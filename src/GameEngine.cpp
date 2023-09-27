@@ -1,42 +1,97 @@
+//----------------------------------------------------------------------------------------------------------------------
+//  MACROS
+
 #include "../include/GameEngine.h"
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <vector>
 
-#define COMP345_RISK_DEFAULT_ARRAY_INIT                             \
-    this->arraySize = 5;                                            \
-    this->numberOfElements = 0;                                     \
+#define STATE_ARRAY_INIT(x, y)                                      \
+    this->arraySize = x;                                            \
+    this->numberOfElements = y;                                     \
     this->transitionNames = new std::string[this->arraySize];       \
     this->states = new State*[this->arraySize];                     \
+    this->functions = new cmdFuncPtr[this->arraySize];              \
+
+
+#define PRESS_ENTER_TO_CONTINUE(clearConsole)                       \
+    std::string _IGNORE_STRING;                                     \
+    std::cout << "Press Enter to Continue... ";                     \
+    std::getline(std::cin, _IGNORE_STRING);                         \
+                                                                    \
+    if (clearConsole) {                                             \
+        system("cls");                                              \
+    }                                                               \
+
+
+//----------------------------------------------------------------------------------------------------------------------
+//  TRANSITION FUNCTIONS
+//  todo implement transition functions
+
+void printInput(const std::string& input) {
+    std::cout << "\033[34m" << "ARGS:\t" << input << "\033[0m" << std::endl;
+}
+
+void loadMap(const std::string& input) {
+    std::cout << "\033[34m" << "loading map w/ args:\t" << input << "\033[0m" << std::endl;
+}
+
+void validateMap(const std::string& input) {
+    std::cout << "\033[34m" << "validating map w/ args:\t" << input << "\033[0m" << std::endl;
+}
+
+void addPlayer(const std::string& input) {
+    std::cout << "\033[34m" << "adding player w/ args:\t" << input << "\033[0m" << std::endl;
+}
+
+void assignCountries(const std::string& input) {
+    std::cout << "\033[34m" << "assigning countries w/ args:\t" << input << "\033[0m" << std::endl;
+}
+
+void issueOrder(const std::string& input) {
+    std::cout << "\033[34m" << "issuing order w/ args:\t" << input << "\033[0m" << std::endl;
+}
+
+void endIssueOrders(const std::string& input) {
+    std::cout << "\033[34m" << "FINISHED issuing orders w/ args:\t" << input << "\033[0m" << std::endl;
+}
+
+void executeOrder(const std::string& input) {
+    std::cout << "\033[34m" << "executing order w/ args:\t" << input << "\033[0m" << std::endl;
+}
+
+void endExecuteOrders(const std::string& input) {
+    std::cout << "\033[34m" << "FINISHED executing orders w/ args:\t" << input << "\033[0m" << std::endl;
+}
+
+void winGame(const std::string& input) {
+    std::cout << "\033[34m" << "win w/ args:\t" << input << "\033[0m" << std::endl;
+}
+
+void endProgram(__attribute__((unused)) const std::string& ignored) {
+    GameEngine& gameEngine = GameEngine::getInstance();
+    gameEngine.stop();
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 //  STATE
 
-//  todo delete after implementing separate functions for each command at each state
-void temporaryFunction(const std::string& input) {
-    std::cout << "\033[34m" << "ARGS: " << input << "\033[0m" << std::endl;
-}
 
 State::State() {
-    COMP345_RISK_DEFAULT_ARRAY_INIT
-    this->functions = new cmdFuncPtr[this->arraySize];
+    STATE_ARRAY_INIT(5, 0)
     this->stateName = "DEFAULT-STATE-NAME";
 }
 
 State::State(const std::string& stateName) {
-    COMP345_RISK_DEFAULT_ARRAY_INIT
-    this->functions = new cmdFuncPtr[this->arraySize];
+    STATE_ARRAY_INIT(5, 0)
     this->stateName = stateName;
 }
 
 State::State(const State &otherState) {
+    STATE_ARRAY_INIT(otherState.arraySize * 2, otherState.numberOfElements)
     this->stateName = otherState.stateName;
-    this->arraySize = otherState.arraySize * 2;
-    this->numberOfElements = otherState.numberOfElements;
-    this->transitionNames = new std::string[this->arraySize];
-    this->states = new State*[this->arraySize];
-    this->functions = new cmdFuncPtr[this->arraySize];
 
     //  Copying the values from the other State object
     for (int i = 0; i < this->numberOfElements; i++) {
@@ -54,12 +109,8 @@ State::~State() {
 
 State& State::operator=(const State &otherState) {
     if (this != &otherState) {  //  Check for self-assignment
+        STATE_ARRAY_INIT(otherState.arraySize * 2, otherState.numberOfElements)
         this->stateName = otherState.stateName;
-        this->arraySize = otherState.arraySize * 2;
-        this->numberOfElements = otherState.numberOfElements;
-        this->transitionNames = new std::string[this->arraySize];
-        this->states = new State*[this->arraySize];
-        this->functions = new cmdFuncPtr[this->arraySize];
 
         //  Copying the values from the other State object
         for (int i = 0; i < this->numberOfElements; i++) {
@@ -96,15 +147,20 @@ bool State::operator==(const State &otherState) const {
     return true;
 }
 
+std::ostream &operator<<(std::ostream &os, const State &state) {
+    os << state.stateName << "\t" << state.numberOfElements;
+    return os;
+}
 
-void State::addTransition(const std::string& transitionName, State* newState) {
+
+void State::addTransition(const std::string& transitionName, State* newState, const cmdFuncPtr& functionPtr) {
     if (this->numberOfElements >= this->arraySize) {
         doubleCapacity();
     }
 
     this->transitionNames[numberOfElements] = transitionName;
     this->states[numberOfElements] = newState;
-    this->functions[numberOfElements] = &temporaryFunction;     //  todo remove when implemented
+    this->functions[numberOfElements] = functionPtr;
     numberOfElements++;
 }
 
@@ -124,6 +180,9 @@ State& State::getState(const std::string& transitionName) const {
             return *(this->states[i]);
         }
     }
+
+    //  throw an error.
+    throw std::runtime_error("UNKNOWN TRANSITION NAME");
 }
 
 cmdFuncPtr State::getFunction(const std::string &transitionName) const {
@@ -132,6 +191,9 @@ cmdFuncPtr State::getFunction(const std::string &transitionName) const {
             return this->functions[i];
         }
     }
+
+    //  throw an error.
+    throw std::runtime_error("UNKNOWN TRANSITION NAME");
 }
 
 void State::doubleCapacity() {
@@ -151,14 +213,10 @@ void State::doubleCapacity() {
     this->states = bufferArrayState;
     this->functions = bufferArrayFunctions;
     this->arraySize = newSize;
-}
 
-void State::printContents() const {
-    std::cout << "PRINTING:" << std::endl;
-    std::cout << this->arraySize << std::endl;
-    for (int i = 0; i < this->numberOfElements; i++) {
-        std::cout << this->transitionNames[i] << "\tfrom: " << this->states[i]->stateName << std::endl;
-    }
+    bufferArrayString = nullptr;
+    bufferArrayState = nullptr;
+    bufferArrayFunctions = nullptr;
 }
 
 
@@ -167,7 +225,6 @@ void State::printContents() const {
 //  GAME_ENGINE
 
 static std::vector<std::string> getTokens(std::string input) {
-    //  todo kinda figure this out
     std::istringstream iss(input);
     std::vector<std::string> tokens;
 
@@ -176,6 +233,11 @@ static std::vector<std::string> getTokens(std::string input) {
     }
 
     return tokens;
+}
+
+GameEngine &GameEngine::getInstance() {
+    static GameEngine instance;
+    return instance;
 }
 
 GameEngine::GameEngine() {
@@ -191,26 +253,27 @@ GameEngine::GameEngine() {
     State* end = new State("END");
 
     //  Defining the 'transitions' and 'commands'
-    start->addTransition("loadmap", mapLoaded);
-    mapLoaded->addTransition("loadmap", mapLoaded);
-    mapLoaded->addTransition("validatemap", mapValidated);
-    mapValidated->addTransition("addplayer", playersAdded);
-    playersAdded->addTransition("addplayer", playersAdded);
-    playersAdded->addTransition("assigncountries", assignReinforcement);
-    assignReinforcement->addTransition("issueorder", issueOrders);
-    issueOrders->addTransition("issueorder", issueOrders);
-    issueOrders->addTransition("endissueorders", executeOrders);
-    executeOrders->addTransition("endexecorders", assignReinforcement);
-    executeOrders->addTransition("execorder", executeOrders);
-    executeOrders->addTransition("win", win);
-    win->addTransition("play", start);
-    win->addTransition("end", end);
+    start->addTransition("loadmap", mapLoaded, &loadMap);
+    mapLoaded->addTransition("loadmap", mapLoaded, &loadMap);
+    mapLoaded->addTransition("validatemap", mapValidated, &validateMap);
+    mapValidated->addTransition("addplayer", playersAdded, &addPlayer);
+    playersAdded->addTransition("addplayer", playersAdded, &addPlayer);
+    playersAdded->addTransition("assigncountries", assignReinforcement, &assignCountries);
+    assignReinforcement->addTransition("issueorder", issueOrders, &issueOrder);
+    issueOrders->addTransition("issueorder", issueOrders, &issueOrder);
+    issueOrders->addTransition("endissueorders", executeOrders, &endIssueOrders);
+    executeOrders->addTransition("endexecorders", assignReinforcement, &endExecuteOrders);
+    executeOrders->addTransition("execorder", executeOrders, &executeOrder);
+    executeOrders->addTransition("win", win, &winGame);
+    win->addTransition("play", start, &printInput);
+    win->addTransition("end", end, &endProgram);
 
     //  Init member attributes
     //  this->size = 9;
     this->states = new State[] {*start, *mapLoaded, *mapValidated, *playersAdded, *assignReinforcement, *issueOrders,
                                 *executeOrders, *win, *end};
     this->currentState = *start;
+    this->isRunning = true;
 }
 
 GameEngine::~GameEngine() {
@@ -218,8 +281,8 @@ GameEngine::~GameEngine() {
 }
 
 void GameEngine::execute() {
-    while (true) {
-        std::cout << "CURRENT STATE:\t" << this->currentState.getStateName() << std::endl;
+    while (this->isRunning) {
+        std::cout << "CURRENT STATE:\t[" << this->currentState.getStateName() << "]" << std::endl;
         std::cout << "Please enter a command:\n> ";
 
         std::string userInput;
@@ -229,13 +292,19 @@ void GameEngine::execute() {
         //  Execute the user input command, if valid.
         takeCommand(userInput);
 
-        std::cout << "Press Enter to Continue...\n> ";
-        std::getline(std::cin, userInput);
-        system("cls");
+        //  Press enter to continue.
+        PRESS_ENTER_TO_CONTINUE(true)
     }
 }
 
+void GameEngine::stop() {
+    this->isRunning = false;
+}
+
+
 void GameEngine::takeCommand(const std::string& rawCommand) {
+
+    //  Get the tokens of the raw command
     std::vector<std::string> tokens = getTokens(rawCommand);
     std::string& transitionName = tokens.front();
 
@@ -246,12 +315,17 @@ void GameEngine::takeCommand(const std::string& rawCommand) {
     }
 
     //  If the transition is VALID, execute command and shift state
+    State& nextState = this->currentState.getState(transitionName);
     cmdFuncPtr transitionFunction = this->currentState.getFunction(transitionName);
+
     transitionFunction(rawCommand);
 
-    State& nextState = this->currentState.getState(transitionName);
-
-
     this->currentState = nextState;
-    std::cout << "SWITCHED STATES TO: " << currentState.getStateName() << std::endl;
+    std::cout << "\033[34m" << "SWITCHED STATES TO:\t[" << currentState.getStateName() << "]\033[0m" << std::endl;
 }
+
+std::ostream &operator<<(std::ostream &os, const GameEngine& gameEngine) {
+    os << gameEngine.currentState.getStateName();
+    return os;
+}
+

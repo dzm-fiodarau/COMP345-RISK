@@ -3,12 +3,14 @@
 
 #include <string>
 
-/**
- * \brief   Function pointer for functions to be called when executing the commands when transitioning from one State
- *          to another State.
- */
+//  Function pointer for functions to be called when executing the commands when transitioning from one State to another
+//  State.
 typedef void (*cmdFuncPtr)(const std::string&);
 
+/**
+ * \class   State
+ * \brief   A class to represent a State object. Contains a state name and links or transitions to other State objects.
+ */
 class State {
 public:
     /**
@@ -34,7 +36,6 @@ public:
      */
     ~State();
 
-
     /**
      * \brief               Assigns values of the passed State object into the current state object.
      * \param otherState    The other State object to copy member variables from.
@@ -52,13 +53,17 @@ public:
      */
     bool operator==(const State& otherState) const;
 
+    /**
+     * /brief               Stream Insertion Override. Prints state name and number of transitions.
+     */
+    friend std::ostream& operator<<(std::ostream& os, const State& state);
 
     /**
      * \brief                   Adds a transition to another State object.
      * \param transitionName    The name of the transition.
      * \param newState          The State object liked to by the transition.
      */
-    void addTransition(const std::string& transitionName, State* newState);
+    void addTransition(const std::string& transitionName, State* newState, const cmdFuncPtr& functionPtr);
 
     /**
      * \break                   Checks whether a transition exist, given the transition name.
@@ -84,12 +89,6 @@ public:
      * \return                  The corresponding function.
      */
     cmdFuncPtr getFunction(const std::string& transitionName) const;
-
-    /**
-     * \brief                   Prints the contents of the State object.
-     * todo find a way to override the stream extraction operator
-     */
-    void printContents() const;
 
     /**
      * /brief   Returns the state name.
@@ -124,22 +123,58 @@ private:
 };
 
 
-
+/**
+ * \class   GameEngine
+ * \brief   A class that controls the flow of the game through States.
+ *
+ * The game engine constructs a set of linked states, with each state representing a specific stage of the game. The
+ * current state dictates the available commands and executable actions.
+ */
 class GameEngine {
 public:
-    static GameEngine& getInstance()  {
-        static GameEngine instance;
-        return instance;
-    }
+    /**
+     * \brief   Gets the singleton instance of the GameEngine class;
+     * \return  Returns an instance of GameEngine.
+     */
+    static GameEngine& getInstance();
 
+    /**
+     * \brief   Start the main program loop.
+     */
     void execute();
+
+    /**
+     * \brief   Signals the GameEngine object to stop.
+     */
+    void stop();
+
+    /**
+     * \brief               Takes a command. Determines if the command is valid depending on the current state.
+     *                      If command is valid, executes command and transitions into another state. Otherwise, an
+     *                      error message is thrown.
+     * \param rawCommand    The raw command as entered by the user.
+     */
     void takeCommand(const std::string& rawCommand);
 
+    /**
+     * /brief               Stream Insertion Override. Prints name of the current state.
+     */
+    friend std::ostream& operator<<(std::ostream& os, const GameEngine& gameEngine);
+
 private:
+    //  A dynamic array of all states used. Deallocated when deconstructor called.
     State* states;
+
+    //  The current state.
     State currentState;
 
+    //  True if the game is running.
+    bool isRunning;
+
+    //  Default Constructor, constructs the set of State objects.
     GameEngine();
+
+    //  Deconstructor, deallocates all the state objects initialized in the constructor.
     ~GameEngine();
 
     GameEngine(const GameEngine& other) = delete;

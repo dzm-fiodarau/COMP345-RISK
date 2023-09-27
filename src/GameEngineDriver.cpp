@@ -1,12 +1,14 @@
 #include <iostream>
-#include <string>
-#include <vector>
 #include "../include/GameEngine.h"
 
+void testGameStates();
+
 int main() {
-
-    GameEngine& gameEngine = GameEngine::getInstance();
-    gameEngine.execute();
-
+    testGameStates();
     return 0;
+}
+
+void testGameStates() {
+    GameEngine* gameEngine = &GameEngine::getInstance();
+    gameEngine->execute();
 }
