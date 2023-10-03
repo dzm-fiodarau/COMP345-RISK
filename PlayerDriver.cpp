@@ -3,7 +3,7 @@
 using namespace std;
 
 void testPlayers() {
-    // Test Player class methods here
+    //test players
     vector<string*> territories = {new string("Territory1"), new string("Territory2")};
     vector<string*> handCards = {new string("Card1"), new string("Card2")};
     vector<Order*> orders = {new Order("Order1"), new Order("Order2")};
