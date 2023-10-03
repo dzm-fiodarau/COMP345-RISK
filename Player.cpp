@@ -6,16 +6,16 @@ int index;	//used for for-loop
 //default constructor
 Player::Player()
 {
-	string name;
+	string playerName = "";
 	vector<string*> terriorty;
 	vector<string*> handCard;
 	vector<Order*> orderList;
 }
 
 //constructor
-Player::Player(string n, vector<string*> t, vector<string*> hd,vector<Order*> ol)
+Player::Player(string pn, vector<string*> t, vector<string*> hd,vector<Order*> ol)
 {
-	this->name = n;
+	this->playerName = pn;
 	this->territory = t;
 	this->handCard = hd;
 	this->orderList = ol;
@@ -24,7 +24,7 @@ Player::Player(string n, vector<string*> t, vector<string*> hd,vector<Order*> ol
 //copy constructor
 Player::Player(const Player& p)
 {
-	this->name = p.name;
+	this->playerName = p.playerName;
 	this->territory = p.territory;
 	this->handCard = p.handCard;
 	this->orderList = p.orderList;
@@ -33,39 +33,41 @@ Player::Player(const Player& p)
 //destructor
 Player::~Player()
 {
-	name.clear();
+	playerName.clear();
 	territory.clear();
 	handCard.clear();
 	for (auto ol: orderList)
 	{
-		delete ol;
+		delete ol;	//delete each element of orderList
 	}
 	orderList.clear();
 }
 
+//method toAttack of Player
 void Player::toAttack()
 {
-	for (index=0; index < territory.size(); index++) 
+	for (index=0; index<territory.size(); index++) 
 	{
 		cout << *territory[index] << " ";
 	}
 	cout << endl;
 }
 
+//method toDefend of Player
 void Player::toDefend()
 {
-	for (index=0; index < territory.size(); index++)
+	for (index=0; index<territory.size(); index++)
 	{
 		cout << *territory[index] << " ";
 	}
 	cout << endl;
 }
 
-//get issueOrder
+//methods below are used to get issueOrder
 void Player::issueOrder(string io)
 {
-	Order *a = new Order(io);
-	orderList.push_back(a);
+	Order *o = new Order(io);
+	orderList.push_back(o);
 }
 
 vector<Order*> Player::getOrderList()
@@ -76,7 +78,7 @@ vector<Order*> Player::getOrderList()
 void Player::printOrder()
 {
 	vector<Order*>::iterator it = orderList.begin();
-	for (; it != orderList.end(); it++)
+	for (; it!=orderList.end(); it++)
 	{
 		cout << (*it)->getResult() << " ";
 	}
