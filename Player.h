@@ -1,5 +1,5 @@
-#ifndef PLAYER_H
-#define PLAYER_H
+#ifndef PLAYER_H    //check whether there is Player.h or not
+#define PLAYER_H    //if no, then create one
 
 #include <iostream>
 #include <vector>
@@ -7,6 +7,7 @@
 
 using namespace std;
 
+//order object
 class Order {
 private:
     string result;
@@ -19,26 +20,27 @@ public:
     }
 };
 
+//player object
 class Player {
 private:
-    string name;
+    string playerName;
     vector<string*> territory;
     vector<string*> handCard;
     vector<Order*> orderList;
 
 public:
-    // Constructors and Destructor
+    //constructors & destructor
     Player();
-    Player(string n, vector<string*> t, vector<string*> h, vector<Order*> o);
+    Player(string pn, vector<string*> t, vector<string*> hc, vector<Order*> ol);
     Player(const Player& p);
     ~Player();
 
-    // Member Functions
+    //some member functions
     void toAttack();
     void toDefend();
-    void issueOrder(string o);
+    void issueOrder(string io);
     vector<Order*> getOrderList();
     void printOrder();
 };
 
-#endif // PLAYER_H
+#endif //PLAYER_H
