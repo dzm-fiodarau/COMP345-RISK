@@ -31,7 +31,7 @@ public:
      * \param   order Order to be removed from the list
      * \return  True if order removal is successful, false otherwise
      */
-    bool remove(Order *order);
+    void remove(Order *order);
     /**
      * \brief   Moves specified order to specified index in the list
      * \param   order Order to be moved
@@ -43,7 +43,7 @@ public:
      * \brief   Assigns new values to member varaiables of the OrdersList object
      * \param   ordersList OrdersList object from which new values are to be taken
      */
-    void operator=(const OrdersList &ordersList);
+    OrdersList &operator=(const OrdersList &ordersList);
 
     /**
      * \brief   Stream insertion override, prints all orders contained in the list
@@ -84,7 +84,7 @@ public:
      * \brief   Assigns new values to member varaiables of the Order object
      * \param   order Order object from which new values are to be taken
      */
-    void operator=(const Order &order);
+    Order &operator=(const Order &order);
 
     /**
      * \brief   Stream insertion override, prints order's type and target territory
@@ -112,7 +112,7 @@ public:
      * \param   target Territory to which troups are to be deployed
      * \param   armyUnits Number of army units to be deployed
      */
-    DeployOrder(string type /*, Territory* target*/, int armyUnits);
+    DeployOrder(/*Territory* target,*/ int armyUnits);
     /**
      * \brief   Constructs a DeployOrder object using values from another DeployOrder object
      * \param   order Other DeployOrder object to copy member variables from
@@ -133,7 +133,7 @@ public:
      * \brief   Assigns new values to member varaiables of the DeployOrder object
      * \param   order DeployOrder object from which new values are to be taken
      */
-    void operator=(const DeployOrder &order);
+    DeployOrder &operator=(const DeployOrder &order);
 
     /**
      * \brief   Stream insertion override, prints order's type, target territory and number of army units
@@ -160,7 +160,7 @@ public:
      * \param   armyUnits Number of army units to be moved
      * \param   source  Territory from which troups are to be moved
      */
-    AdvanceOrder(string type /*, Territory* target*/, int armyUnits /*, Territory* source*/);
+    AdvanceOrder(/*Territory* target,*/ int armyUnits /*, Territory* source*/);
     /**
      * \brief   Constructs an AdvanceOrder object using values from another AdvanceOrder object
      * \param   order Other AdvanceOrder object to copy member variables from
@@ -181,7 +181,7 @@ public:
      * \brief   Assigns new values to member varaiables of the AdvanceOrder object
      * \param   order AdvanceOrder object from which new values are to be taken
      */
-    void operator=(const AdvanceOrder &order);
+    AdvanceOrder &operator=(const AdvanceOrder &order);
 
     /**
      * \brief   Stream insertion override, prints order's type, source and target territories, and number of army units
@@ -208,7 +208,7 @@ public:
      * \param   type Type of the Order object created
      * \param   target Territory to be bombed
      */
-    BombOrder(string type /*, Territory* target*/);
+    BombOrder(/*Territory* target*/);
     /**
      * \brief   Constructs a BombOrder object using values from another BombOrder object
      * \param   order Other BombOrder object to copy member variables from
@@ -229,7 +229,7 @@ public:
      * \brief   Assigns new values to member varaiables of the BombOrder object
      * \param   order BombOrder object from which new values are to be taken
      */
-    void operator=(const BombOrder &order);
+    BombOrder &operator=(const BombOrder &order);
 
     /**
      * \brief   Stream insertion override, prints order's type and target territory
@@ -250,7 +250,7 @@ public:
      * \param   type Type of the Order object created
      * \param   target Territory to be blockaded
      */
-    BlockadeOrder(string type /*, Territory* target*/);
+    BlockadeOrder(/*Territory* target*/);
     /**
      * \brief   Constructs a BlockadeOrder object using values from another BlockadeOrder object
      * \param   order Other BlockadeOrder object to copy member variables from
@@ -271,7 +271,7 @@ public:
      * \brief   Assigns new values to member varaiables of the BlockadeOrder object
      * \param   order BlockadeOrder object from which new values are to be taken
      */
-    void operator=(const BlockadeOrder &order);
+    BlockadeOrder &operator=(const BlockadeOrder &order);
 
     /**
      * \brief   Stream insertion override, prints order's type and target territory
@@ -294,7 +294,7 @@ public:
      * \param   armyUnits Number of army units to be moved
      * \param   source  Territory from which troups are to be moved
      */
-    AirliftOrder(string type /*, Territory* target*/, int armyUnits /*, Territory* source*/);
+    AirliftOrder(/*Territory* target,*/ int armyUnits /*, Territory* source*/);
     /**
      * \brief   Constructs an AirliftOrder object using values from another AirliftOrder object
      * \param   order Other AirliftOrder object to copy member variables from
@@ -315,7 +315,7 @@ public:
      * \brief   Assigns new values to member varaiables of the AirliftOrder object
      * \param   order AirliftOrder object from which new values are to be taken
      */
-    void operator=(const AirliftOrder &order);
+    AirliftOrder &operator=(const AirliftOrder &order);
 
     /**
      * \brief   Stream insertion override, prints order's type, source and target territories, and number of army units
@@ -342,7 +342,7 @@ public:
      * \param   type Type of the Order object created
      * \param   player Player with whom negotiation happens
      */
-    NegotiateOrder(string type /*,Player *player*/);
+    NegotiateOrder(/*Player *player*/);
     /**
      * \brief   Constructs a NegotiateOrder object using values from another NegotiateOrder object
      * \param   order Other NegotiateOrder object to copy member variables from
@@ -363,7 +363,7 @@ public:
      * \brief   Assigns new values to member varaiables of the NegotiateOrder object
      * \param   order NegotiateOrder object from which new values are to be taken
      */
-    void operator=(const NegotiateOrder &order);
+    NegotiateOrder &operator=(const NegotiateOrder &order);
 
     /**
      * \brief   Stream insertion override, prints order's type and target player
