@@ -1,14 +1,14 @@
 #include <iostream>
-#include <vector> 
+#include <vector>
 #include <random>
 
-#include "Cards.h"
+#include "../headers/Cards.h"
 
 using namespace std;
 
 Card::Card()
 {
-    //TODO: Think about creating an no-data/empty card type.
+    // TODO: Think about creating an no-data/empty card type.
 }
 
 Card::Card(type type)
@@ -18,7 +18,7 @@ Card::Card(type type)
 
 void Card::play()
 {
-    //TODO: Implement method with the orders.
+    // TODO: Implement method with the orders.
 }
 
 type Card::getCardType() const
@@ -30,27 +30,31 @@ Card::~Card()
 {
 }
 
-bool Card::operator==(const Card& otherCard) const
+bool Card::operator==(const Card &otherCard) const
 {
-    if (this->cardType != otherCard.cardType) {
+    if (this->cardType != otherCard.cardType)
+    {
         return false;
     }
 
     return true;
 }
 
-Card& Card::operator=(const Card& otherCard)
+Card &Card::operator=(const Card &otherCard)
 {
-    if (this != &otherCard) {
+    if (this != &otherCard)
+    {
         this->cardType = otherCard.cardType;
     }
 
     return *this;
 }
 
-std::ostream& operator<<(std::ostream& os, const Card& card) {
+std::ostream &operator<<(std::ostream &os, const Card &card)
+{
     os << "Card of type: ";
-    switch (card.getCardType()) {
+    switch (card.getCardType())
+    {
     case type::bomb:
         os << "bomb";
         break;
@@ -76,14 +80,15 @@ std::ostream& operator<<(std::ostream& os, const Card& card) {
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const std::vector<Card*> multipleCards)
+std::ostream &operator<<(std::ostream &os, const std::vector<Card *> multipleCards)
 {
     os << "Current hand of size " << multipleCards.size() << " with content of:" << std::endl;
 
-    for (Card* card : multipleCards)
+    for (Card *card : multipleCards)
     {
         os << "Card of type: ";
-        switch (card->getCardType()) {
+        switch (card->getCardType())
+        {
         case type::bomb:
             os << "bomb";
             break;
@@ -110,11 +115,11 @@ std::ostream& operator<<(std::ostream& os, const std::vector<Card*> multipleCard
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const Deck& deck)
+std::ostream &operator<<(std::ostream &os, const Deck &deck)
 {
     os << "Current deck of size " << deck.cardList.size() << " with content of:" << std::endl;
 
-    for (Card* card : deck.cardList)
+    for (Card *card : deck.cardList)
     {
         os << *card;
     }
@@ -122,35 +127,37 @@ std::ostream& operator<<(std::ostream& os, const Deck& deck)
     return os;
 }
 
-Deck& Deck::getInstance() {
+Deck &Deck::getInstance()
+{
     static Deck instance;
     return instance;
 }
 
-//TODO: Determine what are the default cards in the starting deck
-Deck::Deck() {
+// TODO: Determine what are the default cards in the starting deck
+Deck::Deck()
+{
 }
 
-Card* Deck::draw()
+Card *Deck::draw()
 {
     std::random_device r;
     std::mt19937 rng(r());
-    //The number generated will be betwwen 0 and the lenght of the deck size.
+    // The number generated will be betwwen 0 and the lenght of the deck size.
     std::uniform_int_distribution<int> uniform_dist(0, cardList.size() - 1);
-    
+
     int randNum = uniform_dist(rng);
 
-    //The card that got randomly chosen
-    Card* cardSelected = cardList[randNum];
+    // The card that got randomly chosen
+    Card *cardSelected = cardList[randNum];
 
-    //Delete it from the deck
+    // Delete it from the deck
     cardList.erase(cardList.begin() + randNum);
 
-    //Return the card
+    // Return the card
     return cardSelected;
 }
 
-void Deck::addCard(Card* card)
+void Deck::addCard(Card *card)
 {
     cardList.push_back(card);
 }
@@ -162,7 +169,7 @@ int Deck::getDeckSize() const
 
 Deck::~Deck()
 {
-    for (Card* card : cardList)
+    for (Card *card : cardList)
     {
         delete card;
     }
