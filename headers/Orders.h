@@ -7,51 +7,7 @@
 using namespace std;
 
 /**
- * \class   OrdersList
- * \brief   Class that holds the list of Order objects of each player
- */
-class OrdersList
-{
-public:
-    // List of pointers to Order objects
-    list<Order *> orders;
-
-    /**
-     * \brief   Constructs an OrdersList object with an empty list of orders
-     */
-    OrdersList();
-    /**
-     * \brief   Constructs an OrdersList object using values from another OrdersList object
-     * \param   ordersList Other OrdersList object to copy member variables from
-     */
-    OrdersList(OrdersList &ordersList);
-
-    /**
-     * \brief   Removes the specified order from the list
-     * \param   order Order to be removed from the list
-     * \return  True if order removal is successful, false otherwise
-     */
-    void remove(Order *order);
-    /**
-     * \brief   Moves specified order to specified index in the list
-     * \param   order Order to be moved
-     * \param   index New position of the order in the list
-     * \return  True if order moving is successful, false otherwise
-     */
-    bool move(Order *order, int index);
-    /**
-     * \brief   Assigns new values to member varaiables of the OrdersList object
-     * \param   ordersList OrdersList object from which new values are to be taken
-     */
-    OrdersList &operator=(const OrdersList &ordersList);
-
-    /**
-     * \brief   Stream insertion override, prints all orders contained in the list
-     */
-    friend ostream &operator<<(ostream &outs, const OrdersList &ordersList);
-};
-
-/**
+ * todo update documentation
  * \class   OrdersList
  * \brief   Class that holds the list of Order objects of each player
  */
@@ -99,6 +55,51 @@ protected:
 };
 
 /**
+ * \class   OrdersList
+ * \brief   Class that holds the list of Order objects of each player
+ */
+class OrdersList
+{
+public:
+    // List of pointers to Order objects
+    list<Order *> orders;
+
+    /**
+     * \brief   Constructs an OrdersList object with an empty list of orders
+     */
+    OrdersList();
+    /**
+     * \brief   Constructs an OrdersList object using values from another OrdersList object
+     * \param   ordersList Other OrdersList object to copy member variables from
+     */
+    OrdersList(OrdersList &ordersList);
+
+    /**
+     * \brief   Removes the specified order from the list
+     * \param   order Order to be removed from the list
+     * \return  True if order removal is successful, false otherwise
+     */
+    void remove(Order *order);
+    /**
+     * \brief   Moves specified order to specified index in the list
+     * \param   order Order to be moved
+     * \param   index New position of the order in the list
+     * \return  True if order moving is successful, false otherwise
+     */
+    bool move(Order *order, int index);
+    /**
+     * \brief   Assigns new values to member varaiables of the OrdersList object
+     * \param   ordersList OrdersList object from which new values are to be taken
+     */
+    OrdersList &operator=(const OrdersList &ordersList);
+
+    /**
+     * \brief   Stream insertion override, prints all orders contained in the list
+     */
+    friend ostream &operator<<(ostream &outs, const OrdersList &ordersList);
+};
+
+/**
  * \class   DeployOrder
  * \brief   Class that represents the deploy action
  * \extends Order
@@ -123,12 +124,14 @@ public:
      * \brief   Verifies if the order is valid
      * \return  True if the order is valid, false otherwise
      */
-    bool validate();
+    bool validate() override;
+
     /**
      * \brief   Executes the order
      * \return  String that describes the effects of the executed order
      */
-    string execute();
+    string execute() override;
+
     /**
      * \brief   Assigns new values to member varaiables of the DeployOrder object
      * \param   order DeployOrder object from which new values are to be taken
@@ -171,12 +174,12 @@ public:
      * \brief   Verifies if the order is valid
      * \return  True if the order is valid, false otherwise
      */
-    bool validate();
+    bool validate() override;
     /**
      * \brief   Executes the order
      * \return  String that describes the effects of the executed order
      */
-    string execute();
+    string execute() override;
     /**
      * \brief   Assigns new values to member varaiables of the AdvanceOrder object
      * \param   order AdvanceOrder object from which new values are to be taken
@@ -219,12 +222,12 @@ public:
      * \brief   Verifies if the order is valid
      * \return  True if the order is valid, false otherwise
      */
-    bool validate();
+    bool validate() override;
     /**
      * \brief   Executes the order
      * \return  String that describes the effects of the executed order
      */
-    string execute();
+    string execute() override;
     /**
      * \brief   Assigns new values to member varaiables of the BombOrder object
      * \param   order BombOrder object from which new values are to be taken
@@ -261,12 +264,12 @@ public:
      * \brief   Verifies if the order is valid
      * \return  True if the order is valid, false otherwise
      */
-    bool validate();
+    bool validate() override;
     /**
      * \brief   Executes the order
      * \return  String that describes the effects of the executed order
      */
-    string execute();
+    string execute() override;
     /**
      * \brief   Assigns new values to member varaiables of the BlockadeOrder object
      * \param   order BlockadeOrder object from which new values are to be taken
@@ -305,12 +308,12 @@ public:
      * \brief   Verifies if the order is valid
      * \return  True if the order is valid, false otherwise
      */
-    bool validate();
+    bool validate() override;
     /**
      * \brief   Executes the order
      * \return  String that describes the effects of the executed order
      */
-    string execute();
+    string execute() override;
     /**
      * \brief   Assigns new values to member varaiables of the AirliftOrder object
      * \param   order AirliftOrder object from which new values are to be taken
@@ -353,12 +356,12 @@ public:
      * \brief   Verifies if the order is valid
      * \return  True if the order is valid, false otherwise
      */
-    bool validate();
+    bool validate() override;
     /**
      * \brief   Executes the order
      * \return  String that describes the effects of the executed order
      */
-    string execute();
+    string execute() override;
     /**
      * \brief   Assigns new values to member varaiables of the NegotiateOrder object
      * \param   order NegotiateOrder object from which new values are to be taken
