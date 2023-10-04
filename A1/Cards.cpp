@@ -152,7 +152,6 @@ Card* Deck::draw()
 
 void Deck::addCard(Card* card)
 {
-    
     cardList.push_back(card);
 }
 
