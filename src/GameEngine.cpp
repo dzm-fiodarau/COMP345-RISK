@@ -1,119 +1,145 @@
 //----------------------------------------------------------------------------------------------------------------------
 //  MACROS
 
-#include "../include/GameEngine.h"
+#include "../headers/GameEngine.h"
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <vector>
 
-#define STATE_ARRAY_INIT(x, y)                                      \
-    this->arraySize = x;                                            \
-    this->numberOfElements = y;                                     \
-    this->transitionNames = new std::string[this->arraySize];       \
-    this->states = new State*[this->arraySize];                     \
-    this->functions = new cmdFuncPtr[this->arraySize];              \
+#define STATE_ARRAY_INIT(x, y)                                \
+    this->arraySize = x;                                      \
+    this->numberOfElements = y;                               \
+    this->transitionNames = new std::string[this->arraySize]; \
+    this->states = new State *[this->arraySize];              \
+    this->functions = new cmdFuncPtr[this->arraySize];
 
-
-#define PRESS_ENTER_TO_CONTINUE(clearConsole)                       \
-    std::string _IGNORE_STRING;                                     \
-    std::cout << "Press Enter to Continue... ";                     \
-    std::getline(std::cin, _IGNORE_STRING);                         \
-                                                                    \
-    if (clearConsole) {                                             \
-        system("cls");                                              \
-    }                                                               \
-
+#define PRESS_ENTER_TO_CONTINUE(clearConsole)   \
+    std::string _IGNORE_STRING;                 \
+    std::cout << "Press Enter to Continue... "; \
+    std::getline(std::cin, _IGNORE_STRING);     \
+                                                \
+    if (clearConsole)                           \
+    {                                           \
+        system("cls");                          \
+    }
 
 //----------------------------------------------------------------------------------------------------------------------
 //  TRANSITION FUNCTIONS
 //  todo implement transition functions
 
-void printInput(const std::string& input) {
-    std::cout << "\033[34m" << "ARGS:\t" << input << "\033[0m" << std::endl;
+void printInput(const std::string &input)
+{
+    std::cout << "\033[34m"
+              << "ARGS:\t" << input << "\033[0m" << std::endl;
 }
 
-void loadMap(const std::string& input) {
-    std::cout << "\033[34m" << "loading map w/ args:\t" << input << "\033[0m" << std::endl;
+void loadMap(const std::string &input)
+{
+    std::cout << "\033[34m"
+              << "loading map w/ args:\t" << input << "\033[0m" << std::endl;
 }
 
-void validateMap(const std::string& input) {
-    std::cout << "\033[34m" << "validating map w/ args:\t" << input << "\033[0m" << std::endl;
+void validateMap(const std::string &input)
+{
+    std::cout << "\033[34m"
+              << "validating map w/ args:\t" << input << "\033[0m" << std::endl;
 }
 
-void addPlayer(const std::string& input) {
-    std::cout << "\033[34m" << "adding player w/ args:\t" << input << "\033[0m" << std::endl;
+void addPlayer(const std::string &input)
+{
+    std::cout << "\033[34m"
+              << "adding player w/ args:\t" << input << "\033[0m" << std::endl;
 }
 
-void assignCountries(const std::string& input) {
-    std::cout << "\033[34m" << "assigning countries w/ args:\t" << input << "\033[0m" << std::endl;
+void assignCountries(const std::string &input)
+{
+    std::cout << "\033[34m"
+              << "assigning countries w/ args:\t" << input << "\033[0m" << std::endl;
 }
 
-void issueOrder(const std::string& input) {
-    std::cout << "\033[34m" << "issuing order w/ args:\t" << input << "\033[0m" << std::endl;
+void issueOrder(const std::string &input)
+{
+    std::cout << "\033[34m"
+              << "issuing order w/ args:\t" << input << "\033[0m" << std::endl;
 }
 
-void endIssueOrders(const std::string& input) {
-    std::cout << "\033[34m" << "FINISHED issuing orders w/ args:\t" << input << "\033[0m" << std::endl;
+void endIssueOrders(const std::string &input)
+{
+    std::cout << "\033[34m"
+              << "FINISHED issuing orders w/ args:\t" << input << "\033[0m" << std::endl;
 }
 
-void executeOrder(const std::string& input) {
-    std::cout << "\033[34m" << "executing order w/ args:\t" << input << "\033[0m" << std::endl;
+void executeOrder(const std::string &input)
+{
+    std::cout << "\033[34m"
+              << "executing order w/ args:\t" << input << "\033[0m" << std::endl;
 }
 
-void endExecuteOrders(const std::string& input) {
-    std::cout << "\033[34m" << "FINISHED executing orders w/ args:\t" << input << "\033[0m" << std::endl;
+void endExecuteOrders(const std::string &input)
+{
+    std::cout << "\033[34m"
+              << "FINISHED executing orders w/ args:\t" << input << "\033[0m" << std::endl;
 }
 
-void winGame(const std::string& input) {
-    std::cout << "\033[34m" << "win w/ args:\t" << input << "\033[0m" << std::endl;
+void winGame(const std::string &input)
+{
+    std::cout << "\033[34m"
+              << "win w/ args:\t" << input << "\033[0m" << std::endl;
 }
 
-void endProgram(__attribute__((unused)) const std::string& ignored) {
-    GameEngine& gameEngine = GameEngine::getInstance();
+void endProgram(__attribute__((unused)) const std::string &ignored)
+{
+    GameEngine &gameEngine = GameEngine::getInstance();
     gameEngine.stop();
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 //  STATE
 
-
-State::State() {
+State::State()
+{
     STATE_ARRAY_INIT(5, 0)
     this->stateName = "DEFAULT-STATE-NAME";
 }
 
-State::State(const std::string& stateName) {
+State::State(const std::string &stateName)
+{
     STATE_ARRAY_INIT(5, 0)
     this->stateName = stateName;
 }
 
-State::State(const State &otherState) {
+State::State(const State &otherState)
+{
     STATE_ARRAY_INIT(otherState.arraySize * 2, otherState.numberOfElements)
     this->stateName = otherState.stateName;
 
     //  Copying the values from the other State object
-    for (int i = 0; i < this->numberOfElements; i++) {
+    for (int i = 0; i < this->numberOfElements; i++)
+    {
         this->transitionNames[i] = otherState.transitionNames[i];
         this->states[i] = otherState.states[i];
         this->functions[i] = otherState.functions[i];
     }
 }
 
-State::~State() {
+State::~State()
+{
     delete[] transitionNames;
-    delete[] states;    //  Deallocates the pointers, not the values pointed by the pointers.
+    delete[] states; //  Deallocates the pointers, not the values pointed by the pointers.
     delete[] functions;
 }
 
-State& State::operator=(const State &otherState) {
-    if (this != &otherState) {  //  Check for self-assignment
+State &State::operator=(const State &otherState)
+{
+    if (this != &otherState)
+    { //  Check for self-assignment
         STATE_ARRAY_INIT(otherState.arraySize * 2, otherState.numberOfElements)
         this->stateName = otherState.stateName;
 
         //  Copying the values from the other State object
-        for (int i = 0; i < this->numberOfElements; i++) {
+        for (int i = 0; i < this->numberOfElements; i++)
+        {
             this->transitionNames[i] = otherState.transitionNames[i];
             this->states[i] = otherState.states[i];
             this->functions[i] = otherState.functions[i];
@@ -124,22 +150,26 @@ State& State::operator=(const State &otherState) {
 }
 
 //  todo maybe implement checking that function addresses are the same
-bool State::operator==(const State &otherState) const {
+bool State::operator==(const State &otherState) const
+{
     //  Checking if the state name and the number of elements are equal (buffer capacity does not matter)
-    if ((this->stateName != otherState.stateName)
-     || (this->numberOfElements != otherState.numberOfElements)) {
+    if ((this->stateName != otherState.stateName) || (this->numberOfElements != otherState.numberOfElements))
+    {
         return false;
     }
 
-    for (int i = 0; i < this->numberOfElements; i++) {
-        if (!otherState.containsTransition(this->transitionNames[i])) {
+    for (int i = 0; i < this->numberOfElements; i++)
+    {
+        if (!otherState.containsTransition(this->transitionNames[i]))
+        {
             return false;
         }
 
         State resultingState = otherState.getState(this->transitionNames[i]);
         State comparisonState = this->getState(this->transitionNames[i]);
 
-        if (resultingState.stateName != comparisonState.stateName) {
+        if (resultingState.stateName != comparisonState.stateName)
+        {
             return false;
         }
     }
@@ -147,14 +177,16 @@ bool State::operator==(const State &otherState) const {
     return true;
 }
 
-std::ostream &operator<<(std::ostream &os, const State &state) {
+std::ostream &operator<<(std::ostream &os, const State &state)
+{
     os << state.stateName << "\t" << state.numberOfElements;
     return os;
 }
 
-
-void State::addTransition(const std::string& transitionName, State* newState, const cmdFuncPtr& functionPtr) {
-    if (this->numberOfElements >= this->arraySize) {
+void State::addTransition(const std::string &transitionName, State *newState, const cmdFuncPtr &functionPtr)
+{
+    if (this->numberOfElements >= this->arraySize)
+    {
         doubleCapacity();
     }
 
@@ -164,9 +196,12 @@ void State::addTransition(const std::string& transitionName, State* newState, co
     numberOfElements++;
 }
 
-bool State::containsTransition(const std::string &transitionName) const {
-    for (int i = 0; i < this->numberOfElements; i++) {
-        if (this->transitionNames[i] == transitionName) {
+bool State::containsTransition(const std::string &transitionName) const
+{
+    for (int i = 0; i < this->numberOfElements; i++)
+    {
+        if (this->transitionNames[i] == transitionName)
+        {
             return true;
         }
     }
@@ -174,9 +209,12 @@ bool State::containsTransition(const std::string &transitionName) const {
     return false;
 }
 
-State& State::getState(const std::string& transitionName) const {
-    for (int i = 0; i < this->numberOfElements; i++) {
-        if (this->transitionNames[i] == transitionName) {
+State &State::getState(const std::string &transitionName) const
+{
+    for (int i = 0; i < this->numberOfElements; i++)
+    {
+        if (this->transitionNames[i] == transitionName)
+        {
             return *(this->states[i]);
         }
     }
@@ -185,9 +223,12 @@ State& State::getState(const std::string& transitionName) const {
     throw std::runtime_error("UNKNOWN TRANSITION NAME");
 }
 
-cmdFuncPtr State::getFunction(const std::string &transitionName) const {
-    for (int i = 0; i < this->numberOfElements; i++) {
-        if (this->transitionNames[i] == transitionName) {
+cmdFuncPtr State::getFunction(const std::string &transitionName) const
+{
+    for (int i = 0; i < this->numberOfElements; i++)
+    {
+        if (this->transitionNames[i] == transitionName)
+        {
             return this->functions[i];
         }
     }
@@ -196,14 +237,16 @@ cmdFuncPtr State::getFunction(const std::string &transitionName) const {
     throw std::runtime_error("UNKNOWN TRANSITION NAME");
 }
 
-void State::doubleCapacity() {
+void State::doubleCapacity()
+{
     const size_t newSize = this->arraySize * 2;
 
-    std::string* bufferArrayString = new std::string[newSize];
-    State** bufferArrayState = new State*[newSize];
-    cmdFuncPtr* bufferArrayFunctions = new cmdFuncPtr[newSize];
+    std::string *bufferArrayString = new std::string[newSize];
+    State **bufferArrayState = new State *[newSize];
+    cmdFuncPtr *bufferArrayFunctions = new cmdFuncPtr[newSize];
 
-    for (int i = 0; i < this->numberOfElements; i++) {
+    for (int i = 0; i < this->numberOfElements; i++)
+    {
         bufferArrayString[i] = this->transitionNames[i];
         bufferArrayState[i] = this->states[i];
         bufferArrayFunctions[i] = this->functions[i];
@@ -219,38 +262,40 @@ void State::doubleCapacity() {
     bufferArrayFunctions = nullptr;
 }
 
-
-
 //----------------------------------------------------------------------------------------------------------------------
 //  GAME_ENGINE
 
-static std::vector<std::string> getTokens(std::string input) {
+static std::vector<std::string> getTokens(std::string input)
+{
     std::istringstream iss(input);
     std::vector<std::string> tokens;
 
-    while (iss >> input) {
+    while (iss >> input)
+    {
         tokens.push_back(input);
     }
 
     return tokens;
 }
 
-GameEngine &GameEngine::getInstance() {
+GameEngine &GameEngine::getInstance()
+{
     static GameEngine instance;
     return instance;
 }
 
-GameEngine::GameEngine() {
+GameEngine::GameEngine()
+{
     //  Defining the 'nodes'
-    State* start = new State("start");
-    State* mapLoaded = new State("map loaded");
-    State* mapValidated = new State("map validated");
-    State* playersAdded = new State("players added");
-    State* assignReinforcement = new State("assign reinforcement");
-    State* issueOrders = new State("issue orders");
-    State* executeOrders = new State("execute orders");
-    State* win = new State("win");
-    State* end = new State("END");
+    State *start = new State("start");
+    State *mapLoaded = new State("map loaded");
+    State *mapValidated = new State("map validated");
+    State *playersAdded = new State("players added");
+    State *assignReinforcement = new State("assign reinforcement");
+    State *issueOrders = new State("issue orders");
+    State *executeOrders = new State("execute orders");
+    State *win = new State("win");
+    State *end = new State("END");
 
     //  Defining the 'transitions' and 'commands'
     start->addTransition("loadmap", mapLoaded, &loadMap);
@@ -270,18 +315,21 @@ GameEngine::GameEngine() {
 
     //  Init member attributes
     //  this->size = 9;
-    this->states = new State[] {*start, *mapLoaded, *mapValidated, *playersAdded, *assignReinforcement, *issueOrders,
-                                *executeOrders, *win, *end};
+    this->states = new State[]{*start, *mapLoaded, *mapValidated, *playersAdded, *assignReinforcement, *issueOrders,
+                               *executeOrders, *win, *end};
     this->currentState = *start;
     this->isRunning = true;
 }
 
-GameEngine::~GameEngine() {
+GameEngine::~GameEngine()
+{
     delete[] this->states;
 }
 
-void GameEngine::execute() {
-    while (this->isRunning) {
+void GameEngine::execute()
+{
+    while (this->isRunning)
+    {
         std::cout << "CURRENT STATE:\t[" << this->currentState.getStateName() << "]" << std::endl;
         std::cout << "Please enter a command:\n> ";
 
@@ -297,35 +345,40 @@ void GameEngine::execute() {
     }
 }
 
-void GameEngine::stop() {
+void GameEngine::stop()
+{
     this->isRunning = false;
 }
 
-
-void GameEngine::takeCommand(const std::string& rawCommand) {
+void GameEngine::takeCommand(const std::string &rawCommand)
+{
 
     //  Get the tokens of the raw command
     std::vector<std::string> tokens = getTokens(rawCommand);
-    std::string& transitionName = tokens.front();
+    std::string &transitionName = tokens.front();
 
     //  If the transition is INVALID for the current state.
-    if (!this->currentState.containsTransition(transitionName)) {
-        std::cout << "\033[1;31m" << "ERROR, COMMAND INVALID PLEASE TRY AGAIN" << "\033[0m" << std::endl;
+    if (!this->currentState.containsTransition(transitionName))
+    {
+        std::cout << "\033[1;31m"
+                  << "ERROR, COMMAND INVALID PLEASE TRY AGAIN"
+                  << "\033[0m" << std::endl;
         return;
     }
 
     //  If the transition is VALID, execute command and shift state
-    State& nextState = this->currentState.getState(transitionName);
+    State &nextState = this->currentState.getState(transitionName);
     cmdFuncPtr transitionFunction = this->currentState.getFunction(transitionName);
 
     transitionFunction(rawCommand);
 
     this->currentState = nextState;
-    std::cout << "\033[34m" << "SWITCHED STATES TO:\t[" << currentState.getStateName() << "]\033[0m" << std::endl;
+    std::cout << "\033[34m"
+              << "SWITCHED STATES TO:\t[" << currentState.getStateName() << "]\033[0m" << std::endl;
 }
 
-std::ostream &operator<<(std::ostream &os, const GameEngine& gameEngine) {
+std::ostream &operator<<(std::ostream &os, const GameEngine &gameEngine)
+{
     os << gameEngine.currentState.getStateName();
     return os;
 }
-

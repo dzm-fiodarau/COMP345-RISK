@@ -1,14 +1,8 @@
 #include <iostream>
-#include "../include/GameEngine.h"
+#include "../headers/GameEngine.h"
 
-void testGameStates();
-
-int main() {
-    testGameStates();
-    return 0;
-}
-
-void testGameStates() {
-    GameEngine* gameEngine = &GameEngine::getInstance();
+void testGameStates()
+{
+    GameEngine *gameEngine = &GameEngine::getInstance();
     gameEngine->execute();
 }
