@@ -59,6 +59,11 @@ public:
      */
     friend std::ostream& operator<<(std::ostream& os, const Card& card);
 
+    /**
+     * /brief               Prints the name of a list of cards.
+     */
+    friend std::ostream& operator<<(std::ostream& os, const std::vector<Card*> multipleCards);
+
 private:
     // The card type
     type cardType;
@@ -69,12 +74,28 @@ class Deck
 public:
     static Deck& getInstance();
 
+    /**
+     * \brief   Empty constructor
+     */
     Deck();
 
     Card* draw();
 
+    /**
+     * \brief               Add a Card to the deck.
+     * \param otherState    The Card to be added.
+     */
     void addCard(Card* card);
 
+    /**
+     * \brief               Returns the number of cards currently in the deck.
+     * \return              The number of cards in the deck.
+     */
+    int getDeckSize() const;
+
+    /**
+     * \brief   Deconstructs the Deck object.
+     */
     ~Deck();
 
     /**
@@ -83,6 +104,10 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Deck& deck);
 
 private:
-
+    // The deck list of cards
     std::vector<Card*> cardList;
+
+    Deck(const Deck& other) = delete;
+    Deck& operator=(const Deck& other) = delete;
+    Deck& operator=(const Deck& other) const = delete;
 };

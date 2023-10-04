@@ -76,9 +76,43 @@ std::ostream& operator<<(std::ostream& os, const Card& card) {
     return os;
 }
 
+std::ostream& operator<<(std::ostream& os, const std::vector<Card*> multipleCards)
+{
+    os << "Current hand of size " << multipleCards.size() << " with content of:" << std::endl;
+
+    for (Card* card : multipleCards)
+    {
+        os << "Card of type: ";
+        switch (card->getCardType()) {
+        case type::bomb:
+            os << "bomb";
+            break;
+        case type::reinforcement:
+            os << "reinforcement";
+            break;
+        case type::blockade:
+            os << "blockade";
+            break;
+        case type::airlif:
+            os << "airlif";
+            break;
+        case type::diplomacy:
+            os << "diplomacy";
+            break;
+        default:
+            os << "invalid";
+            break;
+        }
+
+        os << std::endl;
+    }
+
+    return os;
+}
+
 std::ostream& operator<<(std::ostream& os, const Deck& deck)
 {
-    os << "Current deck content:" << std::endl;
+    os << "Current deck of size " << deck.cardList.size() << " with content of:" << std::endl;
 
     for (Card* card : deck.cardList)
     {
@@ -101,21 +135,36 @@ Card* Deck::draw()
 {
     std::random_device r;
     std::mt19937 rng(r());
+    //The number generated will be betwwen 0 and the lenght of the deck size.
     std::uniform_int_distribution<int> uniform_dist(0, cardList.size() - 1);
     
     int randNum = uniform_dist(rng);
 
+    //The card that got randomly chosen
     Card* cardSelected = cardList[randNum];
 
+    //Delete it from the deck
     cardList.erase(cardList.begin() + randNum);
+
+    //Return the card
     return cardSelected;
 }
 
 void Deck::addCard(Card* card)
 {
+    
     cardList.push_back(card);
+}
+
+int Deck::getDeckSize() const
+{
+    return cardList.size();
 }
 
 Deck::~Deck()
 {
+    for (Card* card : cardList)
+    {
+        delete card;
+    }
 }
