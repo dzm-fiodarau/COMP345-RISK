@@ -86,9 +86,9 @@ private:
 class MapLoader
 {
 public:
-    explicit MapLoader(const std::string &filePath);
-    Map load();
-    void linkAdjacentTerritories(Map &map);
+    explicit MapLoader(const std::string& filePath);
+    Map* load();
+    void linkAdjacentTerritories(Map& map);
 
 private:
     std::string filePath;

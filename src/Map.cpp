@@ -217,14 +217,14 @@ void MapLoader::linkAdjacentTerritories(Map &map)
     }
 }
 
-Map MapLoader::load()
+Map* MapLoader::load()
 {
-    Map map;
+    Map* map = new Map();
     std::ifstream file(filePath);
     if (!file.is_open())
     {
         std::cerr << "Failed to open the map file." << std::endl;
-        return map;
+        return nullptr;
     }
     else
     {
@@ -258,10 +258,10 @@ Map MapLoader::load()
         switch (state)
         {
         case ParseState::CONTINENTS:
-            parseContinentLine(line, map);
+            parseContinentLine(line, *map);
             break;
         case ParseState::TERRITORIES:
-            parseTerritoryLine(line, map);
+            parseTerritoryLine(line, *map);
             break;
         default:
             // Either the line is part of an unrecognized section or it's an error. For now skip it.
@@ -270,12 +270,12 @@ Map MapLoader::load()
     }
 
     // Once loaded all the territories, link them to their adjacent territories.
-    linkAdjacentTerritories(map);
+    linkAdjacentTerritories(*map);
 
     file.close();
 
-    std::cout << "Loaded " << map.getNumContinents() << " continents." << std::endl;
-    std::cout << "Loaded " << map.getNumTerritories() << " territories." << std::endl
+    std::cout << "Loaded " << (*map).getNumContinents() << " continents." << std::endl;
+    std::cout << "Loaded " << (*map).getNumTerritories() << " territories." << std::endl
               << std::endl;
 
     return map;

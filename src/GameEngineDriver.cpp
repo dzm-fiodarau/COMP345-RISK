@@ -3,6 +3,6 @@
 
 void testGameStates()
 {
-    GameEngine *gameEngine = &GameEngine::getInstance();
+    GameEngine* gameEngine = new GameEngine();
     gameEngine->execute();
 }

@@ -1,187 +1,209 @@
 #ifndef GAME_ENGINE_H
 #define GAME_ENGINE_H
 
+//  Macro Includes
 #include <string>
 
-//  Function pointer for functions to be called when executing the commands when transitioning from one State to another
-//  State.
-typedef void (*cmdFuncPtr)(const std::string &);
+//  Project includes
+#include "../headers/Map.h"
+#include "../headers/Player.h"
 
-/**
- * \class   State
- * \brief   A class to represent a State object. Contains a state name and links or transitions to other State objects.
- */
-class State
-{
+
+
+//  Declare GameEngine for TransitionData class
+class GameEngine;
+
+
+
+/** \class State
+ *  \brief Class to represent a state. */
+class State {
 public:
-    /**
-     * \brief   Constructs a state object with a default name of "DEFAULT-STATE-NAME" and an initial capacity of five
-     *          transitions.
-     */
+    /** \brief Constructs a default state object. */
     State();
 
-    /**
-     * \brief               Constructs a state object with a specified name and an initial capacity of five transitions.
-     * \param stateName     The name of the state.
-     */
-    explicit State(const std::string &stateName);
+    /** \brief Constructs a state object with the specified state name.
+     *  \param stateName The name of the state. */
+    explicit State(const std::string& stateName);
 
-    /**
-     * \brief               Constructs a state object using the values from another State object. Avoids deep copying.
-     * \param otherState    The other State object to copy member variables from.
-     */
-    State(const State &otherState);
+    /** \brief Constructs a state object from another state object. Copy constructor.
+     *  \param otherState The other state object to copy. */
+    State(const State& otherState);
 
-    /**
-     * \brief   Deconstructs the State object.
-     */
+    /** \brief Assigns the values of the passed state object into the current state object. Copy assignment operator.
+     *  \param otherState The other state object to copy values from.
+     *  \return The current state object with changed values. */
+    State& operator=(const State& otherState);
+
+    /** \brief Constructs a state object from another state object then sets the values of the other state object to
+     *        unspecified. Move constructor.
+     *  \param otherState The other state object to extract values from. */
+    State(State&& otherState) noexcept;
+
+    /** \brief Deallocates a State object. */
     ~State();
 
-    /**
-     * \brief               Assigns values of the passed State object into the current state object.
-     * \param otherState    The other State object to copy member variables from.
-     * \return              Returns instance of current object with values changed.
-     */
-    State &operator=(const State &otherState);
+    /** \brief Assigns the values of the passed state object into the current state object then sets the values of the
+     *        other state object to unspecified. Move assignment operator.
+     *  \param otherState The other state object to extract values from.
+     *  \return The current state object with changed values. */
+    State& operator=(State&& otherState) noexcept;
 
-    /**
-     * \brief               Compares two State objects. Returns true if objects are equal; false otherwise.
-     * \remarks             Two State objects are considered equal if they have the same state name, contain the same
-     *                      number of transitions, same transition names with the same corresponding state name
-     *                      (we do not directly check if the state objects are equal, do not want infinite recursive).
-     * \param otherState    The other State object to compare.
-     * \return              True if the two State objects are considered equal. False otherwise.
-     */
-    bool operator==(const State &otherState) const;
+    /** \brief Prints the name of the state into the output stream. Stream insertion operator.*/
+    friend std::ostream& operator<<(std::ostream& os, const State& otherState);
 
-    /**
-     * /brief               Stream Insertion Override. Prints state name and number of transitions.
-     */
-    friend std::ostream &operator<<(std::ostream &os, const State &state);
+    /** \brief Compares two state objects and returns true if they are equal. False otherwise. */
+    bool operator==(const State& otherState) const;
 
-    /**
-     * \brief                   Adds a transition to another State object.
-     * \param transitionName    The name of the transition.
-     * \param newState          The State object liked to by the transition.
-     */
-    void addTransition(const std::string &transitionName, State *newState, const cmdFuncPtr &functionPtr);
-
-    /**
-     * \break                   Checks whether a transition exist, given the transition name.
-     * @param transitionName    The name of the transition to check for.
-     * @return                  True if the transition exists, false otherwise.
-     */
-    bool containsTransition(const std::string &transitionName) const;
-
-    /**
-     * \brief                   Returns the state given by the transition specified by the transition name.
-     * \remarks                 Make sure to assure that transition exists with 'containsTransition' before attempting
-     *                          to get a state. Not doing so may result in undefined behavior.
-     * \param transitionName    The name of the transition.
-     * \return                  The corresponding State object.
-     */
-    State &getState(const std::string &transitionName) const;
-
-    /**
-     * \brief                   Returns the function given by the transition specified by the transition name.
-     * \remarks                 Make sure to assure that transition exists with 'containsTransition' before attempting.
-     *                          to get a state. Not doing so may result in undefined behavior.
-     * \param transitionName    The name of the transition.
-     * \return                  The corresponding function.
-     */
-    cmdFuncPtr getFunction(const std::string &transitionName) const;
-
-    /**
-     * /brief   Returns the state name.
-     * /return  Returns the state name.
-     */
-    inline std::string getStateName() const
-    {
-        return stateName;
-    }
+    /** /brief   Gets the name of the state.
+     *  /return  Returns the name of the state. */
+    std::string getStateName() const;
 
 private:
-    //  Name of the State object
-    std::string stateName;
-
-    //  The following dynamic arrays are meant to be the same size, with each element corresponding to each other
-    //  Dynamic array of transition names
-    std::string *transitionNames;
-
-    //  Dynamic array of State objects
-    State **states;
-
-    //  Dynamic array of function pointers, with the respective behavior for each command
-    cmdFuncPtr *functions;
-
-    //  Capacity of the dynamic arrays, all share the same capacity
-    size_t arraySize;
-
-    //  Number of elements currently contained in the dynamic arrays
-    size_t numberOfElements;
-
-    //  Doubles the capacity of the buffer arrays
-    void doubleCapacity();
+    //  The name of the state
+    std::string* stateName;
 };
 
-/**
- * \class   GameEngine
- * \brief   A class that controls the flow of the game through States.
- *
- * The game engine constructs a set of linked states, with each state representing a specific stage of the game. The
- * current state dictates the available commands and executable actions.
- */
-class GameEngine
-{
+
+
+/** \class TransitionData
+ *  \brief A class that stores transition data for the GameObject class.
+ *  States are stored in the GameObject class as elements in an array. States are to be linked by index pairs. This
+ *  class stores index pairs indicating the direction of flow between states. The class contains addition information
+ *  about the transition including the valid transition name, a help string, and a function pointer that points to the
+ *  transitions corresponding function. */
+class TransitionData {
 public:
-    /**
-     * \brief   Gets the singleton instance of the GameEngine class;
-     * \return  Returns an instance of GameEngine.
-     */
-    static GameEngine &getInstance();
+    /** \brief Constructs a default TransitionData object. */
+    TransitionData() = default;
 
-    /**
-     * \brief   Start the main program loop.
-     */
-    void execute();
+    /** \brief Constructs a TransitionData object given the passed data. */
+    TransitionData(size_t, size_t, std::string, std::string, bool (*)(const std::string&, GameEngine&));
 
-    /**
-     * \brief   Signals the GameEngine object to stop.
-     */
-    void stop();
+    /** \brief Constructs a TransitionData object from another TransitionData object. Copy constructor. */
+    TransitionData(const TransitionData&);
 
-    /**
-     * \brief               Takes a command. Determines if the command is valid depending on the current state.
-     *                      If command is valid, executes command and transitions into another state. Otherwise, an
-     *                      error message is thrown.
-     * \param rawCommand    The raw command as entered by the user.
-     */
-    void takeCommand(const std::string &rawCommand);
+    /** \brief Destructs a TransitionData object. */
+    ~TransitionData();
 
-    /**
-     * /brief               Stream Insertion Override. Prints name of the current state.
-     */
-    friend std::ostream &operator<<(std::ostream &os, const GameEngine &gameEngine);
+    /** \brief Assigns the values of the passed TransitionData object to the current. Copy assignment operator. */
+    TransitionData& operator=(const TransitionData&);
+
+    /** \brief Prints a brief summary of the TransitionData object. Stream insertion operator. */
+    friend std::ostream& operator<<(std::ostream& os, const TransitionData& obj);
+
+
+    /** \brief Get the first index, which indicates the state BEFORE transition. */
+    size_t getIndex1() const { return *index1; }
+
+    /** \brief Get the second index, which indicates the state AFTER transition. */
+    size_t getIndex2() const { return *index2; }
+
+    /** \brief Get the name of the transition. */
+    std::string getTransitionName() const { return *transitionName; }
+
+    /** \brief Get the help string. */
+    std::string getHelpString() const { return *helpString; }
+
+    /** \brief Get the transition function. */
+    bool (*getTransitionFunction())(const std::string&, GameEngine&) { return transitionFunction; }
 
 private:
-    //  A dynamic array of all states used. Deallocated when deconstructor called.
-    State *states;
+    //  The first index which indicates the index of the state BEFORE transition
+    size_t* index1;
 
-    //  The current state.
-    State currentState;
+    //  The second index which indicates the index of the state AFTER transition
+    size_t* index2;
 
-    //  True if the game is running.
-    bool isRunning;
+    //  The transition name
+    std::string* transitionName;
 
-    //  Default Constructor, constructs the set of State objects.
+    //  The help string
+    std::string* helpString;
+
+    //  The transition function
+    bool (*transitionFunction)(const std::string&, GameEngine&);
+};
+
+/** \class GameEngine
+ *  \brief A class that controls the flow of the game through notations of state and transitions. */
+class GameEngine {
+public:
+    /** \brief Constructs a default GameEngine object with the specification as shown in the instructions. */
     GameEngine();
 
-    //  Deconstructor, deallocates all the state objects initialized in the constructor.
+    /** \brief Constructs a GameEngine object from another GameEngine object. Copy constructor. */
+    GameEngine(const GameEngine&);
+
+    /** \brief Constructs a GameEngine object from another then deallocates all variables and sets pointer to an
+     *  unspecified state. Move constructor. */
+    GameEngine(GameEngine&&) noexcept;
+
+    /** \brief Deconstructs a GameEngine object. */
     ~GameEngine();
 
-    GameEngine(const GameEngine &other) = delete;
-    GameEngine &operator=(const GameEngine &other) = delete;
-    GameEngine &operator=(const GameEngine &other) const = delete;
+    /** \brief Assigns the values of the passed GameEngine object to the current. Copy assignment operator. */
+    GameEngine& operator=(const GameEngine&);
+
+    /** \brief Assigns the values of the passed GameEngine object to the current, then deallocates dynamic variables
+     *  and sets values to an unspecified state. Move assignment operator. */
+    GameEngine& operator=(GameEngine&&) noexcept;
+
+    friend std::ostream& operator<<(std::ostream&, const GameEngine&);
+
+    /** \brief Starts the execution of the game object. Main entry point. */
+    void execute();
+
+    //  Getters & Setters
+    /** \brief Sets the map pointer. */
+    void setMap(Map*);
+    /** \brief Returns the map pointer. */
+    Map* getMap() const;
+
+    /** \brief Returns a copy of the players list */
+    std::vector<Player> getPlayers() const;
+
+    /** \brief Adds a player to the players list */
+    void addPlayerToGame(const Player&) const;
+
+    /** \brief Sets the game running flag to false */
+    void stopRunning() { *isRunning = false; }
+
+private:
+    //  A list of states
+    State* states;
+
+    //  A list of TransitionData objects (contains the data about transitions)
+    TransitionData* transitionDatabase;
+
+    //  The index of the current state of the game engine
+    size_t* currentStateIndex;
+
+    //  The size of the list of states member array
+    size_t* statesSize;
+
+    //  The size of the list of the transition data member array
+    size_t* transitionDatabaseSize;
+
+    //  Whether the game running or not
+    bool* isRunning;
+
+    //  Map pointer
+    Map* map;
+
+    //  List of players
+    std::vector<Player>* playersList;
+
+
+    //  Returns the index of the appropriate transition struct given the current state and the given transition name
+    //  Returns -1 if no matching transition is found
+    int indexOfTransition(const std::string& transitionName) const;
+
+    //  Returns the help strings of the possible transitions in the current state.
+    std::string getHelpStrings() const;
+
+    //  Further process a command. Calls the corresponding transition function.
+    void processCommand(TransitionData, const std::string&);
 };
 
 #endif // GAME_ENGINE_H

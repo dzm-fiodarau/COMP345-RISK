@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.25)
 project(COMP345_RISK VERSION 1.0)
-set(CMAKE_BUILD_TYPE Release)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_CXX_STANDARD 20)
+
+# Toggle debug output macros
+# add_definitions(-DDEBUG -DRED_DEBUG_OUTPUT)
+
 
 add_executable(COMP345_RISK
         # .h files
