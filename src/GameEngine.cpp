@@ -195,7 +195,7 @@ bool addPlayer(const std::string& input, GameEngine& gameEngine) {
         return false;
     }
 
-    Player newPlayer(tokens.front(), {}, {}, {});   //  TODO IMPLEMENT LATER WHEN BETTER UNDERSTANDING
+    Player newPlayer(tokens.front(), {}, {});   //  TODO IMPLEMENT LATER WHEN BETTER UNDERSTANDING
     gameEngine.addPlayerToGame(newPlayer);
     return true;
 }
