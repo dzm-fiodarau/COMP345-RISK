@@ -6,7 +6,7 @@
 void testLoadMaps()
 {
     MapLoader loadMap("../Cornwall.map");
-    Map map = loadMap.load();
+    Map map = *loadMap.load();
 
     if (map.validate())
     {

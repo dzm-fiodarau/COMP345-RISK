@@ -4,6 +4,10 @@
 //  Macro Includes
 #include <string>
 
+//  Project includes
+#include "../headers/Map.h"
+#include "../headers/Player.h"
+
 //  Declare
 class GameEngine;
 
@@ -148,6 +152,21 @@ public:
     /** \brief Starts the execution of the game object. Main entry point. */
     void execute();
 
+    //  Getters & Setters
+    /** \brief Sets the map pointer. */
+    void setMap(Map*);
+    /** \brief Returns the map pointer. */
+    Map* getMap() const;
+
+    /** \brief Returns a copy of the players list */
+    std::vector<Player> getPlayers() const;
+
+    /** \brief Adds a player to the players list */
+    void addPlayerToGame(const Player&) const;
+
+    /** \brief Sets the game running flag to false */
+    void stopRunning() { *isRunning = false; }
+
 private:
     //  A list of states
     State* states;
@@ -166,6 +185,12 @@ private:
 
     //  Whether the game running or not
     bool* isRunning;
+
+    //  Map pointer
+    Map* map;
+
+    //  List of players
+    std::vector<Player>* playersList;
 
 
     //  Returns the index of the appropriate transition struct given the current state and the given transition name
