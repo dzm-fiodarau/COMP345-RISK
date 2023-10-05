@@ -8,7 +8,9 @@
 #include "../headers/Map.h"
 #include "../headers/Player.h"
 
-//  Declare
+
+
+//  Declare GameEngine for TransitionData class
 class GameEngine;
 
 

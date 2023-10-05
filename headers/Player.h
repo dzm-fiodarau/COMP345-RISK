@@ -1,13 +1,19 @@
-#ifndef PLAYER_H    //check whether there is Player.h or not
-#define PLAYER_H    //if no, then create one
-
-#include "Orders.h"
+#ifndef PLAYER_H // check whether there is Player.h or not
+#define PLAYER_H // if no, then create one
 
 #include <iostream>
 #include <vector>
 #include <string>
 
+#include "Orders.h"
+#include "Map.h"
+#include "Cards.h"
+
 using namespace std;
+
+class OrdersList;
+class Player;
+class Territory;
 
 //  README
 //  CHANGED 10/4/2023
@@ -22,26 +28,28 @@ using namespace std;
 //  - Adjusted method call in the .cpp file to match the actual method in the Order class
 //          from '(*it)->getResult()' to '(*it)->execute()'
 
-//player object
-class Player {
+// player object
+class Player
+{
 private:
     string playerName;
-    vector<string*> territory;
-    vector<string*> handCard;
-    vector<Order*> orderList;
+    OrdersList *ordersList;
 
 public:
-    //constructors & destructor
+    vector<Card *> handCard;
+    vector<Territory *> territory;
+
+    // constructors & destructor
     Player();
-    Player(string pn, vector<string*> t, vector<string*> hc, vector<Order*> ol);
-    Player(const Player& p);
+    Player(string pn, vector<Territory *> t, vector<Card *> hc);
+    Player(const Player &p);
     ~Player();
 
-    //some member functions
+    // some member functions
     void toAttack();
     void toDefend();
-    void issueOrder(string io);
-    vector<Order*> getOrderList();
+    void issueOrder(string type, Territory *target, int armyUnits, Territory *source, Player *player);
+    OrdersList *getOrdersList();
     void printOrder();
 
     //  CHANGED 10/4/2023
@@ -49,4 +57,4 @@ public:
     string getPlayerName() const;
 };
 
-#endif //PLAYER_H
+#endif // PLAYER_H

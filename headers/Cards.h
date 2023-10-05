@@ -4,15 +4,22 @@
 #pragma once
 
 #include <string>
-#include <vector> 
+#include <vector>
 
 // Enum of the different card types
-enum class type { bomb, reinforcement, blockade, airlif, diplomacy };
+enum class type
+{
+    bomb,
+    reinforcement,
+    blockade,
+    airlift,
+    diplomacy
+};
 
 /**
  * \class   Card
  * \brief   Class representing the card object. Each card has one of five possible type.
- */ 
+ */
 class Card
 {
 public:
@@ -48,24 +55,24 @@ public:
      * \param otherState    The other Card object to compare.
      * \return              True if the two Card objects are considered equal. False otherwise.
      */
-    bool operator==(const Card& otherCard) const;
+    bool operator==(const Card &otherCard) const;
 
     /**
      * \brief               Assigns the card type of the passed Card object into the current card object.
      * \param otherState    The other Card object to copy the type from.
      * \return              Returns instance of current object with values changed.
      */
-    Card& operator=(const Card& otherCard);
+    Card &operator=(const Card &otherCard);
 
     /**
      * /brief               Prints the name of the card type.
      */
-    friend std::ostream& operator<<(std::ostream& os, const Card& card);
+    friend std::ostream &operator<<(std::ostream &os, const Card &card);
 
     /**
      * /brief               Prints the name of a list of cards.
      */
-    friend std::ostream& operator<<(std::ostream& os, const std::vector<Card*> multipleCards);
+    friend std::ostream &operator<<(std::ostream &os, const std::vector<Card *> multipleCards);
 
 private:
     // The card type
@@ -75,20 +82,20 @@ private:
 class Deck
 {
 public:
-    static Deck& getInstance();
+    static Deck &getInstance();
 
     /**
      * \brief   Empty constructor
      */
     Deck();
 
-    Card* draw();
+    Card *draw();
 
     /**
      * \brief               Add a Card to the deck.
      * \param otherState    The Card to be added.
      */
-    void addCard(Card* card);
+    void addCard(Card *card);
 
     /**
      * \brief               Returns the number of cards currently in the deck.
@@ -104,15 +111,15 @@ public:
     /**
      * /brief               Prints the whole deck content
      */
-    friend std::ostream& operator<<(std::ostream& os, const Deck& deck);
+    friend std::ostream &operator<<(std::ostream &os, const Deck &deck);
 
 private:
     // The deck list of cards
-    std::vector<Card*> cardList;
+    std::vector<Card *> cardList;
 
-    Deck(const Deck& other) = delete;
-    Deck& operator=(const Deck& other) = delete;
-    Deck& operator=(const Deck& other) const = delete;
+    Deck(const Deck &other) = delete;
+    Deck &operator=(const Deck &other) = delete;
+    Deck &operator=(const Deck &other) const = delete;
 };
 
-#endif  // CARDS_H
+#endif // CARDS_H

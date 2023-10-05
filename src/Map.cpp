@@ -5,7 +5,10 @@
 // Territory Implementation
 
 Territory::Territory(const std::string &name, int xCoord, int yCoord, Continent *cont, Player *owner = nullptr, int armies = 0)
-    : name(name), x(xCoord), y(yCoord), continent(cont), owner(owner), numberOfArmies(armies) {}
+    : name(name), x(xCoord), y(yCoord), continent(cont), owner(owner), numberOfArmies(armies)
+{
+    owner->territory.push_back(this);
+}
 
 std::string Territory::getName() const
 {
@@ -152,7 +155,7 @@ void Map::printMap() const
         for (const auto &territory : continent->getTerritories())
         {
             std::cout << " - " << territory->getName()
-                      << ": owner=" << (territory->getOwner() ? territory->getOwner()->getPlayerName() : "None")  //  CHANGED 10/4/2023
+                      << ": owner=" << (territory->getOwner() ? territory->getOwner()->getPlayerName() : "None") //  CHANGED 10/4/2023
                       << "; armies=" << territory->getNumberOfArmies()
                       << "; " << territory->getAdjacentTerritories().size() << " adjacent territories: ";
             const auto &adjacentTerritories = territory->getAdjacentTerritories();

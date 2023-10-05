@@ -15,7 +15,7 @@ void testCards()
     {
         deck->addCard(new Card(type::blockade));
         deck->addCard(new Card(type::bomb));
-        deck->addCard(new Card(type::airlif));
+        deck->addCard(new Card(type::airlift));
         deck->addCard(new Card(type::diplomacy));
         deck->addCard(new Card(type::reinforcement));
     }
