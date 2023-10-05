@@ -6,8 +6,18 @@
 #include <iostream>
 using namespace std;
 
+#include "Map.h"
+#include "Player.h"
+#include "Cards.h"
+
+class Card;
+class OrdersList;
+class Player;
+class Territory;
+// Global string array containing all allowed orders
+const string allowedOrders[6] = {"deploy", "advance", "bomb", "blockade", "airlift", "negotiate"};
+
 /**
- * todo update documentation
  * \class   OrdersList
  * \brief   Class that holds the list of Order objects of each player
  */
@@ -19,7 +29,7 @@ public:
      * \param   type Type of the Order object created
      * \param   target Territory targeted by the order
      */
-    Order(string type /*, Territory* target*/);
+    Order(OrdersList *ordersList, string type, Territory *target);
     /**
      * \brief   Constructs an Order object using values from another Order object
      * \param   order Other Order object to copy member variables from
@@ -50,10 +60,12 @@ public:
     friend ostream &operator<<(ostream &outs, const Order &order);
 
 protected:
-    // Type of order
+    // OrdersList object that holds order
+    OrdersList *ordersList;
+    //  Type of order
     string type;
     // Territory targeted by the order
-    // Territory *target;
+    Territory *target;
 };
 
 /**
@@ -65,11 +77,13 @@ class OrdersList
 public:
     // List of pointers to Order objects
     list<Order *> orders;
+    // Owner of orders list
+    Player *owner;
 
     /**
      * \brief   Constructs an OrdersList object with an empty list of orders
      */
-    OrdersList();
+    OrdersList(Player *owner);
     /**
      * \brief   Constructs an OrdersList object using values from another OrdersList object
      * \param   ordersList Other OrdersList object to copy member variables from
@@ -106,7 +120,7 @@ public:
  * \brief   Class that represents the deploy action
  * \extends Order
  */
-class DeployOrder : Order
+class DeployOrder : public Order
 {
 public:
     /**
@@ -115,7 +129,7 @@ public:
      * \param   target Territory to which troups are to be deployed
      * \param   armyUnits Number of army units to be deployed
      */
-    DeployOrder(/*Territory* target,*/ int armyUnits);
+    DeployOrder(OrdersList *ordersList, Territory *target, int armyUnits);
     /**
      * \brief   Constructs a DeployOrder object using values from another DeployOrder object
      * \param   order Other DeployOrder object to copy member variables from
@@ -155,7 +169,7 @@ private:
  * \brief   Class that represents the advance action
  * \extends Order
  */
-class AdvanceOrder : Order
+class AdvanceOrder : public Order
 {
 public:
     /**
@@ -165,7 +179,7 @@ public:
      * \param   armyUnits Number of army units to be moved
      * \param   source  Territory from which troups are to be moved
      */
-    AdvanceOrder(/*Territory* target,*/ int armyUnits /*, Territory* source*/);
+    AdvanceOrder(OrdersList *ordersList, Territory *target, int armyUnits, Territory *source);
     /**
      * \brief   Constructs an AdvanceOrder object using values from another AdvanceOrder object
      * \param   order Other AdvanceOrder object to copy member variables from
@@ -197,7 +211,7 @@ private:
     // Number of army units to move
     int armyUnits;
     // Territory from which the army units are moved
-    // Territory *source;
+    Territory *source;
 };
 
 /**
@@ -205,7 +219,7 @@ private:
  * \brief   Class that represents the bomb action
  * \extends Order
  */
-class BombOrder : Order
+class BombOrder : public Order
 {
 public:
     /**
@@ -213,7 +227,7 @@ public:
      * \param   type Type of the Order object created
      * \param   target Territory to be bombed
      */
-    BombOrder(/*Territory* target*/);
+    BombOrder(OrdersList *ordersList, Territory *target);
     /**
      * \brief   Constructs a BombOrder object using values from another BombOrder object
      * \param   order Other BombOrder object to copy member variables from
@@ -247,7 +261,7 @@ public:
  * \brief   Class that represents the blockade action
  * \extends Order
  */
-class BlockadeOrder : Order
+class BlockadeOrder : public Order
 {
 public:
     /**
@@ -255,7 +269,7 @@ public:
      * \param   type Type of the Order object created
      * \param   target Territory to be blockaded
      */
-    BlockadeOrder(/*Territory* target*/);
+    BlockadeOrder(OrdersList *ordersList, Territory *target);
     /**
      * \brief   Constructs a BlockadeOrder object using values from another BlockadeOrder object
      * \param   order Other BlockadeOrder object to copy member variables from
@@ -289,7 +303,7 @@ public:
  * \brief   Class that represents the airlift action
  * \extends Order
  */
-class AirliftOrder : Order
+class AirliftOrder : public Order
 {
 public:
     /**
@@ -299,7 +313,7 @@ public:
      * \param   armyUnits Number of army units to be moved
      * \param   source  Territory from which troups are to be moved
      */
-    AirliftOrder(/*Territory* target,*/ int armyUnits /*, Territory* source*/);
+    AirliftOrder(OrdersList *ordersList, Territory *target, int armyUnits, Territory *source);
     /**
      * \brief   Constructs an AirliftOrder object using values from another AirliftOrder object
      * \param   order Other AirliftOrder object to copy member variables from
@@ -331,7 +345,7 @@ private:
     // Number of army units advanced
     int armyUnits;
     // Territory from which the army units are advanced
-    // Territory *source;
+    Territory *source;
 };
 
 /**
@@ -339,7 +353,7 @@ private:
  * \brief   Class that represents the negotiation action
  * \extends Order
  */
-class NegotiateOrder : Order
+class NegotiateOrder : public Order
 {
 public:
     /**
@@ -347,7 +361,7 @@ public:
      * \param   type Type of the Order object created
      * \param   player Player with whom negotiation happens
      */
-    NegotiateOrder(/*Player *player*/);
+    NegotiateOrder(OrdersList *ordersList, Player *player);
     /**
      * \brief   Constructs a NegotiateOrder object using values from another NegotiateOrder object
      * \param   order Other NegotiateOrder object to copy member variables from
@@ -377,7 +391,7 @@ public:
 
 private:
     // Player with whom attacks are prevented during current turn
-    // Player *player;
+    Player *player;
 };
 
 #endif

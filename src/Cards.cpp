@@ -64,8 +64,8 @@ std::ostream &operator<<(std::ostream &os, const Card &card)
     case type::blockade:
         os << "blockade";
         break;
-    case type::airlif:
-        os << "airlif";
+    case type::airlift:
+        os << "airlift";
         break;
     case type::diplomacy:
         os << "diplomacy";
@@ -98,8 +98,8 @@ std::ostream &operator<<(std::ostream &os, const std::vector<Card *> multipleCar
         case type::blockade:
             os << "blockade";
             break;
-        case type::airlif:
-            os << "airlif";
+        case type::airlift:
+            os << "airlift";
             break;
         case type::diplomacy:
             os << "diplomacy";
