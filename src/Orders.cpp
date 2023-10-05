@@ -4,18 +4,21 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 //  ORDERS LIST
-OrdersList::OrdersList()
+OrdersList::OrdersList(Player *owner)
 {
+    OrdersList::owner = owner;
 }
 
 OrdersList::OrdersList(OrdersList &ordersList)
 {
     orders = ordersList.orders;
+    owner = ordersList.owner;
 }
 
 OrdersList &OrdersList::operator=(const OrdersList &ordersList)
 {
     orders = ordersList.orders;
+    owner = ordersList.owner;
     return *this;
 }
 
@@ -33,6 +36,7 @@ ostream &operator<<(ostream &outs, const OrdersList &ordersList)
 
 void OrdersList::remove(Order *order)
 {
+    delete (order);
     orders.remove(order);
 }
 
@@ -59,34 +63,37 @@ bool OrdersList::move(Order *order, int index)
 
 //----------------------------------------------------------------------------------------------------------------------
 //  ORDER
-Order::Order(string type /*, Territory* target*/)
+Order::Order(OrdersList *ordersList, string type, Territory *target)
 {
+    Order::ordersList = ordersList;
     Order::type = type;
-    // Order::target = target;
+    Order::target = target;
 }
 
 Order::Order(Order &order)
 {
+    ordersList = order.ordersList;
     type = order.type;
-    // target = order.target;
+    target = order.target;
 }
 
 Order &Order::operator=(const Order &order)
 {
+    ordersList = order.ordersList;
     type = order.type;
-    // target = order.target;
+    target = order.target;
     return *this;
 }
 
 ostream &operator<<(ostream &outs, const Order &order)
 {
-    return outs << "Order: type = " << order.type << ", target = " /*<< order.target*/;
+    return outs << "Order: type = " << order.type << ", target = " << order.target;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 //  DEPLOY ORDER
-DeployOrder::DeployOrder(/*Territory* target,*/ int armyUnits)
-    : Order("deploy" /*, target*/)
+DeployOrder::DeployOrder(OrdersList *ordersList, Territory *target, int armyUnits)
+    : Order(ordersList, "deploy", target)
 {
     DeployOrder::armyUnits = armyUnits;
 }
@@ -106,44 +113,44 @@ DeployOrder &DeployOrder::operator=(const DeployOrder &order)
 
 ostream &operator<<(ostream &outs, const DeployOrder &order)
 {
-    return outs << "DeployOrder: type = " << order.type << ", target = " /*<< order.target*/
+    return outs << "DeployOrder: type = " << order.type << ", target = " << order.target
                 << ", army units = " << order.armyUnits;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 //  ADVANCE ORDER
-AdvanceOrder::AdvanceOrder(/*Territory* target,*/ int armyUnits /*, Territory* source*/)
-    : Order("advance" /*, target*/)
+AdvanceOrder::AdvanceOrder(OrdersList *ordersList, Territory *target, int armyUnits, Territory *source)
+    : Order(ordersList, "advance", target)
 {
     AdvanceOrder::armyUnits = armyUnits;
-    // AdvanceOrder::source = source;
+    AdvanceOrder::source = source;
 }
 
 AdvanceOrder::AdvanceOrder(AdvanceOrder &order)
     : Order(order)
 {
     AdvanceOrder::armyUnits = order.armyUnits;
-    // AdvanceOrder::source = order.source;
+    AdvanceOrder::source = order.source;
 }
 
 AdvanceOrder &AdvanceOrder::operator=(const AdvanceOrder &order)
 {
     Order::operator=(order);
     armyUnits = order.armyUnits;
-    // source = order.source;
+    source = order.source;
     return *this;
 }
 
 ostream &operator<<(ostream &outs, const AdvanceOrder &order)
 {
-    return outs << "AdvanceOrder: type = " << order.type << ", target = " /*<< order.target*/
-                << ", army units = " << order.armyUnits << ", source = " /*<<order.source*/;
+    return outs << "AdvanceOrder: type = " << order.type << ", target = " << order.target
+                << ", army units = " << order.armyUnits << ", source = " << order.source;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 //  BOMB ORDER
-BombOrder::BombOrder(/*Territory* target*/)
-    : Order("bomb" /*, target*/)
+BombOrder::BombOrder(OrdersList *ordersList, Territory *target)
+    : Order(ordersList, "bomb", target)
 {
 }
 
@@ -160,13 +167,13 @@ BombOrder &BombOrder::operator=(const BombOrder &order)
 
 ostream &operator<<(ostream &outs, const BombOrder &order)
 {
-    return outs << "BombOrder: type = " << order.type << ", target = " /*<< order.target*/;
+    return outs << "BombOrder: type = " << order.type << ", target = " << order.target;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 //  BLOCKADE ORDER
-BlockadeOrder::BlockadeOrder(/*Territory* target*/)
-    : Order("blockade" /*, target*/)
+BlockadeOrder::BlockadeOrder(OrdersList *ordersList, Territory *target)
+    : Order(ordersList, "blockade", target)
 {
 }
 
@@ -183,73 +190,70 @@ BlockadeOrder &BlockadeOrder::operator=(const BlockadeOrder &order)
 
 ostream &operator<<(ostream &outs, const BlockadeOrder &order)
 {
-    return outs << "BlockadeOrder: type = " << order.type << ", target = " /*<< order.target*/;
+    return outs << "BlockadeOrder: type = " << order.type << ", target = " << order.target;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 //  AIRLIFT ORDER
-AirliftOrder::AirliftOrder(/*Territory* target,*/ int armyUnits /*, Territory* source*/)
-    : Order("airlift" /*, target*/)
+AirliftOrder::AirliftOrder(OrdersList *ordersList, Territory *target, int armyUnits, Territory *source)
+    : Order(ordersList, "airlift", target)
 {
     AirliftOrder::armyUnits = armyUnits;
-    // AirliftOrder::source = source;
+    AirliftOrder::source = source;
 }
 
 AirliftOrder::AirliftOrder(AirliftOrder &order)
     : Order(order)
 {
     AirliftOrder::armyUnits = order.armyUnits;
-    // AirliftOrder::source = order.source;
+    AirliftOrder::source = order.source;
 }
 
 AirliftOrder &AirliftOrder::operator=(const AirliftOrder &order)
 {
     Order::operator=(order);
     armyUnits = order.armyUnits;
-    // source = order.source;
+    source = order.source;
     return *this;
 }
 
 ostream &operator<<(ostream &outs, const AirliftOrder &order)
 {
-    return outs << "AirliftOrder: type = " << order.type << ", target = " /*<< order.target*/
-                << ", army units = " << order.armyUnits << ", source = " /*<<order.source*/;
+    return outs << "AirliftOrder: type = " << order.type << ", target = " << order.target
+                << ", army units = " << order.armyUnits << ", source = " << order.source;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 //  NEGOTIATE ORDER
-NegotiateOrder::NegotiateOrder(/*Player* player*/)
-    : Order("negotiate" /*, NULL*/)
+NegotiateOrder::NegotiateOrder(OrdersList *ordersList, Player *player)
+    : Order(ordersList, "negotiate", NULL)
 {
-    // NegotiateOrder::player = player;
+    NegotiateOrder::player = player;
 }
 
 NegotiateOrder::NegotiateOrder(NegotiateOrder &order)
     : Order(order)
 {
-    // NegotiateOrder::player = order.player;
+    player = order.player;
 }
 
 NegotiateOrder &NegotiateOrder::operator=(const NegotiateOrder &order)
 {
     Order::operator=(order);
-    // player = order.player;
+    player = order.player;
     return *this;
 }
 
 ostream &operator<<(ostream &outs, const NegotiateOrder &order)
 {
-    return outs << "NegotiateOrder: type = " << order.type << ", target player = " /*<<order.player*/;
+    return outs << "NegotiateOrder: type = " << order.type << ", target player = " << order.player;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 //  ORDER VALIDATIONS
 bool Order::validate()
 {
-    string allowedTypes[6] = {"deploy", "advance", "bomb", "blockade", "airlift", "negotiate"};
-
-    // TO DO: add verification of target territory validity
-    return find(begin(allowedTypes), end(allowedTypes), type) != end(allowedTypes);
+    return (find(begin(allowedOrders), end(allowedOrders), type) != end(allowedOrders)) && target;
 }
 
 bool DeployOrder::validate()
@@ -260,40 +264,38 @@ bool DeployOrder::validate()
 
 bool AdvanceOrder::validate()
 {
-    // TO DO: add verification of number of army units specified validity (<= source territory's)
-    // TO DO: add verification of source territory validity
-    return Order::validate() && armyUnits > 0;
+    return Order::validate() && source && armyUnits > 0 && armyUnits <= (*target).numberOfArmies && (find(begin((*source).adjacentTerritories), end((*source).adjacentTerritories), target) != end((*source).adjacentTerritories));
 }
 
 bool BombOrder::validate()
 {
-    // TO DO: add verification of bomb card in hand
-    return Order::validate();
+    return Order::validate() && (find_if(begin((*(*ordersList).owner).handCard), end((*(*ordersList).owner).handCard),
+                                         [](const Card *card) -> bool
+                                         { return (*card).getCardType() == type::bomb; }) != end((*(*ordersList).owner).handCard));
 }
 
 bool BlockadeOrder::validate()
 {
-    // TO DO: add verification of blockade card in hand
-    return Order::validate();
+    return Order::validate() && ((find(begin(ordersList->owner->territory), end(ordersList->owner->territory), target)) != end(ordersList->owner->territory)) && (find_if(begin((*(*ordersList).owner).handCard), end((*(*ordersList).owner).handCard), [](const Card *card) -> bool
+                                                                                                                                                                          { return (*card).getCardType() == type::blockade; }) != end((*(*ordersList).owner).handCard));
 }
 
 bool AirliftOrder::validate()
 {
-    // TO DO: add verification of number of army units specified validity (<= source territory's)
-    // TO DO: add verification of source territory validity
-    // TO DO: add verification of airlift card in hand
-    return Order::validate() && armyUnits > 0;
+    return Order::validate() && source && armyUnits > 0 && armyUnits <= (*target).numberOfArmies && (find_if(begin((*(*ordersList).owner).handCard), end((*(*ordersList).owner).handCard), [](const Card *card) -> bool
+                                                                                                             { return (*card).getCardType() == type::airlift; }) != end((*(*ordersList).owner).handCard));
 }
 
 bool NegotiateOrder::validate()
 {
-    //  todo: implement function
-    return false;
+    return (find(begin(allowedOrders), end(allowedOrders), type) != end(allowedOrders)) && player && (find_if(begin((*(*ordersList).owner).handCard), end((*(*ordersList).owner).handCard), [](const Card *card) -> bool
+                                                                                                              { return (*card).getCardType() == type::diplomacy; }) != end((*(*ordersList).owner).handCard));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 //  ORDER EXECUTES
-string Order::execute()
+string
+Order::execute()
 {
     cout << this << " has been executed.";
     return "Order has been executed.";
