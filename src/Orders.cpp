@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include "../headers/Orders.h"
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -50,7 +51,7 @@ bool OrdersList::move(Order *order, int index)
     }
 
     orders.remove(order);
-    list<Order *>::iterator it = orders.begin();
+    it = orders.begin();
     advance(it, index);
     orders.insert(it, order);
     return true;
@@ -282,6 +283,12 @@ bool AirliftOrder::validate()
     // TO DO: add verification of source territory validity
     // TO DO: add verification of airlift card in hand
     return Order::validate() && armyUnits > 0;
+}
+
+bool NegotiateOrder::validate()
+{
+    //  todo: implement function
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

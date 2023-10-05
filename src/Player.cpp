@@ -79,7 +79,13 @@ void Player::printOrder()
 	vector<Order *>::iterator it = orderList.begin();
 	for (; it != orderList.end(); it++)
 	{
-		cout << (*it)->getResult() << " ";
+        //  CHANGED 10/4/2023
+		//  cout << (*it)->getResult() << " ";
+        cout << (*it)->execute() << " ";
 	}
 	cout << endl;
+}
+
+string Player::getPlayerName() const {
+    return playerName;
 }

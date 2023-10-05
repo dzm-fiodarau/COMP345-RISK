@@ -7,6 +7,56 @@
 using namespace std;
 
 /**
+ * todo update documentation
+ * \class   OrdersList
+ * \brief   Class that holds the list of Order objects of each player
+ */
+class Order
+{
+public:
+    /**
+     * \brief   Constructs an Order object
+     * \param   type Type of the Order object created
+     * \param   target Territory targeted by the order
+     */
+    Order(string type /*, Territory* target*/);
+    /**
+     * \brief   Constructs an Order object using values from another Order object
+     * \param   order Other Order object to copy member variables from
+     */
+    Order(Order &order);
+
+    /**
+     * \brief   Verifies if the order is valid, has to be implemented in child classes
+     * \return  True if the order is valid, false otherwise
+     */
+    virtual bool validate();
+
+    /**
+     * \brief   Executes the order, has to be implemented in child classes
+     * \return  String that describes the effects of the executed order
+     */
+    virtual string execute();
+
+    /**
+     * \brief   Assigns new values to member varaiables of the Order object
+     * \param   order Order object from which new values are to be taken
+     */
+    Order &operator=(const Order &order);
+
+    /**
+     * \brief   Stream insertion override, prints order's type and target territory
+     */
+    friend ostream &operator<<(ostream &outs, const Order &order);
+
+protected:
+    // Type of order
+    string type;
+    // Territory targeted by the order
+    // Territory *target;
+};
+
+/**
  * \class   OrdersList
  * \brief   Class that holds the list of Order objects of each player
  */
@@ -52,53 +102,6 @@ public:
 };
 
 /**
- * \class   OrdersList
- * \brief   Class that holds the list of Order objects of each player
- */
-class Order
-{
-public:
-    /**
-     * \brief   Constructs an Order object
-     * \param   type Type of the Order object created
-     * \param   target Territory targeted by the order
-     */
-    Order(string type /*, Territory* target*/);
-    /**
-     * \brief   Constructs an Order object using values from another Order object
-     * \param   order Other Order object to copy member variables from
-     */
-    Order(Order &order);
-
-    /**
-     * \brief   Verifies if the order is valid, has to be implemented in child classes
-     * \return  True if the order is valid, false otherwise
-     */
-    virtual bool validate();
-    /**
-     * \brief   Executes the order, has to be implemented in child classes
-     * \return  String that describes the effects of the executed order
-     */
-    virtual string execute();
-    /**
-     * \brief   Assigns new values to member varaiables of the Order object
-     * \param   order Order object from which new values are to be taken
-     */
-    Order &operator=(const Order &order);
-
-    /**
-     * \brief   Stream insertion override, prints order's type and target territory
-     */
-    friend ostream &operator<<(ostream &outs, const Order &order);
-
-protected:
-    // Type of order
-    string type;
-    // Territory targeted by the order
-    // Territory *target;
-};
-
-/**
  * \class   DeployOrder
  * \brief   Class that represents the deploy action
  * \extends Order
@@ -123,12 +126,14 @@ public:
      * \brief   Verifies if the order is valid
      * \return  True if the order is valid, false otherwise
      */
-    bool validate();
+    bool validate() override;
+
     /**
      * \brief   Executes the order
      * \return  String that describes the effects of the executed order
      */
-    string execute();
+    string execute() override;
+
     /**
      * \brief   Assigns new values to member varaiables of the DeployOrder object
      * \param   order DeployOrder object from which new values are to be taken
@@ -171,12 +176,12 @@ public:
      * \brief   Verifies if the order is valid
      * \return  True if the order is valid, false otherwise
      */
-    bool validate();
+    bool validate() override;
     /**
      * \brief   Executes the order
      * \return  String that describes the effects of the executed order
      */
-    string execute();
+    string execute() override;
     /**
      * \brief   Assigns new values to member varaiables of the AdvanceOrder object
      * \param   order AdvanceOrder object from which new values are to be taken
@@ -219,12 +224,12 @@ public:
      * \brief   Verifies if the order is valid
      * \return  True if the order is valid, false otherwise
      */
-    bool validate();
+    bool validate() override;
     /**
      * \brief   Executes the order
      * \return  String that describes the effects of the executed order
      */
-    string execute();
+    string execute() override;
     /**
      * \brief   Assigns new values to member varaiables of the BombOrder object
      * \param   order BombOrder object from which new values are to be taken
@@ -261,12 +266,12 @@ public:
      * \brief   Verifies if the order is valid
      * \return  True if the order is valid, false otherwise
      */
-    bool validate();
+    bool validate() override;
     /**
      * \brief   Executes the order
      * \return  String that describes the effects of the executed order
      */
-    string execute();
+    string execute() override;
     /**
      * \brief   Assigns new values to member varaiables of the BlockadeOrder object
      * \param   order BlockadeOrder object from which new values are to be taken
@@ -305,12 +310,12 @@ public:
      * \brief   Verifies if the order is valid
      * \return  True if the order is valid, false otherwise
      */
-    bool validate();
+    bool validate() override;
     /**
      * \brief   Executes the order
      * \return  String that describes the effects of the executed order
      */
-    string execute();
+    string execute() override;
     /**
      * \brief   Assigns new values to member varaiables of the AirliftOrder object
      * \param   order AirliftOrder object from which new values are to be taken
@@ -353,12 +358,12 @@ public:
      * \brief   Verifies if the order is valid
      * \return  True if the order is valid, false otherwise
      */
-    bool validate();
+    bool validate() override;
     /**
      * \brief   Executes the order
      * \return  String that describes the effects of the executed order
      */
-    string execute();
+    string execute() override;
     /**
      * \brief   Assigns new values to member varaiables of the NegotiateOrder object
      * \param   order NegotiateOrder object from which new values are to be taken

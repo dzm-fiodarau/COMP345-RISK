@@ -88,7 +88,7 @@ void winGame(const std::string &input)
               << "win w/ args:\t" << input << "\033[0m" << std::endl;
 }
 
-void endProgram(__attribute__((unused)) const std::string &ignored)
+void endProgram(const std::string &ignored)
 {
     GameEngine &gameEngine = GameEngine::getInstance();
     gameEngine.stop();
