@@ -4,6 +4,14 @@ set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(COMP345_RISK
+        # .h files
+        headers/Cards.h
+        headers/GameEngine.h
+        headers/Map.h
+        headers/Orders.h
+        headers/Player.h
+
+        # .cpp files
         src/Cards.cpp
         src/CardsDriver.cpp
         src/GameEngine.cpp

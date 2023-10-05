@@ -1,5 +1,5 @@
-#ifndef COMP345_RISK_GAMEENGINE_H
-#define COMP345_RISK_GAMEENGINE_H
+#ifndef GAME_ENGINE_H
+#define GAME_ENGINE_H
 
 #include <string>
 
@@ -182,4 +182,4 @@ private:
     GameEngine& operator=(const GameEngine& other) const = delete;
 };
 
-#endif //COMP345_RISK_GAMEENGINE_H
+#endif // GAME_ENGINE_H

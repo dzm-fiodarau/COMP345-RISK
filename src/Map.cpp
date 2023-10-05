@@ -1,11 +1,6 @@
 #include "../headers/Map.h"
+#include "../headers/Player.h"
 #include <iostream>
-
-// placeholder for player
-std::string Player::getName() const
-{
-    return name;
-}
 
 // Territory Implementation
 
@@ -157,7 +152,7 @@ void Map::printMap() const
         for (const auto &territory : continent->getTerritories())
         {
             std::cout << " - " << territory->getName()
-                      << ": owner=" << (territory->getOwner() ? territory->getOwner()->getName() : "None")
+                      << ": owner=" << (territory->getOwner() ? territory->getOwner()->getPlayerName() : "None")  //  CHANGED 10/4/2023
                       << "; armies=" << territory->getNumberOfArmies()
                       << "; " << territory->getAdjacentTerritories().size() << " adjacent territories: ";
             const auto &adjacentTerritories = territory->getAdjacentTerritories();

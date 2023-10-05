@@ -31,11 +31,13 @@ public:
      * \return  True if the order is valid, false otherwise
      */
     virtual bool validate();
+
     /**
      * \brief   Executes the order, has to be implemented in child classes
      * \return  String that describes the effects of the executed order
      */
     virtual string execute();
+
     /**
      * \brief   Assigns new values to member varaiables of the Order object
      * \param   order Order object from which new values are to be taken

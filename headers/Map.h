@@ -7,20 +7,22 @@
 #include <sstream>
 #include <unordered_map>
 #include <map>
+#include "Player.h"
 
 class Continent;
 class Territory;
-class Player;
 
-//placeholder for player
-class Player{
-public:
-    std::string getName() const;
+//  README
+//  CHANGED 10/4/2023
+//  Changed so that the project can compile. Issue: the placeholder classes were interfering with the linking during
+//  compile time. Therefore, project could not compile.
 
-private:
-    std::string name;
-    int playerID;
-}; 
+//  CHANGES
+//  - Added include directive: #include "Player.h"
+//  - Removed the first declaration of the Player class: class Player;
+//  - Removed the placeholder class and corresponding methods in the .cpp file
+//  - Adjusted method call in the .cpp file
+//          from 'territory->getOwner()->getName()' to 'territory->getOwner()->getPlayerName()'
 
 class Continent {
 public:

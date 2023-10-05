@@ -1,3 +1,6 @@
+#ifndef CARDS_H
+#define CARDS_H
+
 #pragma once
 
 #include <string>
@@ -111,3 +114,5 @@ private:
     Deck& operator=(const Deck& other) = delete;
     Deck& operator=(const Deck& other) const = delete;
 };
+
+#endif  // CARDS_H
