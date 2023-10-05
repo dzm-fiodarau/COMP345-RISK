@@ -6,11 +6,11 @@ void testPlayers();
 
 int main()
 {
+    testOrdersLists();
     testCards();
+    testPlayers();
     testGameStates();
     testLoadMaps();
-    testOrdersLists();
-    testPlayers();
 
     return 0;
 }

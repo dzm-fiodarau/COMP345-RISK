@@ -25,10 +25,10 @@ OrdersList &OrdersList::operator=(const OrdersList &ordersList)
 ostream &operator<<(ostream &outs, const OrdersList &ordersList)
 {
     outs << "Orders List: {\n";
-    list<Order *>::const_iterator it;
-    for (it = ordersList.orders.begin(); it != ordersList.orders.end(); ++it)
+    list<Order *>::const_iterator itr;
+    for (itr = ordersList.orders.begin(); itr != ordersList.orders.end(); ++itr)
     {
-        outs << *it << ";" << endl;
+        outs << *(*itr) << ";" << endl;
     }
     outs << "}";
     return outs;
@@ -36,8 +36,15 @@ ostream &operator<<(ostream &outs, const OrdersList &ordersList)
 
 void OrdersList::remove(Order *order)
 {
+    auto it = std::find(orders.begin(), orders.end(), order);
+    if (it == orders.end())
+    {
+        cout << "(OrdersList::remove())Order not found in the list." << endl;
+        return;
+    }
     delete (order);
     orders.remove(order);
+    cout << "OrdersList::remove() was successful.\n";
 }
 
 bool OrdersList::move(Order *order, int index)
@@ -58,6 +65,7 @@ bool OrdersList::move(Order *order, int index)
     it = orders.begin();
     advance(it, index);
     orders.insert(it, order);
+    cout << "OrdersList::move() was successful.\n";
     return true;
 }
 
@@ -259,19 +267,19 @@ bool Order::validate()
 bool DeployOrder::validate()
 {
     // TO DO: add verification of number of army units specified validity (reinforcement pool)
-    return Order::validate() && armyUnits > 0;
+    return Order::validate() && armyUnits > 0 && ((find(begin(ordersList->owner->territory), end(ordersList->owner->territory), target)) != end(ordersList->owner->territory));
 }
 
 bool AdvanceOrder::validate()
 {
-    return Order::validate() && source && armyUnits > 0 && armyUnits <= (*target).numberOfArmies && (find(begin((*source).adjacentTerritories), end((*source).adjacentTerritories), target) != end((*source).adjacentTerritories));
+    return Order::validate() && source && armyUnits > 0 && armyUnits <= (*target).numberOfArmies && (find(begin((*source).adjacentTerritories), end((*source).adjacentTerritories), target) != end((*source).adjacentTerritories)) && ((find(begin(ordersList->owner->territory), end(ordersList->owner->territory), source)) != end(ordersList->owner->territory));
 }
 
 bool BombOrder::validate()
 {
-    return Order::validate() && (find_if(begin((*(*ordersList).owner).handCard), end((*(*ordersList).owner).handCard),
-                                         [](const Card *card) -> bool
-                                         { return (*card).getCardType() == type::bomb; }) != end((*(*ordersList).owner).handCard));
+    return Order::validate() && (find_if(begin((*(*ordersList).owner).handCard), end((*(*ordersList).owner).handCard), [](const Card *card) -> bool
+                                         { return (*card).getCardType() == type::bomb; }) != end((*(*ordersList).owner).handCard)) &&
+           ((find(begin(ordersList->owner->territory), end(ordersList->owner->territory), target)) == end(ordersList->owner->territory));
 }
 
 bool BlockadeOrder::validate()
@@ -283,7 +291,8 @@ bool BlockadeOrder::validate()
 bool AirliftOrder::validate()
 {
     return Order::validate() && source && armyUnits > 0 && armyUnits <= (*target).numberOfArmies && (find_if(begin((*(*ordersList).owner).handCard), end((*(*ordersList).owner).handCard), [](const Card *card) -> bool
-                                                                                                             { return (*card).getCardType() == type::airlift; }) != end((*(*ordersList).owner).handCard));
+                                                                                                             { return (*card).getCardType() == type::airlift; }) != end((*(*ordersList).owner).handCard)) &&
+           ((find(begin(ordersList->owner->territory), end(ordersList->owner->territory), source)) != end(ordersList->owner->territory));
 }
 
 bool NegotiateOrder::validate()
@@ -294,51 +303,106 @@ bool NegotiateOrder::validate()
 
 //----------------------------------------------------------------------------------------------------------------------
 //  ORDER EXECUTES
-string
-Order::execute()
+string Order::execute()
 {
-    cout << this << " has been executed.";
-    return "Order has been executed.";
+    if (validate())
+    {
+        cout << *this << " has been executed." << endl;
+        return "Order has been executed.";
+    }
+    else
+    {
+        cout << *this << " is an invalid order. No action is executed" << endl;
+        return "Invalid order.";
+    }
 }
 
 // TO DO: Implement DeployOrder's actions
 string DeployOrder::execute()
 {
-    cout << this << " has been executed.";
-    return "DeployOrder has been executed.";
+    if (validate())
+    {
+        cout << *this << " has been executed." << endl;
+        return "DeployOrder has been executed.";
+    }
+    else
+    {
+        cout << *this << " is an invalid order. No action is executed" << endl;
+        return "Invalid order.";
+    }
 }
 
 // TO DO: Implement AdvanceOrder's actions
 string AdvanceOrder::execute()
 {
-    cout << this << " has been executed.";
-    return "AdvanceOrder has been executed.";
+    if (validate())
+    {
+        cout << *this << " has been executed." << endl;
+        return "AdvanceOrder has been executed.";
+    }
+    else
+    {
+        cout << *this << " is an invalid order. No action is executed" << endl;
+        return "Invalid order.";
+    }
 }
 
 // TO DO: Implement BombOrder's actions
 string BombOrder::execute()
 {
-    cout << this << " has been executed.";
-    return "BombOrder has been executed.";
+    if (validate())
+    {
+        cout << *this << " has been executed." << endl;
+        return "BombOrder has been executed.";
+    }
+    else
+    {
+        cout << *this << " is an invalid order. No action is executed" << endl;
+        return "Invalid order.";
+    }
 }
 
 // TO DO: Implement BlockadeOrder's actions
 string BlockadeOrder::execute()
 {
-    cout << this << " has been executed.";
-    return "BlockadeOrder has been executed.";
+    if (validate())
+    {
+        cout << *this << " has been executed." << endl;
+        return "BlockadeOrder has been executed.";
+    }
+    else
+    {
+        cout << *this << " is an invalid order. No action is executed" << endl;
+        return "Invalid order.";
+    }
 }
 
 // TO DO: Implement AirliftOrder's actions
 string AirliftOrder::execute()
 {
-    cout << this << " has been executed.";
-    return "AirliftOrder has been executed.";
+    if (validate())
+    {
+        cout << *this << " has been executed." << endl;
+        return "AirliftOrder has been executed.";
+    }
+    else
+    {
+        cout << *this << " is an invalid order. No action is executed" << endl;
+        return "Invalid order.";
+    }
 }
 
 // TO DO: Implement NegotiateOrder's actions
 string NegotiateOrder::execute()
 {
-    cout << this << " has been executed.";
-    return "NegotiateOrder has been executed.";
+    if (validate())
+    {
+        cout << *this << " has been executed." << endl;
+        return "NegotiateOrder has been executed.";
+    }
+    else
+    {
+        cout << *this << " is an invalid order. No action is executed" << endl;
+        return "Invalid order.";
+    }
 }
