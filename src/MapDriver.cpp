@@ -1,22 +1,38 @@
 #include "../headers/Map.h"
 #include <iostream>
 
-// TODO: load reading a set of conquest map files and
-// creates a map object for valid map files, and rejects various different invalid map files
+// Load and validate a set of conquest map files
 void testLoadMaps()
 {
-    MapLoader loadMap("../Cornwall.map");
-    Map map = *loadMap.load();
+    std::vector<std::string> mapFiles = {"../maps/Cornwall.map", "../maps/EmptyMap.map", "../maps/BadMap.map", "../maps/DoesNotExist.map"};
 
-    if (map.validate())
+    for (const auto &mapFile : mapFiles)
     {
-        std::cout << "Map is valid!" << std::endl
-                  << std::endl;
+        std::cout << "Loading \"" << mapFile << "\"...\n";
+        MapLoader loadMap(mapFile);
+        Map *mapPtr = loadMap.load();
+
+        if (mapPtr)
+        {
+            Map map = *mapPtr;
+
+            if (map.validate())
+            {
+                std::cout << "\"" << mapFile << "\" is valid!\n\n";
+            }
+            else
+            {
+                std::cout << "\"" << mapFile << "\" is not valid!\n\n";
+            }
+
+            map.printMap();
+            std::cout << std::endl;
+
+            delete mapPtr; // Delete allocated memory
+        }
+        else
+        {
+            std::cout << "\"" << mapFile << "\" is not valid!\n\n";
+        }
     }
-    else
-    {
-        std::cout << "Map is not valid." << std::endl
-                  << std::endl;
-    }
-    map.printMap();
 }

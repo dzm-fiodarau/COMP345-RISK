@@ -8,11 +8,11 @@ void testPlayers();
 #ifndef DEBUG
 int main()
 {
+    testLoadMaps();
     testOrdersLists();
     testCards();
     testPlayers();
     testGameStates();
-    testLoadMaps();
 
     return 0;
 }
