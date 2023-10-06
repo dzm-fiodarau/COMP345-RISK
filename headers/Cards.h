@@ -5,6 +5,16 @@
 
 #include <string>
 #include <vector>
+#include "Player.h"
+#include "Map.h"
+
+// Forward declaration
+class Card;
+class Deck;
+
+//  Forward declaration for classes from 'Map.h'
+class Player;
+class Territory;
 
 // Enum of the different card types
 enum class type
@@ -37,7 +47,7 @@ public:
     /**
      * \brief               Queue the effect of the card by creating an order to the player order list.
      */
-    void play();
+    void play(Player*, Deck*, Territory*, int, Territory*);
 
     /**
      * \brief               Use to get the card type.

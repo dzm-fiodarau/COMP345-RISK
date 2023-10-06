@@ -5,8 +5,8 @@
 #include <string>
 
 //  Project includes
-#include "../headers/Map.h"
-#include "../headers/Player.h"
+#include "Map.h"
+#include "Player.h"
 
 
 
