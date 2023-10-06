@@ -11,9 +11,21 @@
 
 using namespace std;
 
+//  Forward declaration, 'Orders.h'
+class Order;
 class OrdersList;
-class Player;
+
+
+//  Forward declaration, 'Map.h'
 class Territory;
+class Continent;
+class MapLoader;
+
+
+//  Forward declaration, 'Cards.h'
+class Card;
+class Deck;
+
 
 // player object
 class Player
