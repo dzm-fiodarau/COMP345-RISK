@@ -48,10 +48,4 @@ void testPlayers()
 
     player2->issueOrder("deploy", territory2, 2, nullptr, nullptr);
     player2->issueOrder("advance", territory2, 1, territory1, nullptr);
-
-    // Print orders for player1 and player2
-    cout << "Player 1 orders: ";
-    player1->printOrder();
-    cout << "Player 2 orders: ";
-    player2->printOrder();
 }
