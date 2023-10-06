@@ -5,38 +5,39 @@
 
 void testCards()
 {
-    // Create an empty deck
+    std::cout << "-------------------------------------------" << std::endl;
+
+    Continent* europe = new Continent("Europe", 100);
+    Player* player1 = new Player();
+    Territory* france = new Territory("France", 5, 5, europe, player1, 5);
+
+    // Create a deck filled with some cards
     Deck *deck = &Deck::getInstance();
     // Create an empty card hand
     std::vector<Card *> hand;
-
-    // Add some cards in the deck
-    for (size_t i = 0; i < 3; i++)
-    {
-        deck->addCard(new Card(type::blockade));
-        deck->addCard(new Card(type::bomb));
-        deck->addCard(new Card(type::airlift));
-        deck->addCard(new Card(type::diplomacy));
-        deck->addCard(new Card(type::reinforcement));
-    }
-    // Print the deck content
+ 
+    // Print the initial deck content
     std::cout << *deck << std::endl;
 
     // Draw one card in the deck
     Card *card = deck->draw();
-    // Print the card
+    std::cout << "Card drawn from deck: " << std::endl;
     std::cout << *card << std::endl;
+
     // Add it to the hand
     hand.push_back(card);
     // Print the hand and make sure it is the same card drawn
     std::cout << hand << std::endl;
-    // Print the deck content to make sure it has one less card
-    std::cout << *deck << std::endl;
 
     // Draw some cards from the deck and add them to the hand
     hand.push_back(deck->draw());
     hand.push_back(deck->draw());
-    hand.push_back(deck->draw());
     // Print the cards in the hand
     std::cout << hand << std::endl;
+
+    //Play The first card of hand, which creates an order
+    hand[1]->play(player1, deck, france, NULL, NULL);
+
+    // Print final deck content
+    std::cout << *deck << std::endl;
 }

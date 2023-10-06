@@ -6,9 +6,33 @@
 
 using namespace std;
 
+/** \brief Convert the type enum to a string */
+static std::string convertTypeToString(type type) {
+    switch (type)
+    {
+    case type::bomb:
+       return "bomb";
+        break;
+    case type::reinforcement:
+        return "reinforcement";
+        break;
+    case type::blockade:
+        return "blockade";
+        break;
+    case type::airlift:
+        return "airlift";
+        break;
+    case type::diplomacy:
+        return "diplomacy";
+        break;
+    default:
+        return "invalid";
+        break;
+    }
+}
+
 Card::Card()
 {
-    // TODO: Think about creating an no-data/empty card type.
 }
 
 Card::Card(type type)
@@ -16,9 +40,11 @@ Card::Card(type type)
     cardType = type;
 }
 
-void Card::play()
+void Card::play(Player* player, Deck* deck, Territory* target, int armyUnits, Territory* source)
 {
-    // TODO: Implement method with the orders.
+    player->issueOrder(convertTypeToString(this->getCardType()), target, armyUnits, source, player);
+
+    deck->addCard(this);
 }
 
 type Card::getCardType() const
@@ -53,29 +79,7 @@ Card &Card::operator=(const Card &otherCard)
 std::ostream &operator<<(std::ostream &os, const Card &card)
 {
     os << "Card of type: ";
-    switch (card.getCardType())
-    {
-    case type::bomb:
-        os << "bomb";
-        break;
-    case type::reinforcement:
-        os << "reinforcement";
-        break;
-    case type::blockade:
-        os << "blockade";
-        break;
-    case type::airlift:
-        os << "airlift";
-        break;
-    case type::diplomacy:
-        os << "diplomacy";
-        break;
-    default:
-        os << "invalid";
-        break;
-    }
-
-    os << std::endl;
+    os << convertTypeToString(card.getCardType()) << std::endl;;
 
     return os;
 }
@@ -86,30 +90,7 @@ std::ostream &operator<<(std::ostream &os, const std::vector<Card *> multipleCar
 
     for (Card *card : multipleCards)
     {
-        os << "Card of type: ";
-        switch (card->getCardType())
-        {
-        case type::bomb:
-            os << "bomb";
-            break;
-        case type::reinforcement:
-            os << "reinforcement";
-            break;
-        case type::blockade:
-            os << "blockade";
-            break;
-        case type::airlift:
-            os << "airlift";
-            break;
-        case type::diplomacy:
-            os << "diplomacy";
-            break;
-        default:
-            os << "invalid";
-            break;
-        }
-
-        os << std::endl;
+        os << convertTypeToString(card->getCardType()) << std::endl;;
     }
 
     return os;
@@ -133,9 +114,16 @@ Deck &Deck::getInstance()
     return instance;
 }
 
-// TODO: Determine what are the default cards in the starting deck
 Deck::Deck()
 {
+    for (size_t i = 0; i < 3; i++)
+    {
+        addCard(new Card(type::blockade));
+        addCard(new Card(type::bomb));
+        addCard(new Card(type::airlift));
+        addCard(new Card(type::diplomacy));
+        addCard(new Card(type::reinforcement));
+    }
 }
 
 Card *Deck::draw()
