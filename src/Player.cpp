@@ -102,7 +102,7 @@ void Player::printOrder()
     // Output all orders of player
     for (Order* order : ordersList->orders) 
     {
-        cout << *order << endl; // Assume that the Order class implements the appropriate output operator overloads
+        cout << *order << endl;
     }
 }
 
