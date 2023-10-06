@@ -14,6 +14,7 @@ class Card;
 class OrdersList;
 class Player;
 class Territory;
+
 // Global string array containing all allowed orders
 const string allowedOrders[6] = {"deploy", "advance", "bomb", "blockade", "airlift", "negotiate"};
 

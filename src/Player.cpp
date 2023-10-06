@@ -1,7 +1,5 @@
 #include "../headers/Player.h"
 
-int index; // used for for-loop
-
 // default constructor
 Player::Player()
 {
@@ -27,36 +25,33 @@ Player::Player(const Player &p)
 	ordersList = p.ordersList;
 }
 
-// TO DO by Ziyi Tu: Reimplement method
 // destructor
 Player::~Player()
 {
 	playerName.clear();
-	// territory.clear();
-	// handCard.clear();
-	//  TO DO: call destructor of ordersList object
+	delete ordersList;
 }
 
-// TO DO by Ziyi Tu: Reimplement method
 // method toAttack of Player
 void Player::toAttack()
 {
-	// for (index = 0; index < territory.size(); index++)
-	// {
-	// 	cout << *territory[index] << " ";
-	// }
-	// cout << endl;
+    cout << playerName << " is selecting territories to attack:" << endl;
+
+    for (Territory* terr : territory)
+    {
+        cout << "Attacking " << terr->getName() << endl;
+    }
 }
 
-// TO DO by Ziyi Tu: Reimplement method
 // method toDefend of Player
 void Player::toDefend()
 {
-	// for (index = 0; index < territory.size(); index++)
-	// {
-	// 	cout << *territory[index] << " ";
-	// }
-	// cout << endl;
+    cout << playerName << " is selecting territories to defend:" << endl;
+
+    for (Territory* terr : territory)
+    {
+		cout << "Defending " << terr->getName() << endl;
+    }
 }
 
 // methods below are used to get issueOrder
@@ -100,17 +95,15 @@ OrdersList *Player::getOrdersList()
 	return ordersList;
 }
 
-// TO DO by Ziyi Tu: Reimplement method
 void Player::printOrder()
 {
-	// vector<Order *>::iterator it = orderList.begin();
-	// for (; it != orderList.end(); it++)
-	// {
-	// 	//  CHANGED 10/4/2023
-	// 	//  cout << (*it)->getResult() << " ";
-	// 	cout << (*it)->execute() << " ";
-	// }
-	// cout << endl;
+    cout << "Orders List for " << playerName << ":" << endl;
+
+    // Output all orders of player
+    for (Order* order : ordersList->orders) 
+    {
+        cout << *order << endl;
+    }
 }
 
 string Player::getPlayerName() const

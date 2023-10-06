@@ -36,7 +36,8 @@ void testCards()
     std::cout << hand << std::endl;
 
     //Play The first card of hand, which creates an order
-    hand[1]->play(player1, deck, france, NULL, NULL);
+    // 'armyUnits' & 'source' are placeholder values below:
+    hand[1]->play(player1, deck, france, -1, nullptr);
 
     // Print final deck content
     std::cout << *deck << std::endl;

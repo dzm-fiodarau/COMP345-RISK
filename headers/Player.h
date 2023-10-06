@@ -11,22 +11,21 @@
 
 using namespace std;
 
+//  Forward declaration, 'Orders.h'
+class Order;
 class OrdersList;
-class Player;
+
+
+//  Forward declaration, 'Map.h'
 class Territory;
+class Continent;
+class MapLoader;
 
-//  README
-//  CHANGED 10/4/2023
-//  Changed so that the project can compile. Issue: the placeholder classes were interfering with the linking during
-//  compile time. Therefore, project could not compile.
 
-//  CHANGES
-//  - Added include directive: #include "Orders.h"
-//  - Removed the placeholder class and corresponding methods in the .cpp file
-//  - Added and implemented the method "string getPlayerName() const" since the "Map" class in "Map.h" is dependent
-//    on being able to get the name of the player
-//  - Adjusted method call in the .cpp file to match the actual method in the Order class
-//          from '(*it)->getResult()' to '(*it)->execute()'
+//  Forward declaration, 'Cards.h'
+class Card;
+class Deck;
+
 
 // player object
 class Player
@@ -51,9 +50,6 @@ public:
     void issueOrder(string type, Territory *target, int armyUnits, Territory *source, Player *player);
     OrdersList *getOrdersList();
     void printOrder();
-
-    //  CHANGED 10/4/2023
-    //  Added function since the class 'Map' is dependent on being able to access the player name.
     string getPlayerName() const;
 };
 

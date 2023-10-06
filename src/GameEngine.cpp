@@ -98,6 +98,7 @@ static std::string reduceStringVector(const std::vector<std::string>& tokens) {
 
 
 bool restart(const std::string& _, GameEngine& gameEngine) {
+    /*
     //  Split the input string into tokens then asserts that no tokens were passed
     vector<std::string> tokens = getTokens(_);
     if (!tokens.empty()) {
@@ -105,8 +106,7 @@ bool restart(const std::string& _, GameEngine& gameEngine) {
                   << "\033[0m" << std::endl;
         return false;
     }
-
-    //  TODO IMPLEMENT LAST
+     */
     return true;
 }
 
@@ -117,6 +117,7 @@ bool restart(const std::string& _, GameEngine& gameEngine) {
  *  \param input    String of all arguments passed.
  *  \return 'true' if the command executes successfully, 'false' otherwise */
 bool loadMap(const std::string& input, GameEngine& gameEngine) {
+    /*
     //  Split the string into tokens
     vector<std::string> tokens = getTokens(input);
 
@@ -141,6 +142,7 @@ bool loadMap(const std::string& input, GameEngine& gameEngine) {
 
     //  Deallocate memory and return true
     delete mapLoader;
+     */
     return true;
 }
 
@@ -151,6 +153,7 @@ bool loadMap(const std::string& input, GameEngine& gameEngine) {
  *  \param _ String of all arguments passed. Meant to be empty, without tokens.
  *  \return 'true' if the command executes successfully, 'false' otherwise */
 bool validateMap(const std::string& _, GameEngine& gameEngine) {
+    /*
     //  Split the input string into tokens then asserts that no tokens were passed
     vector<std::string> tokens = getTokens(_);
     if (!tokens.empty()) {
@@ -178,6 +181,8 @@ bool validateMap(const std::string& _, GameEngine& gameEngine) {
         std::cout << "\033[1;31m" << "FAILED TO VALIDATE MAP, ERROR WITH MAP CONFIGURATION\n" << "\033[0m";
         return false;
     }
+     */
+    return true;
 }
 
 
@@ -187,6 +192,7 @@ bool validateMap(const std::string& _, GameEngine& gameEngine) {
  * \param input String of all arguments passed. Only one parameter expected, which will be the player name.
  * \return True if the player addition was successful */
 bool addPlayer(const std::string& input, GameEngine& gameEngine) {
+    /*
     //  Split the string into tokens and checks that only one argument was passed
     vector<std::string> tokens = getTokens(input);
     if (tokens.size() != 1) {
@@ -197,6 +203,7 @@ bool addPlayer(const std::string& input, GameEngine& gameEngine) {
 
     Player newPlayer(tokens.front(), {}, {});   //  TODO IMPLEMENT LATER WHEN BETTER UNDERSTANDING
     gameEngine.addPlayerToGame(newPlayer);
+     */
     return true;
 }
 
@@ -204,6 +211,7 @@ bool addPlayer(const std::string& input, GameEngine& gameEngine) {
  *  \param _ String of all arguments passed. Meant to be empty, without tokens.
  *  \return Returns true in all cases. */
 bool printPlayers(const std::string& _, GameEngine& gameEngine) {
+    /*
     //  Split the input string into tokens then asserts that no tokens were passed
     vector<std::string> tokens = getTokens(_);
     if (!tokens.empty()) { return false; }
@@ -212,6 +220,7 @@ bool printPlayers(const std::string& _, GameEngine& gameEngine) {
     for (const Player& player : gameEngine.getPlayers()) {
         std::cout << player.getPlayerName() << std::endl;
     }
+     */
     return true;    //  Always return true
 }
 
@@ -367,7 +376,7 @@ std::ostream &operator<<(std::ostream &os, const TransitionData& transitionData)
 
 
 GameEngine::GameEngine()
-    : currentStateIndex(new size_t(0)), statesSize(new size_t(9)), transitionDatabaseSize(new size_t(14)),
+    : currentStateIndex(new size_t(0)), statesSize(new size_t(9)), transitionDatabaseSize(new size_t(15)),
       isRunning(new bool(false)) {
     states = new State[] {
         State("start"),
@@ -585,7 +594,7 @@ void GameEngine::execute() {
     //  Set the isRunning status variable to 'true'
     *isRunning = true;
 
-    while (this->isRunning) {
+    while (*isRunning) {
         //  Printing out prompt
         std::string currentStateName = states[*currentStateIndex].getStateName();
         std::cout << "CURRENT STATE:\t[" << currentStateName << "]" << std::endl;
