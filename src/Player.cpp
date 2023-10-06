@@ -1,13 +1,13 @@
 #include "../headers/Player.h"
 
-// default constructor
+// Default constructor
 Player::Player()
 {
 	playerName = "";
 	ordersList = new OrdersList(this);
 }
 
-// constructor
+// Constructor
 Player::Player(string pn, vector<Territory *> t, vector<Card *> hd)
 {
 	playerName = pn;
@@ -16,7 +16,7 @@ Player::Player(string pn, vector<Territory *> t, vector<Card *> hd)
 	ordersList = new OrdersList(this);
 }
 
-// copy constructor
+// Copy constructor
 Player::Player(const Player &p)
 {
 	playerName = p.playerName;
@@ -25,14 +25,50 @@ Player::Player(const Player &p)
 	ordersList = p.ordersList;
 }
 
-// destructor
+// Destructor
 Player::~Player()
 {
 	playerName.clear();
 	delete ordersList;
 }
 
-// method toAttack of Player
+// Assignment Operator Overload
+Player &Player::operator=(const Player &other)
+{
+    if (this != &other)
+    {
+        playerName = other.playerName;
+        territory = other.territory;
+        handCard = other.handCard;
+        delete ordersList; // Free the existing memory
+        ordersList = new OrdersList(*other.ordersList); // Creating a new OrdersList with copied contents
+    }
+    return *this;
+}
+
+// Stream Insertion Operator Overload
+ostream &operator<<(ostream &out, const Player &player)
+{
+    out << "Player Name: " << player.playerName << endl;
+    out << "Territories: ";
+    for (const auto &terr : player.territory)
+    {
+        out << terr->getName() << " ";
+    }
+    out << endl;
+    out << "Orders List: ";
+    out << *(player.ordersList); 
+    out << endl;
+    return out;
+}
+
+// Method the get palyer name
+string Player::getPlayerName() const
+{
+	return playerName;
+}
+
+// Method toAttack of Player
 void Player::toAttack()
 {
     cout << playerName << " is selecting territories to attack:" << endl;
@@ -43,7 +79,7 @@ void Player::toAttack()
     }
 }
 
-// method toDefend of Player
+// Method toDefend of Player
 void Player::toDefend()
 {
     cout << playerName << " is selecting territories to defend:" << endl;
@@ -54,7 +90,7 @@ void Player::toDefend()
     }
 }
 
-// methods below are used to get issueOrder
+// Methods below are used to get issueOrder
 void Player::issueOrder(string type, Territory *target, int armyUnits, Territory *source, Player *player)
 {
 	Order *order;
@@ -93,20 +129,4 @@ void Player::issueOrder(string type, Territory *target, int armyUnits, Territory
 OrdersList *Player::getOrdersList()
 {
 	return ordersList;
-}
-
-void Player::printOrder()
-{
-    cout << "Orders List for " << playerName << ":" << endl;
-
-    // Output all orders of player
-    for (Order* order : ordersList->orders) 
-    {
-        cout << *order << endl;
-    }
-}
-
-string Player::getPlayerName() const
-{
-	return playerName;
 }
