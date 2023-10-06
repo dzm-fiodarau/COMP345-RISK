@@ -1,5 +1,5 @@
-#ifndef PLAYER_H // check whether there is Player.h or not
-#define PLAYER_H // if no, then create one
+#ifndef PLAYER_H // Check whether there is Player.h or not
+#define PLAYER_H // If no, then create one
 
 #include <iostream>
 #include <vector>
@@ -11,23 +11,14 @@
 
 using namespace std;
 
-//  Forward declaration, 'Orders.h'
-class Order;
 class OrdersList;
-
-
-//  Forward declaration, 'Map.h'
+class Player;
 class Territory;
-class Continent;
-class MapLoader;
 
-
-//  Forward declaration, 'Cards.h'
-class Card;
-class Deck;
-
-
-// player object
+/**
+ * \class   Player
+ * \brief   Class that contains player information
+ */
 class Player
 {
 private:
@@ -38,19 +29,33 @@ public:
     vector<Card *> handCard;
     vector<Territory *> territory;
 
-    // constructors & destructor
+    // Default constructor
     Player();
+    // Constructor
     Player(string pn, vector<Territory *> t, vector<Card *> hc);
+    // Copy constructor
     Player(const Player &p);
+    // Destructor
     ~Player();
 
-    // some member functions
+    // Some member functions
+    string getPlayerName() const;
     void toAttack();
     void toDefend();
+    /**
+     * \brief   Get issueOrder
+     * \param   type Type of the Order object created
+     * \param   target Territory to which troups are to be moved
+     * \param   armyUnits Number of army units to be moved
+     * \param   source  Source of territory
+     * \param   player  Player name
+     */
     void issueOrder(string type, Territory *target, int armyUnits, Territory *source, Player *player);
     OrdersList *getOrdersList();
-    void printOrder();
-    string getPlayerName() const;
+
+    // Operator Overloads
+    Player &operator=(const Player &other);
+    friend ostream &operator<<(ostream &out, const Player &player);
 };
 
 #endif // PLAYER_H
