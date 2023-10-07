@@ -320,10 +320,11 @@ std::string State::getStateName() const {
 //----------------------------------------------------------------------------------------------------------------------
 //  "State" implementations
 
-TransitionData::TransitionData(size_t index1, size_t index2, std::string transitionName, std::string helpString,
-                               bool (*transitionFunction)(const std::string &, GameEngine &)) {
+TransitionData::TransitionData(size_t index1, size_t index2, size_t numberOfArguments, std::string transitionName,
+                               std::string helpString, bool (*transitionFunction)(const std::string &, GameEngine &)) {
     this->index1 = new size_t(index1);
     this->index2 = new size_t(index2);
+    this->numberOfArguments = new size_t(numberOfArguments);
     this->transitionName = new std::string(std::move(transitionName));
     this->helpString = new std::string(std::move(helpString));
     this->transitionFunction = transitionFunction;
@@ -332,6 +333,7 @@ TransitionData::TransitionData(size_t index1, size_t index2, std::string transit
 TransitionData::TransitionData(const TransitionData& other) {
     this->index1 = new size_t(other.getIndex1());
     this->index2 = new size_t(other.getIndex2());
+    this->numberOfArguments = new size_t(other.getNumberOfArguments());
     this->transitionName = new std::string(other.getTransitionName());
     this->helpString = new std::string(other.getHelpString());
     this->transitionFunction = other.transitionFunction;
@@ -340,11 +342,13 @@ TransitionData::TransitionData(const TransitionData& other) {
 TransitionData::~TransitionData() {
     delete index1;
     delete index2;
+    delete numberOfArguments;
     delete transitionName;
     delete helpString;
 
     index1 = nullptr;
     index2 = nullptr;
+    numberOfArguments = nullptr;
     transitionName = nullptr;
     helpString = nullptr;
     transitionFunction = nullptr;
@@ -355,6 +359,7 @@ TransitionData &TransitionData::operator=(const TransitionData& other) {
     if (this != &other) {
         this->index1 = new size_t(other.getIndex1());
         this->index2 = new size_t(other.getIndex2());
+        this->numberOfArguments = new size_t(other.getNumberOfArguments());
         this->transitionName = new std::string(other.getTransitionName());
         this->helpString = new std::string(other.getHelpString());
         this->transitionFunction = other.transitionFunction;
@@ -364,8 +369,8 @@ TransitionData &TransitionData::operator=(const TransitionData& other) {
 }
 
 std::ostream &operator<<(std::ostream &os, const TransitionData& transitionData) {
-    os << transitionData.getIndex1() << " - " << transitionData.getIndex2() << " - "
-       << transitionData.getTransitionName() << " - \"" << transitionData.getHelpString() << "\" - "
+    os << transitionData.getIndex1() << " - " << transitionData.getIndex2() << " - " << transitionData.numberOfArguments
+       << " - " << transitionData.getTransitionName() << " - \"" << transitionData.getHelpString() << "\" - "
        << transitionData.transitionFunction;
     return os;
 }
@@ -391,25 +396,22 @@ GameEngine::GameEngine()
     };
 
     transitionDatabase = new TransitionData[] {
-        TransitionData(0, 1, "loadmap", "loadmap FILEPATH", &loadMap),
-        TransitionData(1, 1, "loadmap", "loadmap FILEPATH", &loadMap),
-        TransitionData(1, 2, "validatemap", "validatemap", &validateMap),
-        TransitionData(2, 3, "addplayer", "addplayer PLAYERNAME", &addPlayer),
-        TransitionData(3, 3, "addplayer", "addplayer PLAYERNAME", &addPlayer),
-        TransitionData(3, 3, "viewplayers", "viewplayers", &printPlayers),
-        TransitionData(3, 4, "assigncountries", "assigncountries SAMPLE", &assignCountries),
-        TransitionData(4, 5, "issueorder", "issueorder SAMPLE", &issueOrder),
-        TransitionData(5, 5, "issueorder", "issueorder SAMPLE", &issueOrder),
-        TransitionData(5, 6, "endissueorders", "endissueorders SAMPLE", &endIssueOrders),
-        TransitionData(6, 6, "execorder", "execorder SAMPLE", &executeOrder),
-        TransitionData(6, 4, "endexecorders", "endexecorders SAMPLE", &endExecuteOrders),
-        TransitionData(6, 7, "win", "win SAMPLE", &winGame),
-        TransitionData(7, 0, "play", "play", &restart),
-        TransitionData(7, 8, "end", "end SAMPLE", &endProgram)
+        TransitionData(0, 1, 1, "loadmap", "loadmap FILEPATH", &loadMap),
+        TransitionData(1, 1, 1, "loadmap", "loadmap FILEPATH", &loadMap),
+        TransitionData(1, 2, 0, "validatemap", "validatemap", &validateMap),
+        TransitionData(2, 3, 1, "addplayer", "addplayer PLAYERNAME", &addPlayer),
+        TransitionData(3, 3, 1, "addplayer", "addplayer PLAYERNAME", &addPlayer),
+        TransitionData(3, 3, 0, "viewplayers", "viewplayers", &printPlayers),
+        TransitionData(3, 4, 0, "assigncountries", "assigncountries", &assignCountries),
+        TransitionData(4, 5, 0, "issueorder", "issueorder -SAMPLE ARGUMENTS-", &issueOrder),
+        TransitionData(5, 5, 0, "issueorder", "issueorder -SAMPLE ARGUMENTS-", &issueOrder),
+        TransitionData(5, 6, 0, "endissueorders", "endissueorders", &endIssueOrders),
+        TransitionData(6, 6, 0, "execorder", "execorder -SAMPLE ARGUMENTS-", &executeOrder),
+        TransitionData(6, 4, 0, "endexecorders", "endexecorders", &endExecuteOrders),
+        TransitionData(6, 7, 0, "win", "win", &winGame),
+        TransitionData(7, 0, 0, "replay", "replay", &restart),
+        TransitionData(7, 8, 0, "quit", "quit", &endProgram)
     };
-
-    this->map = nullptr;
-    this->playersList = new std::vector<Player>();
 }
 
 
@@ -419,25 +421,16 @@ GameEngine::GameEngine(const GameEngine& otherGameEngine) {
     this->transitionDatabaseSize = new size_t(*otherGameEngine.transitionDatabaseSize);
     this->currentStateIndex = new size_t(*otherGameEngine.currentStateIndex);
     this->isRunning = new bool(*otherGameEngine.isRunning);
-    this->map = new Map(*otherGameEngine.map);
-    this->playersList = new std::vector<Player>(*otherGameEngine.playersList);
 
     this->states = new State[*this->statesSize];
     this->transitionDatabase = new TransitionData[*this->transitionDatabaseSize];
 
     for (int i = 0; i < *this->statesSize; i++) {
         this->states[i] = otherGameEngine.states[i];
-
-        //  Assuring that the addresses are different (deep copy)
-        DEBUG_PRINT("\nSTATES\nthis\t", &this->states[i], "\nother\t", &otherGameEngine.states[i])
     }
 
     for (int i = 0; i < *this->transitionDatabaseSize; i++) {
         this->transitionDatabase[i] = otherGameEngine.transitionDatabase[i];
-
-        //  Assuring that the addresses are different (deep copy)
-        DEBUG_PRINT("\nTRANSITION_STRUCT\nthis\t", &this->transitionDatabase[i],
-                    "\nother\t", &otherGameEngine.transitionDatabase[i])
     }
 }
 
@@ -450,8 +443,6 @@ GameEngine::GameEngine(GameEngine &&otherGameEngine) noexcept {
     this->currentStateIndex = new size_t(*otherGameEngine.currentStateIndex);
     this->states = new State[*this->statesSize];
     this->transitionDatabase = new TransitionData[*this->transitionDatabaseSize];
-    this->map = new Map(*otherGameEngine.map);
-    this->playersList = new std::vector<Player>(*otherGameEngine.playersList);
 
     for (int i = 0; i < *this->statesSize; i++) {
         this->states[i] = otherGameEngine.states[i];
@@ -468,8 +459,6 @@ GameEngine::GameEngine(GameEngine &&otherGameEngine) noexcept {
     delete otherGameEngine.statesSize;
     delete otherGameEngine.transitionDatabaseSize;
     delete otherGameEngine.isRunning;
-    delete otherGameEngine.map;
-    delete otherGameEngine.playersList;
 
     otherGameEngine.states = nullptr;
     otherGameEngine.transitionDatabase = nullptr;
@@ -477,8 +466,6 @@ GameEngine::GameEngine(GameEngine &&otherGameEngine) noexcept {
     otherGameEngine.statesSize = nullptr;
     otherGameEngine.transitionDatabaseSize = nullptr;
     otherGameEngine.isRunning = nullptr;
-    otherGameEngine.map = nullptr;
-    otherGameEngine.playersList = nullptr;
 }
 
 
@@ -490,8 +477,6 @@ GameEngine::~GameEngine() {
     delete statesSize;
     delete transitionDatabaseSize;
     delete isRunning;
-    delete map;
-    delete playersList;
 
     //  Set the member pointers to null pointer
     states = nullptr;
@@ -500,8 +485,6 @@ GameEngine::~GameEngine() {
     statesSize = nullptr;
     transitionDatabaseSize = nullptr;
     isRunning = nullptr;
-    map = nullptr;
-    playersList = nullptr;
 }
 
 GameEngine& GameEngine::operator=(const GameEngine &otherGameEngine) {
@@ -511,8 +494,6 @@ GameEngine& GameEngine::operator=(const GameEngine &otherGameEngine) {
         this->transitionDatabaseSize = new size_t(*otherGameEngine.transitionDatabaseSize);
         this->currentStateIndex = new size_t(*otherGameEngine.currentStateIndex);
         this->isRunning = new bool(*otherGameEngine.isRunning);
-        this->map = new Map(*otherGameEngine.map);
-        this->playersList = new std::vector<Player>(*otherGameEngine.playersList);
 
         this->states = new State[*this->statesSize];
         this->transitionDatabase = new TransitionData[*this->transitionDatabaseSize];
@@ -539,8 +520,6 @@ GameEngine& GameEngine::operator=(GameEngine &&otherGameEngine) noexcept {
         this->currentStateIndex = new size_t(*otherGameEngine.currentStateIndex);
         this->states = new State[*this->statesSize];
         this->transitionDatabase = new TransitionData[*this->transitionDatabaseSize];
-        this->map = new Map(*otherGameEngine.map);
-        this->playersList = new std::vector<Player>(*otherGameEngine.playersList);
 
         for (int i = 0; i < *this->statesSize; i++) {
             this->states[i] = otherGameEngine.states[i];
@@ -557,8 +536,6 @@ GameEngine& GameEngine::operator=(GameEngine &&otherGameEngine) noexcept {
         delete otherGameEngine.statesSize;
         delete otherGameEngine.transitionDatabaseSize;
         delete otherGameEngine.isRunning;
-        delete otherGameEngine.map;
-        delete otherGameEngine.playersList;
 
         otherGameEngine.states = nullptr;
         otherGameEngine.transitionDatabase = nullptr;
@@ -566,8 +543,6 @@ GameEngine& GameEngine::operator=(GameEngine &&otherGameEngine) noexcept {
         otherGameEngine.statesSize = nullptr;
         otherGameEngine.transitionDatabaseSize = nullptr;
         otherGameEngine.isRunning = nullptr;
-        otherGameEngine.map = nullptr;
-        otherGameEngine.playersList = nullptr;
     }
 
     return *this;
@@ -678,14 +653,10 @@ void GameEngine::processCommand(TransitionData transitionData, const std::string
     std::cout << "\033[34m" << "SWITCHED STATES TO:\t[" << newCurrentStateName << "]\033[0m" << std::endl;
 }
 
-void GameEngine::setMap(Map* const map) { this->map = map; }
-Map* GameEngine::getMap() const { return map; }
+const State* GameEngine::getStates() const { return states; }
 
-std::vector<Player> GameEngine::getPlayers() const {
-    std::vector<Player> copy = *playersList;
-    return copy;
-}
+const TransitionData* GameEngine::getTransitionsDatabase() const { return transitionDatabase; }
 
-void GameEngine::addPlayerToGame(const Player& player) const {
-    playersList->push_back(player);
-}
+size_t GameEngine::getStatesSize() const { return *statesSize; }
+
+size_t GameEngine::getTransitionDatabaseSize() const { return *transitionDatabaseSize; }

@@ -78,7 +78,7 @@ public:
     TransitionData() = default;
 
     /** \brief Constructs a TransitionData object given the passed data. */
-    TransitionData(size_t, size_t, std::string, std::string, bool (*)(const std::string&, GameEngine&));
+    TransitionData(size_t, size_t, size_t, std::string, std::string, bool (*)(const std::string&, GameEngine&));
 
     /** \brief Constructs a TransitionData object from another TransitionData object. Copy constructor. */
     TransitionData(const TransitionData&);
@@ -99,6 +99,9 @@ public:
     /** \brief Get the second index, which indicates the state AFTER transition. */
     size_t getIndex2() const { return *index2; }
 
+    /** \brief Gets the number of expected argument tokens after the command token. */
+    size_t getNumberOfArguments() const { return *numberOfArguments; }
+
     /** \brief Get the name of the transition. */
     std::string getTransitionName() const { return *transitionName; }
 
@@ -114,6 +117,9 @@ private:
 
     //  The second index which indicates the index of the state AFTER transition
     size_t* index2;
+
+    //  The number of arguments expected after the command token
+    size_t* numberOfArguments;
 
     //  The transition name
     std::string* transitionName;
@@ -154,20 +160,21 @@ public:
     /** \brief Starts the execution of the game object. Main entry point. */
     void execute();
 
-    //  Getters & Setters
-    /** \brief Sets the map pointer. */
-    void setMap(Map*);
-    /** \brief Returns the map pointer. */
-    Map* getMap() const;
-
-    /** \brief Returns a copy of the players list */
-    std::vector<Player> getPlayers() const;
-
-    /** \brief Adds a player to the players list */
-    void addPlayerToGame(const Player&) const;
-
     /** \brief Sets the game running flag to false */
     void stopRunning() { *isRunning = false; }
+
+
+    /** \brief Gets the list of states of the game engine. */
+    const State* getStates() const;
+
+    /** \brief Gets a list of 'TransitionData' objects that contain data about transitions from state to state. */
+    const TransitionData* getTransitionsDatabase() const;
+
+    /** \brief Gets the size of the states list. */
+    size_t getStatesSize() const;
+
+    /** \brief Gets the size of the transitions database list. */
+    size_t getTransitionDatabaseSize() const;
 
 private:
     //  A list of states
@@ -187,12 +194,6 @@ private:
 
     //  Whether the game running or not
     bool* isRunning;
-
-    //  Map pointer
-    Map* map;
-
-    //  List of players
-    std::vector<Player>* playersList;
 
 
     //  Returns the index of the appropriate transition struct given the current state and the given transition name
