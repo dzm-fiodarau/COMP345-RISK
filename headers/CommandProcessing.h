@@ -113,6 +113,12 @@ public:
      *  be correctly executed. */
     bool validate(const Command&, const State&);
 
+    /** \brief Sets the list of states configuration. */
+    void setStates(const State*, size_t);
+
+    /** \brief Sets the list of transition data configuration. */
+    void setTransitionDatabase(const TransitionData*, size_t);
+
 protected:
     //  A list of valid states.
     State* states;

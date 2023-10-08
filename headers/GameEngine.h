@@ -164,11 +164,11 @@ public:
     void stopRunning() { *isRunning = false; }
 
 
-    /** \brief Gets the list of states of the game engine. */
-    const State* getStates() const;
+    /** \brief Gets a list of states of the game engine. */
+    State* getStates() const;
 
     /** \brief Gets a list of 'TransitionData' objects that contain data about transitions from state to state. */
-    const TransitionData* getTransitionsDatabase() const;
+    TransitionData* getTransitionsDatabase() const;
 
     /** \brief Gets the size of the states list. */
     size_t getStatesSize() const;

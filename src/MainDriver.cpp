@@ -3,11 +3,13 @@ void testGameStates();
 void testLoadMaps();
 void testOrdersLists();
 void testPlayers();
-void testCommandProcessing();
+void testCommandProcessing(int, char** argv);
+
+#include <iostream>
 
 //  Regular runtime
 #ifndef DEBUG
-int main()
+int main(int argc, char *argv[])
 {
     testLoadMaps();
     testOrdersLists();
@@ -23,7 +25,7 @@ int main()
 
 
 #ifdef DEBUG
-int main()
+int main(int argc, char** argv)
 {
 #ifdef EXECUTE_CARDS
     testCards();
@@ -46,7 +48,8 @@ int main()
 #endif
 
 #ifdef EXECUTE_COMMAND_PROCESSING
-    testCommandProcessing();
+    //  Calling the driver test function, taking in the program arguments
+    testCommandProcessing(argc, argv);
 #endif
 
     return 0;
