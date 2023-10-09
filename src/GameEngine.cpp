@@ -653,23 +653,9 @@ void GameEngine::processCommand(TransitionData transitionData, const std::string
     std::cout << "\033[34m" << "SWITCHED STATES TO:\t[" << newCurrentStateName << "]\033[0m" << std::endl;
 }
 
-State* GameEngine::getStates() const {
-    //  Deep copying dynamic array values
-    auto* statesCopy = new State[*statesSize];
-    for (size_t i = 0; i < *statesSize; i++)
-        statesCopy[i] = State(states[i]);
+const State* GameEngine::getStates() const { return states; }
 
-    return statesCopy;
-}
-
-TransitionData* GameEngine::getTransitionsDatabase() const {
-    //  Deep copying dynamic array values
-    auto* transitionDatabaseCopy = new TransitionData[*transitionDatabaseSize];
-    for (size_t i = 0; i < *transitionDatabaseSize; i++)
-        transitionDatabaseCopy[i] = TransitionData(transitionDatabase[i]);
-
-    return transitionDatabaseCopy;
-}
+const TransitionData* GameEngine::getTransitionsDatabase() const { return transitionDatabase; }
 
 size_t GameEngine::getStatesSize() const { return *statesSize; }
 

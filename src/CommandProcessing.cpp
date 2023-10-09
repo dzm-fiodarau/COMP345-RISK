@@ -181,20 +181,14 @@ CommandProcessor::CommandProcessor(State* states, TransitionData* transitionData
 sizeOfStates(new size_t(sizeOfStates)), sizeOfTransitionDatabase(new size_t(sizeOfTransitionDatabase)) {
 
     //  Deep copying dynamic array values
-    for (size_t i = 0; i < sizeOfStates; i++)
-        this->states[i] = State(states[i]);
-
-    for (size_t i = 0; i < sizeOfTransitionDatabase; i++)
-        this->transitionDatabase[i] = TransitionData(transitionDatabase[i]);
-
-    //  std::copy(states, states + sizeOfStates, this->states);
-    //  std::copy(transitionDatabase, transitionDatabase + sizeOfTransitionDatabase, this->transitionDatabase);
+    std::copy(states, states + sizeOfStates, this->states);
+    std::copy(transitionDatabase, transitionDatabase + sizeOfTransitionDatabase, this->transitionDatabase);
     DEBUG_PRINT("Called [CommandProcessor, Parameterized Constructor (State*, TransitionData*, size_t, size_t)]")
 }
 
 CommandProcessor::CommandProcessor(const GameEngine& gameEngine)
-: states(gameEngine.getStates()),
-  transitionDatabase(gameEngine.getTransitionsDatabase()),
+: states(const_cast<State*>(gameEngine.getStates())),
+  transitionDatabase(const_cast<TransitionData *>(gameEngine.getTransitionsDatabase())),
   sizeOfStates(new size_t(gameEngine.getStatesSize())),
   sizeOfTransitionDatabase(new size_t(gameEngine.getTransitionDatabaseSize())) {
 
@@ -222,7 +216,7 @@ bool CommandProcessor::validate(const Command& command, const State& currentStat
     int stateIndex = -1;
     for (size_t i = 0; i < *sizeOfStates; i++) {
         if (states[i] == currentState) {
-            stateIndex = static_cast<int>(i);
+            stateIndex = i;
         }
     }
     if (stateIndex == -1) { // State not found in states list
@@ -239,20 +233,6 @@ bool CommandProcessor::validate(const Command& command, const State& currentStat
         }
     }
     return false;
-}
-
-void CommandProcessor::setStates(const State* states, size_t sizeOfStates) {
-    this->states = new State[sizeOfStates];
-    std::copy(states, states + sizeOfStates, this->states);
-
-    this->sizeOfStates = new size_t(sizeOfStates);
-}
-
-void CommandProcessor::setTransitionDatabase(const TransitionData* transitionDatabase, size_t sizeOfTransitionDatabase) {
-    this->transitionDatabase = new TransitionData[sizeOfTransitionDatabase];
-    std::copy(transitionDatabase, transitionDatabase + sizeOfTransitionDatabase, this->transitionDatabase);
-
-    this->sizeOfTransitionDatabase = new size_t(sizeOfTransitionDatabase);
 }
 
 
