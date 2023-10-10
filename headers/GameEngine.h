@@ -4,14 +4,9 @@
 //  Macro Includes
 #include <string>
 
-//  Project includes
-#include "Map.h"
-#include "Player.h"
-
-
-
 //  Declare GameEngine for TransitionData class
 class GameEngine;
+class CommandProcessor;
 
 
 
@@ -176,6 +171,9 @@ public:
     /** \brief Gets the size of the transitions database list. */
     size_t getTransitionDatabaseSize() const;
 
+    /** \brief Sets the current command processor of the GameEngine. */
+    void setCommandProcessor(const CommandProcessor&);
+
 private:
     //  A list of states
     State* states;
@@ -195,6 +193,9 @@ private:
     //  Whether the game running or not
     bool* isRunning;
 
+    //  The command processor to take commands from
+    CommandProcessor* commandProcessor;
+
 
     //  Returns the index of the appropriate transition struct given the current state and the given transition name
     //  Returns -1 if no matching transition is found
@@ -205,6 +206,9 @@ private:
 
     //  Further process a command. Calls the corresponding transition function.
     void processCommand(TransitionData, const std::string&);
+
+    //  Assigns the 'commandProcessor' member variable on initialization. Meant to be called in the constructor.
+    void initializeCommandProcessor();
 };
 
 #endif // GAME_ENGINE_H

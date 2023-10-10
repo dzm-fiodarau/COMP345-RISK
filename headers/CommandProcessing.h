@@ -6,11 +6,15 @@
 #include <vector>
 #include <iostream>
 #include <queue>
-#include "GameEngine.h"
 
 //  Forward declaration of 'GameEngine.h' classes
 class State;
 class TransitionData;
+class GameEngine;
+
+//  Forward declaration classes
+class ConsoleCommandProcessorAdapter;
+
 
 /** \class Command
  *  \brief Class that encapsulates a command, storing additional information and providing helpful methods. */
@@ -113,6 +117,9 @@ public:
      *  be correctly executed. */
     bool validate(const Command&, const State&);
 
+    /** \brief Returns a deep copy of the object. */
+    virtual CommandProcessor* clone() const = 0;
+
 protected:
     //  A list of valid states.
     State* states;
@@ -125,6 +132,10 @@ protected:
 
     //  The size of the transition data list/array.
     size_t* sizeOfTransitionDatabase;
+
+    /** \brief Returns a collection of help strings (for commands that contain the correct syntax) given the current
+     *  state. */
+    std::vector<std::string> getHelpStrings(const State&) const;
 };
 
 /** \class FileCommandProcessorAdapter
@@ -149,12 +160,19 @@ public:
     /** \brief Gets a valid command object given the valid state. */
     Command& getCommand(const State&) override;
 
+    /** \brief Returns a deep copy of the object. */
+    FileCommandProcessorAdapter* clone() const override;
+
 private:
     //  A queue of commands.
     std::queue<Command>* commandQueue;
 
     //  The path of the file to read from.
     std::string* filePath;
+
+    //  A backup command processor. Used to take commands from in the case that the commands from the specified file
+    //  have been exhausted / run out.
+    ConsoleCommandProcessorAdapter* backupCommandProcessor;
 
     //  Loads the contents from the specified file to the command queue.
     //  THROWS an exception if the specified file could not be found.
@@ -182,6 +200,9 @@ public:
 
     /** \brief Gets a valid command object given the valid state. */
     Command& getCommand(const State&) override;
+
+    /** \brief Returns a deep copy of the object. */
+    ConsoleCommandProcessorAdapter* clone() const override;
 };
 
 #endif

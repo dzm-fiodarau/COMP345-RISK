@@ -2,12 +2,14 @@
 //  Macros
 
 #include "../headers/CommandProcessing.h"
+#include "../headers/GameEngine.h"
 
 //  Include directives
 #include <algorithm>
 #include <sstream>
 #include <fstream>
 #include <stdexcept>
+#include <memory>
 
 #ifdef RED_DEBUG_OUTPUT
 #define ANSI_RED_INSERT "\033[31m" <<
@@ -50,6 +52,19 @@ static std::vector<std::string> getTokens(std::string input) {
         tokens.push_back(input);
     }
     return tokens;
+}
+
+/** \brief Prints an error block in case an incorrect raw command was inputted. */
+static void printErrorMenu(const State& currentState, std::vector<std::string> helpStrings) {
+    //  ANSI escape codes
+    std::string AnsiRed = "\033[31m";
+    std::string AnsiClear = "\033[0m";
+
+    std::cout << AnsiRed << "ERROR, List of valid commands:" << AnsiClear << std::endl;
+    for (size_t i = 0; i < helpStrings.size(); i++) {
+        std::cout << AnsiRed << "\t(" << (i + 1) << ") \"" << helpStrings[i] << "\"" << AnsiClear << std::endl;
+    }
+    std::cout << std::endl;
 }
 
 
@@ -111,7 +126,7 @@ std::ostream& operator<<(std::ostream& os, const Command& command) {
 
     if (command.rawCommand != nullptr) {
         numberOfInitializedValues++;
-        oss << *command.rawCommand;
+        oss << "\"" << *command.rawCommand << "\"";
     }
 
     if (command.effect != nullptr) {
@@ -181,18 +196,28 @@ CommandProcessor::CommandProcessor(State* states, TransitionData* transitionData
 sizeOfStates(new size_t(sizeOfStates)), sizeOfTransitionDatabase(new size_t(sizeOfTransitionDatabase)) {
 
     //  Deep copying dynamic array values
-    std::copy(states, states + sizeOfStates, this->states);
-    std::copy(transitionDatabase, transitionDatabase + sizeOfTransitionDatabase, this->transitionDatabase);
+    for (size_t i = 0; i < *this->sizeOfStates; i++)
+        this->states[i] = State(states[i]);
+
+    for (size_t i = 0; i < *this->sizeOfTransitionDatabase; i++)
+        this->transitionDatabase[i] = TransitionData(transitionDatabase[i]);
     DEBUG_PRINT("Called [CommandProcessor, Parameterized Constructor (State*, TransitionData*, size_t, size_t)]")
 }
 
 CommandProcessor::CommandProcessor(const GameEngine& gameEngine)
-: states(const_cast<State*>(gameEngine.getStates())),
-  transitionDatabase(const_cast<TransitionData *>(gameEngine.getTransitionsDatabase())),
+: states(new State[gameEngine.getStatesSize()]),
+  transitionDatabase(new TransitionData[gameEngine.getTransitionDatabaseSize()]),
   sizeOfStates(new size_t(gameEngine.getStatesSize())),
   sizeOfTransitionDatabase(new size_t(gameEngine.getTransitionDatabaseSize())) {
 
-    //  Empty
+    //  Deep copying dynamic array values
+    auto* statesValues = gameEngine.getStates();
+    for (size_t i = 0; i < *sizeOfStates; i++)
+        states[i] = State(statesValues[i]);
+
+    auto* transitionDatabaseValues = gameEngine.getTransitionsDatabase();
+    for (size_t i = 0; i < *sizeOfTransitionDatabase; i++)
+        transitionDatabase[i] = TransitionData(transitionDatabaseValues[i]);
     DEBUG_PRINT("Called [CommandProcessor, Parameterized Constructor (const GameEngine&)]")
 }
 
@@ -235,49 +260,85 @@ bool CommandProcessor::validate(const Command& command, const State& currentStat
     return false;
 }
 
+std::vector<std::string> CommandProcessor::getHelpStrings(const State& currentState) const {
+    //  Get the index of the passed states in the states list
+    int currentStateIndex = -1;
+    for (size_t i = 0; i < *sizeOfStates; i++) {
+        if (states[i] == currentState) {
+            currentStateIndex = i;
+            break;
+        }
+    }
+
+    //  Iterate through the transition database, adding any help strings to the collection
+    std::vector<std::string> helpStrings;
+    for (size_t i = 0 ; i < *sizeOfTransitionDatabase; i++) {
+        TransitionData transitionData = transitionDatabase[i];
+        if (transitionData.getIndex1() == currentStateIndex) {
+            helpStrings.push_back(transitionData.getHelpString());
+        }
+    }
+
+    return helpStrings;
+}
+
 
 
 //----------------------------------------------------------------------------------------------------------------------
 //  Class: 'FileCommandProcessorAdapter' implementation
 
 FileCommandProcessorAdapter::FileCommandProcessorAdapter()
-: CommandProcessor(), filePath(new std::string("")), commandQueue(new std::queue<Command>()) {
-    //  Empty
+    : CommandProcessor(), filePath(new std::string("")), commandQueue(new std::queue<Command>()) {
+
+    //  Initialize the backup command processor
+    this->backupCommandProcessor = new ConsoleCommandProcessorAdapter(states, transitionDatabase, *sizeOfStates,
+                                                                      *sizeOfTransitionDatabase);
     DEBUG_PRINT("Called [FileCommandProcessorAdapter, Default Constructor]")
 }
 
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(State* states, TransitionData* transitionDatabase,
                                                          size_t sizeOfStates, size_t sizeOfTransitionDatabase,
-                                                         const string& filePath)
-: CommandProcessor(states, transitionDatabase, sizeOfStates, sizeOfTransitionDatabase),
-  filePath(new std::string(filePath)), commandQueue(new std::queue<Command>()) {
+                                                         const std::string& filePath)
+    : CommandProcessor(states, transitionDatabase, sizeOfStates, sizeOfTransitionDatabase),
+    filePath(new std::string(filePath)), commandQueue(new std::queue<Command>()) {
 
-    DEBUG_PRINT("Called [FileCommandProcessorAdapter, Parameterized Constructor (State*, TransitionData*, size_t, size_t, const string&)]")
-
+    //  Initialize the backup command processor
+    this->backupCommandProcessor = new ConsoleCommandProcessorAdapter(states, transitionDatabase, sizeOfStates,
+                                                                      sizeOfTransitionDatabase);
     //  Load file contents
     loadFileContents();
+    DEBUG_PRINT("Called [FileCommandProcessorAdapter, Parameterized Constructor (State*, TransitionData*, size_t, size_t, const string&)]")
 }
 
-FileCommandProcessorAdapter::FileCommandProcessorAdapter(const GameEngine& gameEngine, const string& filePath)
-: CommandProcessor(gameEngine), filePath(new std::string(filePath)), commandQueue(new std::queue<Command>()) {
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(const GameEngine& gameEngine, const std::string& filePath)
+    : CommandProcessor(gameEngine), filePath(new std::string(filePath)), commandQueue(new std::queue<Command>()) {
 
-    DEBUG_PRINT("Called [FileCommandProcessorAdapter, Parameterized Constructor (const GameEngine&, const string&)]")
-
+    //  Initialize the backup command processor
+    this->backupCommandProcessor = new ConsoleCommandProcessorAdapter(states, transitionDatabase, *sizeOfStates,
+                                                                      *sizeOfTransitionDatabase);
     //  Load file contents
     loadFileContents();
+    DEBUG_PRINT("Called [FileCommandProcessorAdapter, Parameterized Constructor (const GameEngine&, const string&)]")
 }
 
 FileCommandProcessorAdapter::~FileCommandProcessorAdapter() {
     delete commandQueue;
     delete filePath;
+    delete backupCommandProcessor;
 
     commandQueue = nullptr;
     filePath = nullptr;
-
+    backupCommandProcessor = nullptr;
     DEBUG_PRINT("Called [FileCommandProcessorAdapter, DECONSTRUCTOR]")
 }
 
 Command& FileCommandProcessorAdapter::getCommand(const State& currentState) {
+    //  Counter to keep track of the number of attempts to get a valid command
+    int count = 0;
+    //  ANSI escape codes
+    std::string AnsiRed = "\033[31m";
+    std::string AnsiClear = "\033[0m";
+
     while (!commandQueue->empty()) {
         if (validate(commandQueue->front(), currentState)) {
             auto* commandCopy = new Command(commandQueue->front());     //  Copy command
@@ -285,13 +346,20 @@ Command& FileCommandProcessorAdapter::getCommand(const State& currentState) {
             return *commandCopy;                                        //  Return
         }
 
-        DEBUG_PRINT("INVALID COMMAND: ", commandQueue->front())
+        //  The first time entering an invalid command, print the list of valid commands to input
+        if (count == 0)
+            printErrorMenu(currentState, getHelpStrings(currentState));
+
+        //  Print invalid command state
+        std::cout << AnsiRed << "[" << (count + 1) << "]\t" << "INVALID COMMAND: " << commandQueue->front() << AnsiClear
+                  << std::endl;
+        count++;
         commandQueue->pop();
     }
 
-    //  TODO, reaching here means there are no more values in the queue, find a way to start reading from console now.
-    auto* defaultCommand = new Command();
-    return *defaultCommand;
+    //  Reaching here means there are no more commands to take from the file.
+    //  Takes a command from the backup command processor.
+    return backupCommandProcessor->getCommand(currentState);
 }
 
 void FileCommandProcessorAdapter::loadFileContents() {
@@ -314,6 +382,11 @@ void FileCommandProcessorAdapter::loadFileContents() {
     delete file;
 
     DEBUG_PRINT("SUCCESSFULLY LOADED FILE")
+}
+
+FileCommandProcessorAdapter* FileCommandProcessorAdapter::clone() const {
+    return new FileCommandProcessorAdapter(this->states, this->transitionDatabase, *this->sizeOfStates,
+                                           *this->sizeOfTransitionDatabase, *this->filePath);
 }
 
 
@@ -343,6 +416,12 @@ ConsoleCommandProcessorAdapter::ConsoleCommandProcessorAdapter(const GameEngine&
 }
 
 Command& ConsoleCommandProcessorAdapter::getCommand(const State& currentState) {
+    //  Counter to keep track of the number of attempts to get a valid command
+    int count = 0;
+    //  ANSI escape codes
+    std::string AnsiRed = "\033[31m";
+    std::string AnsiClear = "\033[0m";
+
     while (true) {
         //  Gets a raw command from the std input stream
         std::string userInput;
@@ -352,12 +431,24 @@ Command& ConsoleCommandProcessorAdapter::getCommand(const State& currentState) {
         if (userInput.empty()) { continue; }
 
         //  Encapsulate in a Command object, and check if the command is valid given the current state
-        Command command(userInput);
-        if (validate(command, currentState)) {
-            auto* commandPtr = new Command(command);
+        auto command = std::make_unique<Command>(userInput);
+        if (validate(*command, currentState)) {
+            auto* commandPtr = new Command(*command);
             return *commandPtr;
         }
 
-        DEBUG_PRINT("INVALID COMMAND: ", command)
+        //  INVALID COMMAND CODE
+        //  The first time entering an invalid command, print the list of valid commands to input
+        if (count == 0)
+            printErrorMenu(currentState, getHelpStrings(currentState));
+
+        //  Print invalid command state
+        std::cout << AnsiRed << "[" << (count + 1) << "]\t" << "INVALID COMMAND: " << *command << AnsiClear << std::endl;
+        count++;
     }
+}
+
+ConsoleCommandProcessorAdapter* ConsoleCommandProcessorAdapter::clone() const {
+    return new ConsoleCommandProcessorAdapter(this->states, this->transitionDatabase, *this->sizeOfStates,
+                                              *this->sizeOfTransitionDatabase);
 }
