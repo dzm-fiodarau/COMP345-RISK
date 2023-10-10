@@ -5,7 +5,13 @@
 // Territory Implementation
 
 Territory::Territory(const std::string &name, int xCoord, int yCoord, Continent *cont, Player *owner, int armies)
-    : name(name), x(xCoord), y(yCoord), continent(cont), owner(owner), numberOfArmies(armies) {}
+    : name(name), x(xCoord), y(yCoord), continent(cont), owner(owner), numberOfArmies(armies)
+{
+    if (owner)
+    {
+        owner->territory.push_back(this);
+    }
+}
 
 // Copy constructor
 Territory::Territory(const Territory &other)
