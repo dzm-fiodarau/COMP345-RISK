@@ -4,7 +4,7 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 20)
 
 # Toggle debug output macros.
-option(DEBUG_MODE "Enables debugging code & macros." ON)
+option(DEBUG_MODE "Enables debugging code & macros." OFF)
 
 # Isolates code to run game engine, DEBUG_MODE must be on.
 option(EXECUTE_CARDS              "Toggles execution of Cards code in debug mode."              OFF)
@@ -12,7 +12,7 @@ option(EXECUTE_GAME_ENGINE        "Toggles execution of GameEngine code in debug
 option(EXECUTE_MAP                "Toggles execution of Map code in debug mode."                OFF)
 option(EXECUTE_ORDERS             "Toggles execution of Orders code in debug mode."             OFF)
 option(EXECUTE_PLAYER             "Toggles execution of Player code in debug mode."             OFF)
-option(EXECUTE_COMMAND_PROCESSING "Toggles execution of Command Processing code in debug mode." ON)
+option(EXECUTE_COMMAND_PROCESSING "Toggles execution of Command Processing code in debug mode." OFF)
 
 
 if(DEBUG_MODE)
