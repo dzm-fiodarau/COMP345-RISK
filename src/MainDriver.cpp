@@ -3,6 +3,7 @@ void testGameStates();
 void testLoadMaps();
 void testOrdersLists();
 void testPlayers();
+void testCommandProcessing();
 
 //  Regular runtime
 #ifndef DEBUG
@@ -13,6 +14,7 @@ int main()
     testCards();
     testPlayers();
     testGameStates();
+    testCommandProcessing();
 
     return 0;
 }
@@ -41,6 +43,10 @@ int main()
 
 #ifdef EXECUTE_GAME_ENGINE
     testGameStates();
+#endif
+
+#ifdef EXECUTE_COMMAND_PROCESSING
+    testCommandProcessing();
 #endif
 
     return 0;

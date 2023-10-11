@@ -7,11 +7,12 @@ set(CMAKE_CXX_STANDARD 20)
 option(DEBUG_MODE "Enables debugging code & macros." OFF)
 
 # Isolates code to run game engine, DEBUG_MODE must be on.
-option(EXECUTE_CARDS       "Toggles execution of Cards code in debug mode."      OFF)
-option(EXECUTE_GAME_ENGINE "Toggles execution of GameEngine code in debug mode." OFF)
-option(EXECUTE_MAP         "Toggles execution of Map code in debug mode."        OFF)
-option(EXECUTE_ORDERS      "Toggles execution of Orders code in debug mode."     OFF)
-option(EXECUTE_PLAYER      "Toggles execution of Player code in debug mode."     OFF)
+option(EXECUTE_CARDS              "Toggles execution of Cards code in debug mode."              OFF)
+option(EXECUTE_GAME_ENGINE        "Toggles execution of GameEngine code in debug mode."         OFF)
+option(EXECUTE_MAP                "Toggles execution of Map code in debug mode."                OFF)
+option(EXECUTE_ORDERS             "Toggles execution of Orders code in debug mode."             OFF)
+option(EXECUTE_PLAYER             "Toggles execution of Player code in debug mode."             OFF)
+option(EXECUTE_COMMAND_PROCESSING "Toggles execution of Command Processing code in debug mode." OFF)
 
 
 if(DEBUG_MODE)
@@ -32,15 +33,20 @@ if(DEBUG_MODE)
     if(EXECUTE_PLAYER)
         add_definitions(-DEXECUTE_PLAYER)
     endif()
+    if(EXECUTE_COMMAND_PROCESSING)
+        add_definitions(-DEXECUTE_COMMAND_PROCESSING)
+    endif()
 endif()
 
 
 add_executable(COMP345_RISK
         # .h files
         headers/Cards.h headers/GameEngine.h headers/Map.h headers/Orders.h headers/Player.h
+        headers/CommandProcessing.h
 
         # .cpp files
         src/Cards.cpp src/CardsDriver.cpp src/GameEngine.cpp src/GameEngineDriver.cpp src/Map.cpp src/MapDriver.cpp
-        src/Orders.cpp src/OrdersDriver.cpp src/Player.cpp src/PlayerDriver.cpp src/MainDriver.cpp)
+        src/Orders.cpp src/OrdersDriver.cpp src/Player.cpp src/PlayerDriver.cpp src/MainDriver.cpp
+        src/CommandProcessing.cpp src/CommandProcessingDriver.cpp)
 
 
