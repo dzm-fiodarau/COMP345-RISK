@@ -1,4 +1,6 @@
 #include "../headers/Player.h"
+#include "../headers/Map.h"
+#include "../headers/Cards.h"
 
 void testPlayers()
 {

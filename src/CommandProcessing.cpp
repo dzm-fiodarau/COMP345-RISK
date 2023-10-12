@@ -1,15 +1,15 @@
 //----------------------------------------------------------------------------------------------------------------------
 //  Macros
 
-#include "../headers/CommandProcessing.h"
-#include "../headers/GameEngine.h"
-
 //  Include directives
 #include <algorithm>
 #include <sstream>
 #include <fstream>
 #include <stdexcept>
 #include <memory>
+
+#include "../headers/CommandProcessing.h"
+#include "../headers/GameEngine.h"
 
 #ifdef RED_DEBUG_OUTPUT
 #define ANSI_RED_INSERT "\033[31m" <<
@@ -55,7 +55,7 @@ static std::vector<std::string> getTokens(std::string input) {
 }
 
 /** \brief Prints an error block in case an incorrect raw command was inputted. */
-static void printErrorMenu(const State& currentState, std::vector<std::string> helpStrings) {
+static void printErrorMenu(std::vector<std::string> helpStrings) {
     //  ANSI escape codes
     std::string AnsiRed = "\033[31m";
     std::string AnsiClear = "\033[0m";
@@ -241,7 +241,7 @@ bool CommandProcessor::validate(const Command& command, const State& currentStat
     int stateIndex = -1;
     for (size_t i = 0; i < *sizeOfStates; i++) {
         if (states[i] == currentState) {
-            stateIndex = i;
+            stateIndex = static_cast<int>(i);
         }
     }
     if (stateIndex == -1) { // State not found in states list
@@ -265,7 +265,7 @@ std::vector<std::string> CommandProcessor::getHelpStrings(const State& currentSt
     int currentStateIndex = -1;
     for (size_t i = 0; i < *sizeOfStates; i++) {
         if (states[i] == currentState) {
-            currentStateIndex = i;
+            currentStateIndex = static_cast<int>(i);
             break;
         }
     }
@@ -348,7 +348,7 @@ Command& FileCommandProcessorAdapter::getCommand(const State& currentState) {
 
         //  The first time entering an invalid command, print the list of valid commands to input
         if (count == 0)
-            printErrorMenu(currentState, getHelpStrings(currentState));
+            printErrorMenu(getHelpStrings(currentState));
 
         //  Print invalid command state
         std::cout << AnsiRed << "[" << (count + 1) << "]\t" << "INVALID COMMAND: " << commandQueue->front() << AnsiClear
@@ -363,7 +363,7 @@ Command& FileCommandProcessorAdapter::getCommand(const State& currentState) {
 }
 
 void FileCommandProcessorAdapter::loadFileContents() {
-    std::ifstream* file = new std::ifstream(*filePath);
+    auto* file = new std::ifstream(*filePath);
 
     //  Check if the specified file exists
     if (!*file) {
@@ -440,7 +440,7 @@ Command& ConsoleCommandProcessorAdapter::getCommand(const State& currentState) {
         //  INVALID COMMAND CODE
         //  The first time entering an invalid command, print the list of valid commands to input
         if (count == 0)
-            printErrorMenu(currentState, getHelpStrings(currentState));
+            printErrorMenu(getHelpStrings(currentState));
 
         //  Print invalid command state
         std::cout << AnsiRed << "[" << (count + 1) << "]\t" << "INVALID COMMAND: " << *command << AnsiClear << std::endl;

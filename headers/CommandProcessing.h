@@ -7,13 +7,11 @@
 #include <iostream>
 #include <queue>
 
-//  Forward declaration of 'GameEngine.h' classes
-class State;
-class TransitionData;
-class GameEngine;
+//  Forward declaration of required classes from other header files. (included in .cpp file)
+class State;                //  GameEngine.cpp
+class TransitionData;       //  GameEngine.cpp
+class GameEngine;           //  GameEngine.cpp
 
-//  Forward declaration classes
-class ConsoleCommandProcessorAdapter;
 
 
 /** \class Command
@@ -138,6 +136,36 @@ protected:
     std::vector<std::string> getHelpStrings(const State&) const;
 };
 
+
+
+/** \class ConsoleCommandProcessorAdapter
+ *  \brief A class that supplies commands from the standard cpp input stream.
+ */
+class ConsoleCommandProcessorAdapter : public CommandProcessor {
+public:
+
+    /** \brief Constructs a 'default' ConsoleCommandProcessorAdapter object. */
+    ConsoleCommandProcessorAdapter();
+
+    /** \brief Constructs a ConsoleCommandProcessorAdapter given a configuration of states and transitions. */
+    ConsoleCommandProcessorAdapter(State*, TransitionData*, size_t, size_t);
+
+    /** \brief Constructs a ConsoleCommandProcessorAdapter given a configuration of states and transitions from a
+     * GameObject. */
+    explicit ConsoleCommandProcessorAdapter(const GameEngine&);
+
+    /** \brief Deconstructs a ConsoleCommandProcessorAdapter object. */
+    ~ConsoleCommandProcessorAdapter() override = default;
+
+    /** \brief Gets a valid command object given the valid state. */
+    Command& getCommand(const State&) override;
+
+    /** \brief Returns a deep copy of the object. */
+    ConsoleCommandProcessorAdapter* clone() const override;
+};
+
+
+
 /** \class FileCommandProcessorAdapter
  *  \brief A class that supplies commands from a specified file.
  */
@@ -177,32 +205,6 @@ private:
     //  Loads the contents from the specified file to the command queue.
     //  THROWS an exception if the specified file could not be found.
     void loadFileContents();
-};
-
-/** \class ConsoleCommandProcessorAdapter
- *  \brief A class that supplies commands from the standard cpp input stream.
- */
-class ConsoleCommandProcessorAdapter : public CommandProcessor {
-public:
-
-    /** \brief Constructs a 'default' ConsoleCommandProcessorAdapter object. */
-    ConsoleCommandProcessorAdapter();
-
-    /** \brief Constructs a ConsoleCommandProcessorAdapter given a configuration of states and transitions. */
-    ConsoleCommandProcessorAdapter(State*, TransitionData*, size_t, size_t);
-
-    /** \brief Constructs a ConsoleCommandProcessorAdapter given a configuration of states and transitions from a
-     * GameObject. */
-    explicit ConsoleCommandProcessorAdapter(const GameEngine&);
-
-    /** \brief Deconstructs a ConsoleCommandProcessorAdapter object. */
-    ~ConsoleCommandProcessorAdapter() override = default;
-
-    /** \brief Gets a valid command object given the valid state. */
-    Command& getCommand(const State&) override;
-
-    /** \brief Returns a deep copy of the object. */
-    ConsoleCommandProcessorAdapter* clone() const override;
 };
 
 #endif

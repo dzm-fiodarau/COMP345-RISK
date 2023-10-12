@@ -4,7 +4,7 @@
 //  Macro Includes
 #include <string>
 
-//  Declare GameEngine for TransitionData class
+//  Forward declaration of classes
 class GameEngine;
 class CommandProcessor;
 

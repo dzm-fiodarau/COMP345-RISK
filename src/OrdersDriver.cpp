@@ -1,4 +1,7 @@
 #include "../headers/Orders.h"
+#include "../headers/Player.h"
+#include "../headers/Map.h"
+#include "../headers/Cards.h"
 
 void testOrdersLists()
 {
@@ -10,6 +13,7 @@ void testOrdersLists()
     player1->handCard.push_back(new Card(type::diplomacy));
 
     Continent *europe = new Continent("Europe", 100);
+
     Territory *france = new Territory("France", 5, 5, europe, player1, 5);
     Territory *belgium = new Territory("Belgium", 6, 4, europe, player1, 5);
     Territory *england = new Territory("England", 5, 3, europe, player2, 5);

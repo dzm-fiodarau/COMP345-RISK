@@ -1,6 +1,9 @@
+#include <iostream>
+
 #include "../headers/Map.h"
 #include "../headers/Player.h"
-#include <iostream>
+
+
 
 // Territory Implementation
 
@@ -298,7 +301,7 @@ const std::vector<Continent *> &Map::getContinents() const
     return continents;
 }
 
-// Check if the map is connected, continents are subgraphs, and each territory belongs to only one continent.
+// Check if the map is connected, continents are sub-graphs, and each territory belongs to only one continent.
 bool Map::validate() const
 {
     std::cout << "Validating map...\n";
@@ -316,12 +319,12 @@ bool Map::validate() const
         return false;
     }
 
-    // Check 2: Continents are connected subgraphs
+    // Check 2: Continents are connected sub-graphs
     for (const auto &continent : continents)
     {
         if (continent->getTerritories().size() > 0 && !isConnected(*(continent->getTerritories()[0]), continent->getTerritories()))
         {
-            std::cerr << "Error: Continents are not connected subgraphs!\n";
+            std::cerr << "Error: Continents are not connected sub-graphs!\n";
             return false;
         }
     }
@@ -426,7 +429,7 @@ MapLoader::MapLoader(const std::string &filePath) : filePath(filePath) {}
 MapLoader::MapLoader(const MapLoader &other) : filePath(other.filePath),
                                                parsedTerritoryAdjacencies(other.parsedTerritoryAdjacencies) {}
 
-// Assignement operator
+// Assignment operator
 MapLoader &MapLoader::operator=(MapLoader other)
 {
     std::swap(filePath, other.filePath);
