@@ -5,16 +5,15 @@
 
 #include <string>
 #include <vector>
-#include "Player.h"
-#include "Map.h"
 
-// Forward declaration
-class Card;
-class Deck;
 
-//  Forward declaration for classes from 'Map.h'
-class Player;
-class Territory;
+
+//  Forward declaration of required classes from other header files. (included in .cpp file)
+class Player;           //  Player.h
+class Deck;             //  Map.h
+class Territory;        //  Map.h
+
+
 
 // Enum of the different card types
 enum class type
@@ -42,7 +41,7 @@ public:
      * \brief               Create a card of a specific type.
      * \param stateName     The type of the card.
      */
-    Card(type type);
+    explicit Card(type type);
 
     /**
      * \brief               Queue the effect of the card by creating an order to the player order list.
@@ -82,7 +81,7 @@ public:
     /**
      * /brief               Prints the name of a list of cards.
      */
-    friend std::ostream &operator<<(std::ostream &os, const std::vector<Card *> multipleCards);
+    friend std::ostream &operator<<(std::ostream &os, std::vector<Card *> multipleCards);
 
 private:
     // The card type
@@ -123,13 +122,14 @@ public:
      */
     friend std::ostream &operator<<(std::ostream &os, const Deck &deck);
 
-private:
-    // The deck list of cards
-    std::vector<Card *> cardList;
-
+    //  Deleted members
     Deck(const Deck &other) = delete;
     Deck &operator=(const Deck &other) = delete;
     Deck &operator=(const Deck &other) const = delete;
+
+private:
+    // The deck list of cards
+    std::vector<Card *> cardList;
 };
 
 #endif // CARDS_H

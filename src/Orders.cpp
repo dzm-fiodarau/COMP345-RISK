@@ -1,6 +1,10 @@
 #include <iostream>
-#include <algorithm>
+
 #include "../headers/Orders.h"
+#include "../headers/Map.h"
+#include "../headers/Player.h"
+#include "../headers/Cards.h"
+
 
 //----------------------------------------------------------------------------------------------------------------------
 //  ORDERS LIST
@@ -42,8 +46,10 @@ void OrdersList::remove(Order *order)
         cout << "(OrdersList::remove())Order not found in the list." << endl;
         return;
     }
-    delete (order);
+
     orders.remove(order);
+    delete order;
+
     cout << "OrdersList::remove() was successful.\n";
 }
 

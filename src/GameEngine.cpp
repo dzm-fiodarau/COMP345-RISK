@@ -697,9 +697,9 @@ void GameEngine::setCommandProcessor(const CommandProcessor& newCommandProcessor
 
 void GameEngine::initializeCommandProcessor() {
     //  TODO find a way to make the command processor dependent on the command line arguments
-    //  commandProcessor = new ConsoleCommandProcessorAdapter(states, transitionDatabase, *statesSize,
-    //                                                        *transitionDatabaseSize);
+    commandProcessor = new ConsoleCommandProcessorAdapter(states, transitionDatabase, *statesSize,
+                                                          *transitionDatabaseSize);
 
-    commandProcessor = new FileCommandProcessorAdapter(states, transitionDatabase, *statesSize, *transitionDatabaseSize,
-                                                       "../commands.txt");
+    //  commandProcessor = new FileCommandProcessorAdapter(states, transitionDatabase, *statesSize, *transitionDatabaseSize,
+    //                                                     "../commands.txt");
 }

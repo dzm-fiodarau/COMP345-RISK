@@ -4,23 +4,25 @@
 #include <string>
 #include <list>
 #include <iostream>
+
+//  Forward declaration of required classes from other header files. (included in .cpp file)
+class Territory;    //  Map.h
+class Player;       //  Player.h
+
+//  Forward declaration of classes
+class OrdersList;
+
+
+
 using namespace std;
 
-#include "Map.h"
-#include "Player.h"
-#include "Cards.h"
-
-class Card;
-class OrdersList;
-class Player;
-class Territory;
 
 // Global string array containing all allowed orders
 const string allowedOrders[6] = {"deploy", "advance", "bomb", "blockade", "airlift", "negotiate"};
 
 /**
- * \class   OrdersList
- * \brief   Class that holds the list of Order objects of each player
+ * \class   Order
+ * \brief   A class that represents an order
  */
 class Order
 {
@@ -41,16 +43,16 @@ public:
      * \brief   Verifies if the order is valid, has to be implemented in child classes
      * \return  True if the order is valid, false otherwise
      */
-    virtual bool validate();
+    virtual bool validate() = 0;
 
     /**
      * \brief   Executes the order, has to be implemented in child classes
      * \return  String that describes the effects of the executed order
      */
-    virtual string execute();
+    virtual string execute() = 0;
 
     /**
-     * \brief   Assigns new values to member varaiables of the Order object
+     * \brief   Assigns new values to member variables of the Order object
      * \param   order Order object from which new values are to be taken
      */
     Order &operator=(const Order &order);
@@ -84,7 +86,7 @@ public:
     /**
      * \brief   Constructs an OrdersList object with an empty list of orders
      */
-    OrdersList(Player *owner);
+    explicit OrdersList(Player *owner);
     /**
      * \brief   Constructs an OrdersList object using values from another OrdersList object
      * \param   ordersList Other OrdersList object to copy member variables from
@@ -105,7 +107,7 @@ public:
      */
     bool move(Order *order, int index);
     /**
-     * \brief   Assigns new values to member varaiables of the OrdersList object
+     * \brief   Assigns new values to member variables of the OrdersList object
      * \param   ordersList OrdersList object from which new values are to be taken
      */
     OrdersList &operator=(const OrdersList &ordersList);
@@ -127,7 +129,7 @@ public:
     /**
      * \brief   Constructs a DeployOrder object
      * \param   type Type of the DeployOrder object created
-     * \param   target Territory to which troups are to be deployed
+     * \param   target Territory to which troops are to be deployed
      * \param   armyUnits Number of army units to be deployed
      */
     DeployOrder(OrdersList *ordersList, Territory *target, int armyUnits);
@@ -150,7 +152,7 @@ public:
     string execute() override;
 
     /**
-     * \brief   Assigns new values to member varaiables of the DeployOrder object
+     * \brief   Assigns new values to member variables of the DeployOrder object
      * \param   order DeployOrder object from which new values are to be taken
      */
     DeployOrder &operator=(const DeployOrder &order);
@@ -176,9 +178,9 @@ public:
     /**
      * \brief   Constructs an AdvanceOrder object
      * \param   type Type of the Order object created
-     * \param   target Territory to which troups are to be moved
+     * \param   target Territory to which troops are to be moved
      * \param   armyUnits Number of army units to be moved
-     * \param   source  Territory from which troups are to be moved
+     * \param   source  Territory from which troops are to be moved
      */
     AdvanceOrder(OrdersList *ordersList, Territory *target, int armyUnits, Territory *source);
     /**
@@ -198,7 +200,7 @@ public:
      */
     string execute() override;
     /**
-     * \brief   Assigns new values to member varaiables of the AdvanceOrder object
+     * \brief   Assigns new values to member variables of the AdvanceOrder object
      * \param   order AdvanceOrder object from which new values are to be taken
      */
     AdvanceOrder &operator=(const AdvanceOrder &order);
@@ -246,7 +248,7 @@ public:
      */
     string execute() override;
     /**
-     * \brief   Assigns new values to member varaiables of the BombOrder object
+     * \brief   Assigns new values to member variables of the BombOrder object
      * \param   order BombOrder object from which new values are to be taken
      */
     BombOrder &operator=(const BombOrder &order);
@@ -288,7 +290,7 @@ public:
      */
     string execute() override;
     /**
-     * \brief   Assigns new values to member varaiables of the BlockadeOrder object
+     * \brief   Assigns new values to member variables of the BlockadeOrder object
      * \param   order BlockadeOrder object from which new values are to be taken
      */
     BlockadeOrder &operator=(const BlockadeOrder &order);
@@ -310,9 +312,9 @@ public:
     /**
      * \brief   Constructs an AirliftOrder object
      * \param   type Type of the Order object created
-     * \param   target Territory to which troups are to be moved
+     * \param   target Territory to which troops are to be moved
      * \param   armyUnits Number of army units to be moved
-     * \param   source  Territory from which troups are to be moved
+     * \param   source  Territory from which troops are to be moved
      */
     AirliftOrder(OrdersList *ordersList, Territory *target, int armyUnits, Territory *source);
     /**
@@ -332,7 +334,7 @@ public:
      */
     string execute() override;
     /**
-     * \brief   Assigns new values to member varaiables of the AirliftOrder object
+     * \brief   Assigns new values to member variables of the AirliftOrder object
      * \param   order AirliftOrder object from which new values are to be taken
      */
     AirliftOrder &operator=(const AirliftOrder &order);
@@ -380,7 +382,7 @@ public:
      */
     string execute() override;
     /**
-     * \brief   Assigns new values to member varaiables of the NegotiateOrder object
+     * \brief   Assigns new values to member variables of the NegotiateOrder object
      * \param   order NegotiateOrder object from which new values are to be taken
      */
     NegotiateOrder &operator=(const NegotiateOrder &order);

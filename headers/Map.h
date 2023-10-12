@@ -9,12 +9,17 @@
 #include <map>
 #include <stack>
 #include <unordered_set>
-#include "Player.h"
 
-// Forward declaration
+
+
+//  Forward declaration of required classes from other header files. (included in .cpp file)
+class Player;
+
+// Forward declaration of classes
 class Continent;
 class Territory;
-class Player;
+
+
 
 /** \class Continent
  *  \brief Represents a continent in the game. */
@@ -233,7 +238,7 @@ public:
     /**
      * \brief Validates the map to check if
      *        1) the map is a connected graph, 
-     *        2) continents are connected subgraphs 
+     *        2) continents are connected sub-graphs
      *        3) each country belongs to one and only one continent
      * \return True if the map is valid, false otherwise.
      */
@@ -302,7 +307,7 @@ public:
      * \brief Constructor that takes a file path as parameter.
      * \param filePath Path to the map file to be loaded.
      */
-    MapLoader(const std::string &filePath);
+    explicit MapLoader(const std::string &filePath);
 
     /**
      * \brief Copy constructor.

@@ -5,15 +5,16 @@
 #include <vector>
 #include <string>
 
-#include "Orders.h"
-#include "Map.h"
-#include "Cards.h"
+//  Forward declaration of required classes from other header files. (included in .cpp file)
+class OrdersList;   //  Orders.h
+class Card;         //  Cards.h
+class Territory;    //  Map.h
+
+
 
 using namespace std;
 
-class OrdersList;
-class Player;
-class Territory;
+
 
 /**
  * \class   Player
@@ -45,12 +46,12 @@ public:
     /**
      * \brief   Get issueOrder
      * \param   type Type of the Order object created
-     * \param   target Territory to which troups are to be moved
+     * \param   target Territory to which troops are to be moved
      * \param   armyUnits Number of army units to be moved
      * \param   source  Source of territory
      * \param   player  Player name
      */
-    void issueOrder(string type, Territory *target, int armyUnits, Territory *source, Player *player);
+    void issueOrder(const string& type, Territory *target, int armyUnits, Territory *source, Player *player);
     OrdersList *getOrdersList();
 
     // Operator Overloads

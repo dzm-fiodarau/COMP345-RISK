@@ -2,6 +2,8 @@
 #include <vector>
 
 #include "../headers/Cards.h"
+#include "../headers/Map.h"
+#include "../headers/Player.h"
 
 void testCards()
 {

@@ -3,37 +3,34 @@
 #include <random>
 
 #include "../headers/Cards.h"
+#include "../headers/Player.h"
+#include "../headers/Map.h"
+
 
 using namespace std;
+
 
 /** \brief Convert the type enum to a string */
 static std::string convertTypeToString(type type) {
     switch (type)
     {
+        //  No need for breaks since return exits the function anyway
     case type::bomb:
        return "bomb";
-        break;
     case type::reinforcement:
         return "reinforcement";
-        break;
     case type::blockade:
         return "blockade";
-        break;
     case type::airlift:
         return "airlift";
-        break;
     case type::diplomacy:
         return "diplomacy";
-        break;
     default:
         return "invalid";
-        break;
     }
 }
 
-Card::Card()
-{
-}
+Card::Card() = default;
 
 Card::Card(type type)
 {
@@ -79,7 +76,7 @@ Card &Card::operator=(const Card &otherCard)
 std::ostream &operator<<(std::ostream &os, const Card &card)
 {
     os << "Card of type: ";
-    os << convertTypeToString(card.getCardType()) << std::endl;;
+    os << convertTypeToString(card.getCardType()) << std::endl;
 
     return os;
 }
@@ -130,7 +127,7 @@ Card *Deck::draw()
 {
     std::random_device r;
     std::mt19937 rng(r());
-    // The number generated will be betwwen 0 and the lenght of the deck size.
+    // The number generated will be between 0 and the length of the deck size.
     std::uniform_int_distribution<int> uniform_dist(0, cardList.size() - 1);
 
     int randNum = uniform_dist(rng);

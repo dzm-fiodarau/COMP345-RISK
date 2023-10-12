@@ -1,4 +1,9 @@
+#include <utility>
+
 #include "../headers/Player.h"
+#include "../headers/Orders.h"
+#include "../headers/Map.h"
+#include "../headers/Cards.h"
 
 // Default constructor
 Player::Player()
@@ -10,9 +15,9 @@ Player::Player()
 // Constructor
 Player::Player(string pn, vector<Territory *> t, vector<Card *> hd)
 {
-	playerName = pn;
-	territory = t;
-	handCard = hd;
+	playerName = std::move(pn);
+	territory = std::move(t);
+	handCard = std::move(hd);
 	ordersList = new OrdersList(this);
 }
 
@@ -62,7 +67,7 @@ ostream &operator<<(ostream &out, const Player &player)
     return out;
 }
 
-// Method the get palyer name
+// Method the get player name
 string Player::getPlayerName() const
 {
 	return playerName;
@@ -91,36 +96,39 @@ void Player::toDefend()
 }
 
 // Methods below are used to get issueOrder
-void Player::issueOrder(string type, Territory *target, int armyUnits, Territory *source, Player *player)
+void Player::issueOrder(const string& type, Territory *target, int armyUnits, Territory *source, Player *player)
 {
 	Order *order;
-	if (type.compare("deploy") == 0)
+	if (type == "deploy")
 	{
 		order = new DeployOrder(ordersList, target, armyUnits);
 	}
-	else if (type.compare("advance") == 0)
+	else if (type == "advance")
 	{
 		order = new AdvanceOrder(ordersList, target, armyUnits, source);
 	}
-	else if (type.compare("bomb") == 0)
+	else if (type == "bomb")
 	{
 		order = new BombOrder(ordersList, target);
 	}
-	else if (type.compare("blockade") == 0)
+	else if (type == "blockade")
 	{
 		order = new BlockadeOrder(ordersList, target);
 	}
-	else if (type.compare("airlift") == 0)
+	else if (type == "airlift")
 	{
 		order = new AirliftOrder(ordersList, target, armyUnits, source);
 	}
-	else if (type.compare("negotiate") == 0)
+	else if (type == "negotiate")
 	{
 		order = new NegotiateOrder(ordersList, player);
 	}
 	else
 	{
-		order = new Order(ordersList, type, target);
+        //  TODO Issue some message that the order issued is invalid, either try again or notify nothing is added to queue
+        //  No order is issued if order is invalid
+		//  order = new Order(ordersList, type, target);
+        return;
 	}
 
 	(*ordersList).orders.push_back(order);

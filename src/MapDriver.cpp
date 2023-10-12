@@ -1,5 +1,8 @@
-#include "../headers/Map.h"
 #include <iostream>
+
+#include "../headers/Map.h"
+
+
 
 // Load and validate a set of conquest map files
 void testLoadMaps()
