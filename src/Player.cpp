@@ -101,27 +101,27 @@ void Player::issueOrder(const string& type, Territory *target, int armyUnits, Te
 	Order *order;
 	if (type == "deploy")
 	{
-		order = new DeployOrder(ordersList, target, armyUnits);
+		order = new DeployOrder(this, target, armyUnits);
 	}
 	else if (type == "advance")
 	{
-		order = new AdvanceOrder(ordersList, target, armyUnits, source);
+		order = new AdvanceOrder(this, target, armyUnits, source);
 	}
 	else if (type == "bomb")
 	{
-		order = new BombOrder(ordersList, target);
+		order = new BombOrder(this, target);
 	}
 	else if (type == "blockade")
 	{
-		order = new BlockadeOrder(ordersList, target);
+		order = new BlockadeOrder(this, target);
 	}
 	else if (type == "airlift")
 	{
-		order = new AirliftOrder(ordersList, target, armyUnits, source);
+		order = new AirliftOrder(this, target, armyUnits, source);
 	}
 	else if (type == "negotiate")
 	{
-		order = new NegotiateOrder(ordersList, player);
+		order = new NegotiateOrder(this, player);
 	}
 	else
 	{
@@ -131,7 +131,7 @@ void Player::issueOrder(const string& type, Territory *target, int armyUnits, Te
         return;
 	}
 
-	(*ordersList).orders.push_back(order);
+	ordersList->addOrder(order);
 }
 
 OrdersList *Player::getOrdersList()

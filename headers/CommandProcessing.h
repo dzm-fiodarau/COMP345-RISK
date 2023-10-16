@@ -8,9 +8,9 @@
 #include <queue>
 
 //  Forward declaration of required classes from other header files. (included in .cpp file)
-class State;                //  GameEngine.cpp
-class TransitionData;       //  GameEngine.cpp
-class GameEngine;           //  GameEngine.cpp
+class State;                //  GameEngine.h
+class TransitionData;       //  GameEngine.h
+class GameEngine;           //  GameEngine.h
 
 
 
