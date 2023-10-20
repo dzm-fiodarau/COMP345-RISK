@@ -1,12 +1,21 @@
 //----------------------------------------------------------------------------------------------------------------------
 //  Macros
 
-//  Include directives
+//  Compiler specific macros
+//  Disables clang modernize suggestions
+#ifdef __GNUC__
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "modernize-use-nodiscard"
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+#endif
+
+
 #include <algorithm>
 #include <sstream>
 #include <fstream>
 #include <stdexcept>
 #include <memory>
+#include <utility>
 
 #include "../headers/CommandProcessing.h"
 #include "../headers/GameEngine.h"
@@ -204,6 +213,13 @@ sizeOfStates(new size_t(sizeOfStates)), sizeOfTransitionDatabase(new size_t(size
     DEBUG_PRINT("Called [CommandProcessor, Parameterized Constructor (State*, TransitionData*, size_t, size_t)]")
 }
 
+CommandProcessor::CommandProcessor(std::vector<State> states, std::vector<TransitionData> transitionData)
+    : CommandProcessor(states.data(), transitionData.data(), states.size(), transitionData.size()) {
+
+    //  Empty
+    DEBUG_PRINT("Called [CommandProcessor, Parameterized Constructor (std::vector<State>, std::vector<TransitionData>)]")
+}
+
 CommandProcessor::CommandProcessor(const GameEngine& gameEngine)
 : states(new State[gameEngine.getStatesSize()]),
   transitionDatabase(new TransitionData[gameEngine.getTransitionDatabaseSize()]),
@@ -285,10 +301,80 @@ std::vector<std::string> CommandProcessor::getHelpStrings(const State& currentSt
 
 
 //----------------------------------------------------------------------------------------------------------------------
+//  Class: 'ConsoleCommandProcessorAdapter' implementation
+
+ConsoleCommandProcessorAdapter::ConsoleCommandProcessorAdapter() : CommandProcessor() {
+
+    //  Empty
+    DEBUG_PRINT("Called [ConsoleCommandProcessorAdapter, Default Constructor]")
+}
+
+ConsoleCommandProcessorAdapter::ConsoleCommandProcessorAdapter(State* states, TransitionData* transitionDatabase,
+                                                               size_t sizeOfStates, size_t sizeOfTransitionDatabase)
+: CommandProcessor(states, transitionDatabase, sizeOfStates, sizeOfTransitionDatabase) {
+
+    //  Empty
+    DEBUG_PRINT("Called [ConsoleCommandProcessorAdapter, Parameterized Constructor (State*, TransitionData*, size_t, size_t)]")
+}
+
+ConsoleCommandProcessorAdapter::ConsoleCommandProcessorAdapter(std::vector<State> states,
+                                                               std::vector<TransitionData> transitionDatabase)
+    : CommandProcessor(std::move(states), std::move(transitionDatabase)) {
+
+}
+
+ConsoleCommandProcessorAdapter::ConsoleCommandProcessorAdapter(const GameEngine& gameEngine)
+: CommandProcessor(gameEngine) {
+
+    //  Empty
+    DEBUG_PRINT("Called [ConsoleCommandProcessorAdapter, Parameterized Constructor (const GameEngine&)]")
+}
+
+Command& ConsoleCommandProcessorAdapter::getCommand(const State& currentState) {
+    //  Counter to keep track of the number of attempts to get a valid command
+    int count = 0;
+    //  ANSI escape codes
+    std::string AnsiRed = "\033[31m";
+    std::string AnsiClear = "\033[0m";
+
+    while (true) {
+        //  Gets a raw command from the std input stream
+        std::string userInput;
+        std::getline(std::cin, userInput);
+
+        //  If input string is empty, just continue
+        if (userInput.empty()) { continue; }
+
+        //  Encapsulate in a Command object, and check if the command is valid given the current state
+        auto command = std::make_unique<Command>(userInput);
+        if (validate(*command, currentState)) {
+            auto* commandPtr = new Command(*command);
+            return *commandPtr;
+        }
+
+        //  INVALID COMMAND CODE
+        //  The first time entering an invalid command, print the list of valid commands to input
+        if (count == 0)
+            printErrorMenu(getHelpStrings(currentState));
+
+        //  Print invalid command state
+        std::cout << AnsiRed << "[" << (count + 1) << "]\t" << "INVALID COMMAND: " << *command << AnsiClear << std::endl;
+        count++;
+    }
+}
+
+ConsoleCommandProcessorAdapter* ConsoleCommandProcessorAdapter::clone() const {
+    return new ConsoleCommandProcessorAdapter(this->states, this->transitionDatabase, *this->sizeOfStates,
+                                              *this->sizeOfTransitionDatabase);
+}
+
+
+
+//----------------------------------------------------------------------------------------------------------------------
 //  Class: 'FileCommandProcessorAdapter' implementation
 
 FileCommandProcessorAdapter::FileCommandProcessorAdapter()
-    : CommandProcessor(), filePath(new std::string("")), commandQueue(new std::queue<Command>()) {
+        : CommandProcessor(), filePath(new std::string("")), commandQueue(new std::queue<Command>()) {
 
     //  Initialize the backup command processor
     this->backupCommandProcessor = new ConsoleCommandProcessorAdapter(states, transitionDatabase, *sizeOfStates,
@@ -299,8 +385,8 @@ FileCommandProcessorAdapter::FileCommandProcessorAdapter()
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(State* states, TransitionData* transitionDatabase,
                                                          size_t sizeOfStates, size_t sizeOfTransitionDatabase,
                                                          const std::string& filePath)
-    : CommandProcessor(states, transitionDatabase, sizeOfStates, sizeOfTransitionDatabase),
-    filePath(new std::string(filePath)), commandQueue(new std::queue<Command>()) {
+        : CommandProcessor(states, transitionDatabase, sizeOfStates, sizeOfTransitionDatabase),
+          filePath(new std::string(filePath)), commandQueue(new std::queue<Command>()) {
 
     //  Initialize the backup command processor
     this->backupCommandProcessor = new ConsoleCommandProcessorAdapter(states, transitionDatabase, sizeOfStates,
@@ -311,7 +397,7 @@ FileCommandProcessorAdapter::FileCommandProcessorAdapter(State* states, Transiti
 }
 
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(const GameEngine& gameEngine, const std::string& filePath)
-    : CommandProcessor(gameEngine), filePath(new std::string(filePath)), commandQueue(new std::queue<Command>()) {
+        : CommandProcessor(gameEngine), filePath(new std::string(filePath)), commandQueue(new std::queue<Command>()) {
 
     //  Initialize the backup command processor
     this->backupCommandProcessor = new ConsoleCommandProcessorAdapter(states, transitionDatabase, *sizeOfStates,
@@ -391,64 +477,6 @@ FileCommandProcessorAdapter* FileCommandProcessorAdapter::clone() const {
 
 
 
-//----------------------------------------------------------------------------------------------------------------------
-//  Class: 'ConsoleCommandProcessorAdapter' implementation
-
-ConsoleCommandProcessorAdapter::ConsoleCommandProcessorAdapter() : CommandProcessor() {
-
-    //  Empty
-    DEBUG_PRINT("Called [ConsoleCommandProcessorAdapter, Default Constructor]")
-}
-
-ConsoleCommandProcessorAdapter::ConsoleCommandProcessorAdapter(State* states, TransitionData* transitionDatabase,
-                                                               size_t sizeOfStates, size_t sizeOfTransitionDatabase)
-: CommandProcessor(states, transitionDatabase, sizeOfStates, sizeOfTransitionDatabase) {
-
-    //  Empty
-    DEBUG_PRINT("Called [ConsoleCommandProcessorAdapter, Parameterized Constructor (State*, TransitionData*, size_t, size_t)]")
-}
-
-ConsoleCommandProcessorAdapter::ConsoleCommandProcessorAdapter(const GameEngine& gameEngine)
-: CommandProcessor(gameEngine) {
-
-    //  Empty
-    DEBUG_PRINT("Called [ConsoleCommandProcessorAdapter, Parameterized Constructor (const GameEngine&)]")
-}
-
-Command& ConsoleCommandProcessorAdapter::getCommand(const State& currentState) {
-    //  Counter to keep track of the number of attempts to get a valid command
-    int count = 0;
-    //  ANSI escape codes
-    std::string AnsiRed = "\033[31m";
-    std::string AnsiClear = "\033[0m";
-
-    while (true) {
-        //  Gets a raw command from the std input stream
-        std::string userInput;
-        std::getline(std::cin, userInput);
-
-        //  If input string is empty, just continue
-        if (userInput.empty()) { continue; }
-
-        //  Encapsulate in a Command object, and check if the command is valid given the current state
-        auto command = std::make_unique<Command>(userInput);
-        if (validate(*command, currentState)) {
-            auto* commandPtr = new Command(*command);
-            return *commandPtr;
-        }
-
-        //  INVALID COMMAND CODE
-        //  The first time entering an invalid command, print the list of valid commands to input
-        if (count == 0)
-            printErrorMenu(getHelpStrings(currentState));
-
-        //  Print invalid command state
-        std::cout << AnsiRed << "[" << (count + 1) << "]\t" << "INVALID COMMAND: " << *command << AnsiClear << std::endl;
-        count++;
-    }
-}
-
-ConsoleCommandProcessorAdapter* ConsoleCommandProcessorAdapter::clone() const {
-    return new ConsoleCommandProcessorAdapter(this->states, this->transitionDatabase, *this->sizeOfStates,
-                                              *this->sizeOfTransitionDatabase);
-}
+#ifdef __GNUC__
+#pragma clang diagnostic pop
+#endif

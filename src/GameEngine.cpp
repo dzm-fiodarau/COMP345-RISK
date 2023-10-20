@@ -1,7 +1,16 @@
 //----------------------------------------------------------------------------------------------------------------------
 //  Macros
 
-//  System includes
+//  Compiler specific macros
+//  Disables clang modernize suggestions
+#ifdef __GNUC__
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "modernize-use-nodiscard"
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+#pragma ide diagnostic ignored "UnusedParameter"
+#endif
+
+
 #include <utility>
 #include <string>
 #include <iostream>
@@ -10,9 +19,9 @@
 #include <numeric>
 #include <memory>
 
-//  Project includes
 #include "../headers/GameEngine.h"
 #include "../headers/CommandProcessing.h"
+
 
 #define PRESS_ENTER_TO_CONTINUE(clearConsole)                       \
     std::string _IGNORE_STRING;                                     \
@@ -38,6 +47,7 @@
 #else
 #define DEBUG_PRINT(...)
 #endif
+
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -94,173 +104,70 @@ static std::string reduceStringVector(const std::vector<std::string>& tokens) {
 }
 
 
+
 //----------------------------------------------------------------------------------------------------------------------
-//  TRANSITION FUNCTIONS
+//  Game Functions
 
-
-
-bool restart(const std::string& _, GameEngine& gameEngine) {
-    /*
-    //  Split the input string into tokens then asserts that no tokens were passed
-    vector<std::string> tokens = getTokens(_);
-    if (!tokens.empty()) {
-        std::cout << "\033[1;31m" << "FAILED TO LOAD MAP, INVALID NUMBER OF ARGUMENTS, EXPECTED 0, GOT " << tokens.size()
-                  << "\033[0m" << std::endl;
-        return false;
-    }
-     */
+bool game_restart(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_RESTART")
     return true;
 }
 
-
-
-/** \brief Loads a map. Sample command:
- *         |    loadmap FILEPATH
- *  \param input    String of all arguments passed.
- *  \return 'true' if the command executes successfully, 'false' otherwise */
-bool loadMap(const std::string& input, GameEngine& gameEngine) {
-    /*
-    //  Split the string into tokens
-    vector<std::string> tokens = getTokens(input);
-
-    //  Check that only one argument was passed:
-    if (tokens.size() != 1) {
-        std::cout << "\033[1;31m" << "FAILED TO LOAD MAP, INVALID NUMBER OF ARGUMENTS, EXPECTED 1, GOT " << tokens.size()
-                  << "\033[0m" << std::endl;
-        return false;
-    }
-
-    //  Load Map
-    MapLoader* mapLoader = new MapLoader(tokens.front());
-    Map* map = mapLoader->load();
-
-    //  Check if loading was successful (nullptr means fail)
-    if (map == nullptr) {
-        //  failed to load map
-        std::cout << "\033[1;31m" << "FAILED TO LOAD MAP, PERHAPS INVALID FILE" << "\033[0m" << std::endl;
-        return false;
-    }
-    gameEngine.setMap(map);
-
-    //  Deallocate memory and return true
-    delete mapLoader;
-     */
+bool game_loadMap(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_LOAD_MAP")
     return true;
 }
 
-
-
-/** \brief Validates the map. Sample command:
- *       |  validatemap
- *  \param _ String of all arguments passed. Meant to be empty, without tokens.
- *  \return 'true' if the command executes successfully, 'false' otherwise */
-bool validateMap(const std::string& _, GameEngine& gameEngine) {
-    /*
-    //  Split the input string into tokens then asserts that no tokens were passed
-    vector<std::string> tokens = getTokens(_);
-    if (!tokens.empty()) {
-        std::cout << "\033[1;31m" << "FAILED TO LOAD MAP, INVALID NUMBER OF ARGUMENTS, EXPECTED 0, GOT " << tokens.size()
-                  << "\033[0m" << std::endl;
-        return false;
-    }
-
-    //  Double check that the map pointer in the GameEngine is NOT null
-    if (gameEngine.getMap() == nullptr) {
-        std::cout << "\033[1;31m" << "FAILED TO VALIDATE MAP, NO MAP DEFINED IN GameObject\n" << "\033[0m";
-        return false;
-    }
-
-    //  Get the map, validate it and store status
-    Map* map = gameEngine.getMap();
-    bool validationStatus = map->validate();
-
-    if (validationStatus) {
-        //  Map successfully validated
-        std::cout << "\033[34m" << "MAP SUCCESSFULLY VALIDATED" << "\033[0m" << std::endl;
-        return true;
-    } else {
-        //  Map validation unsuccessful
-        std::cout << "\033[1;31m" << "FAILED TO VALIDATE MAP, ERROR WITH MAP CONFIGURATION\n" << "\033[0m";
-        return false;
-    }
-     */
+bool game_validateMap(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_VALIDATE_MAP")
     return true;
 }
 
-
-
-/** \brief Adds a player to the list of players.
- *         |    addplayer PLAYERNAME
- * \param input String of all arguments passed. Only one parameter expected, which will be the player name.
- * \return True if the player addition was successful */
-bool addPlayer(const std::string& input, GameEngine& gameEngine) {
-    /*
-    //  Split the string into tokens and checks that only one argument was passed
-    vector<std::string> tokens = getTokens(input);
-    if (tokens.size() != 1) {
-        std::cout << "\033[1;31m" << "FAILED TO LOAD MAP, INVALID NUMBER OF ARGUMENTS, EXPECTED 1, GOT " << tokens.size()
-                  << "\033[0m" << std::endl;
-        return false;
-    }
-
-    Player newPlayer(tokens.front(), {}, {});   // IMPLEMENT LATER WHEN BETTER UNDERSTANDING
-    gameEngine.addPlayerToGame(newPlayer);
-     */
+bool game_addPlayer(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_ADD_PLAYER")
     return true;
 }
 
-/** \brief Prints the names of all the players in the game.
- *  \param _ String of all arguments passed. Meant to be empty, without tokens.
- *  \return Returns true in all cases. */
-bool printPlayers(const std::string& _, GameEngine& gameEngine) {
-    /*
-    //  Split the input string into tokens then asserts that no tokens were passed
-    vector<std::string> tokens = getTokens(_);
-    if (!tokens.empty()) { return false; }
-
-    std::cout << "PLAYERS LIST:" << std::endl;
-    for (const Player& player : gameEngine.getPlayers()) {
-        std::cout << player.getPlayerName() << std::endl;
-    }
-     */
-    return true;    //  Always return true
-}
-
-bool assignCountries(const std::string& input, GameEngine& gameEngine) {
-    std::cout << "\033[34m" << "assigning countries w/ args:\t" << input << "\033[0m" << std::endl;
+bool game_printPlayers(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_PRINT_PLAYERS")
     return true;
 }
 
-bool issueOrder(const std::string& input, GameEngine& gameEngine) {
-    std::cout << "\033[34m" << "issuing order w/ args:\t" << input << "\033[0m" << std::endl;
+bool game_gameStart(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_GAME_START")
     return true;
 }
 
-bool endIssueOrders(const std::string& input, GameEngine& gameEngine) {
-    std::cout << "\033[34m" << "FINISHED issuing orders w/ args:\t" << input << "\033[0m" << std::endl;
+bool game_issueOrder(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_ISSUE_ORDER")
     return true;
 }
 
-bool executeOrder(const std::string& input, GameEngine& gameEngine) {
-    std::cout << "\033[34m" << "executing order w/ args:\t" << input << "\033[0m" << std::endl;
+bool game_endIssueOrders(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_END_ISSUE_ORDERS")
     return true;
 }
 
-bool endExecuteOrders(const std::string& input, GameEngine& gameEngine) {
-    std::cout << "\033[34m" << "FINISHED executing orders w/ args:\t" << input << "\033[0m" << std::endl;
+bool game_executeOrder(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_EXECUTE_ORDER")
     return true;
 }
 
-bool winGame(const std::string& input, GameEngine& gameEngine) {
-    std::cout << "\033[34m" << "win w/ args:\t" << input << "\033[0m" << std::endl;
+bool game_endExecuteOrders(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_END_EXECUTE_ORDERS")
     return true;
 }
 
-/** \brief Ends the GameEngine execution. */
-bool endProgram(const std::string& _, GameEngine& gameEngine) {
-    gameEngine.stopRunning();
+bool game_winGame(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_WIN_GAME")
     return true;
 }
+
+bool game_quit(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_END_PROGRAM")
+    return true;
+}
+
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -318,12 +225,16 @@ std::string State::getStateName() const {
     return *(this->stateName);
 }
 
+void State::setStateName(const std::string& newStateName) {
+    *this->stateName = newStateName;
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 //  "State" implementations
 
 TransitionData::TransitionData(size_t index1, size_t index2, size_t numberOfArguments, std::string transitionName,
-                               std::string helpString, bool (*transitionFunction)(const std::string &, GameEngine &)) {
+                               std::string helpString, bool (*transitionFunction)(const std::vector<std::string>&, GameEngine&)) {
     this->index1 = new size_t(index1);
     this->index2 = new size_t(index2);
     this->numberOfArguments = new size_t(numberOfArguments);
@@ -377,6 +288,29 @@ std::ostream &operator<<(std::ostream &os, const TransitionData& transitionData)
     return os;
 }
 
+bool TransitionData::execute(const std::vector<std::string>& tokens, GameEngine& gameEngine) {
+    if (transitionFunction == nullptr) {
+        return false;
+    }
+
+    return transitionFunction(tokens, gameEngine);
+}
+
+//  Standard setter/mutator functions
+void TransitionData::setIndex1(size_t newIndex1) { *this->index1 = newIndex1; }
+
+void TransitionData::setIndex2(size_t newIndex2) { *this->index2 = newIndex2; }
+
+void TransitionData::setNumberOfArguments(size_t newNumberOfArguments) { *this->numberOfArguments = newNumberOfArguments; }
+
+void TransitionData::setTransitionName(const std::string& newTransitionName) { *this->transitionName = newTransitionName; }
+
+void TransitionData::setHelpString(const std::string& newHelpString) { *this->helpString = newHelpString; }
+
+void TransitionData::setTransitionFunction(bool (*newTransitionFunction)(const std::vector<std::string>&, GameEngine&))
+{ this->transitionFunction = newTransitionFunction; }
+
+
 
 //----------------------------------------------------------------------------------------------------------------------
 //  "GameEngine" implementations
@@ -384,39 +318,9 @@ std::ostream &operator<<(std::ostream &os, const TransitionData& transitionData)
 
 GameEngine::GameEngine()
     : currentStateIndex(new size_t(0)), statesSize(new size_t(9)), transitionDatabaseSize(new size_t(15)),
-      isRunning(new bool(false)), commandProcessor(nullptr) {
-    states = new State[] {
-        State("start"),
-        State("map loaded"),
-        State("map validated"),
-        State("players added"),
-        State("assign reinforcement"),
-        State("issueorder"),
-        State("execute orders"),
-        State("win"),
-        State("END")
-    };
-
-    transitionDatabase = new TransitionData[] {
-        TransitionData(0, 1, 1, "loadmap", "loadmap [--filepath]", &loadMap),
-        TransitionData(1, 1, 1, "loadmap", "loadmap [--filepath]", &loadMap),
-        TransitionData(1, 2, 0, "validatemap", "validatemap", &validateMap),
-        TransitionData(2, 3, 1, "addplayer", "addplayer [--playername]", &addPlayer),
-        TransitionData(3, 3, 1, "addplayer", "addplayer [--playername]", &addPlayer),
-        TransitionData(3, 3, 0, "viewplayers", "viewplayers", &printPlayers),
-        TransitionData(3, 4, 0, "assigncountries", "assigncountries", &assignCountries),
-        TransitionData(4, 5, 0, "issueorder", "issueorder -SAMPLE ARGUMENTS-", &issueOrder),
-        TransitionData(5, 5, 0, "issueorder", "issueorder -SAMPLE ARGUMENTS-", &issueOrder),
-        TransitionData(5, 6, 0, "endissueorders", "endissueorders", &endIssueOrders),
-        TransitionData(6, 6, 0, "execorder", "execorder -SAMPLE ARGUMENTS-", &executeOrder),
-        TransitionData(6, 4, 0, "endexecorders", "endexecorders", &endExecuteOrders),
-        TransitionData(6, 7, 0, "win", "win", &winGame),
-        TransitionData(7, 0, 0, "replay", "replay", &restart),
-        TransitionData(7, 8, 0, "quit", "quit", &endProgram)
-    };
-
-    //  Initialize the command processor member variable
-    initializeCommandProcessor();
+      isRunning(new bool(false)), commandProcessor(nullptr), states(new State[0]),
+      transitionDatabase(new TransitionData[0]) {
+    //  Empty
 }
 
 
@@ -652,7 +556,7 @@ std::string GameEngine::getHelpStrings() const {
 
 void GameEngine::processCommand(TransitionData transitionData, const std::string& argumentsRaw) {
     //  Call the transition function and then return the status
-    bool status = transitionData.getTransitionFunction()(argumentsRaw, *this);
+    bool status = transitionData.execute(getTokens(argumentsRaw), *this);
 
     if (!status) {
         //  An error occurred, print error message, and then return
@@ -691,6 +595,42 @@ size_t GameEngine::getStatesSize() const { return *statesSize; }
 
 size_t GameEngine::getTransitionDatabaseSize() const { return *transitionDatabaseSize; }
 
+void GameEngine::setStates(State* newStates, size_t size) {
+    //  Deallocate previous values
+    delete[] states;
+    delete statesSize;
+
+    this->statesSize = new size_t(size);
+
+    //  Deep copying values of passed dynamic array
+    this->states = new State[size];
+    for (int i = 0; i < *this->statesSize; i++) {
+        this->states[i] = State(newStates[i]);
+    }
+}
+
+void GameEngine::setStates(std::vector<State> newStates) {
+    setStates(newStates.data(), newStates.size());
+}
+
+void GameEngine::setTransitionData(TransitionData* newTransitionDatabase, size_t size) {
+    //  Deallocate previous values
+    delete[] transitionDatabase;
+    delete transitionDatabaseSize;
+
+    this->transitionDatabaseSize = new size_t(size);
+
+    //  Deep copying values of passed dynamic array
+    this->transitionDatabase = new TransitionData[size];
+    for (int i = 0; i < *this->transitionDatabaseSize; i++) {
+        this->transitionDatabase[i] = TransitionData(newTransitionDatabase[i]);
+    }
+}
+
+void GameEngine::setTransitionData(std::vector<TransitionData> newTransitionDatabase) {
+    setTransitionData(newTransitionDatabase.data(), newTransitionDatabase.size());
+}
+
 void GameEngine::setCommandProcessor(const CommandProcessor& newCommandProcessor) {
     this->commandProcessor = newCommandProcessor.clone();
 }
@@ -703,3 +643,9 @@ void GameEngine::initializeCommandProcessor() {
     //  commandProcessor = new FileCommandProcessorAdapter(states, transitionDatabase, *statesSize, *transitionDatabaseSize,
     //                                                     "../commands.txt");
 }
+
+
+
+#ifdef __GNUC__
+#pragma clang diagnostic pop
+#endif
