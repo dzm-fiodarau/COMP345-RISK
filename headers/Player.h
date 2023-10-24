@@ -1,6 +1,13 @@
 #ifndef PLAYER_H // Check whether there is Player.h or not
 #define PLAYER_H // If no, then create one
 
+//  Compiler specific macros
+//  Disables clang modernize suggestions
+#ifdef __GNUC__
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "modernize-use-nodiscard"
+#endif
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -51,13 +58,11 @@ public:
      * \param   player  Player name
      */
     void issueOrder(const string& type, Territory *target, int armyUnits, Territory *source, Player *player);
-    OrdersList *getOrdersList();
 
     // Operator Overloads
     Player &operator=(const Player &other);
     friend ostream &operator<<(ostream &out, const Player &player);
 
-    //  TODO IMPLEMENT THESE METHODS
     //  Getter/Accessor methods
     string getPlayerName() const;
     OrdersList* getOrdersList() const;
@@ -65,10 +70,14 @@ public:
     vector<Territory *> getTerritories() const;
 
     //  Setter/Mutator methods
-    void setPlayerName(string);
+    void setPlayerName(std::string);
     void setOrdersList(OrdersList *);
     void setHandCards(vector<Card *>);
     void setTerritories(vector<Territory *>);
 };
+
+#ifdef __GNUC__
+#pragma clang diagnostic pop
+#endif
 
 #endif // PLAYER_H

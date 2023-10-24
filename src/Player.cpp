@@ -134,7 +134,44 @@ void Player::issueOrder(const string& type, Territory *target, int armyUnits, Te
 	(*ordersList).orders.push_back(order);
 }
 
-OrdersList *Player::getOrdersList()
-{
-	return ordersList;
+
+OrdersList *Player::getOrdersList() const {
+    return ordersList;
+}
+
+vector<Card *> Player::getHandCards() const {
+    return handCard;
+}
+
+vector<Territory *> Player::getTerritories() const {
+    return territory;
+}
+
+void Player::setPlayerName(std::string newName) {
+    this->playerName = std::move(newName);
+}
+
+void Player::setOrdersList(OrdersList *newOrdersList) {
+    //  Deallocate the current OrdersList object
+    delete this->ordersList;
+
+    this->ordersList = newOrdersList;
+}
+
+void Player::setHandCards(vector<Card *> newHandCards) {
+    //  Deallocate the current vector of Cards
+    for (auto* cardPtr : handCard) {
+        delete cardPtr;
+    }
+
+    this->handCard = std::move(newHandCards);
+}
+
+void Player::setTerritories(vector<Territory *> newTerritories) {
+    //  Deallocate the current vector of Territories
+    for (auto* territoryPtr : territory) {
+        delete territoryPtr;
+    }
+
+    this->territory = std::move(newTerritories);
 }
