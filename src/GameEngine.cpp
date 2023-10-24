@@ -21,6 +21,8 @@
 
 #include "../headers/GameEngine.h"
 #include "../headers/CommandProcessing.h"
+#include "../headers/Map.h"
+#include "../headers/Player.h"
 
 
 #define PRESS_ENTER_TO_CONTINUE(clearConsole)                       \
@@ -323,8 +325,9 @@ GameEngine::GameEngine()
 }
 
 GameEngine::GameEngine(std::vector<State> states, std::vector<TransitionData> transitionDatabase,
-                       CommandProcessor* commandProcessor)
-    : states(std::move(states)), transitionDatabase(std::move(transitionDatabase)), currentStateIndex(0), isRunning(false) {
+                       CommandProcessor* commandProcessor) : states(std::move(states)),
+                       transitionDatabase(std::move(transitionDatabase)), currentStateIndex(0), isRunning(false),
+                       map(nullptr) {
 
     //  In-case the passed command processor is a nullptr, set default to console command processor
     //  Otherwise, get a copy/clone of the passed command processor
@@ -345,19 +348,31 @@ GameEngine::GameEngine(const GameEngine& other) : GameEngine(other.getStates(), 
 
 
 GameEngine::~GameEngine() {
-    //  Deallocate resources
+    //  Delete/Deallocate all player objects
+    for (auto* playerPtr : players) {
+        delete playerPtr;
+    }
+
+    //  Deallocate other pointer objects
     delete commandProcessor;
+    delete map;
     commandProcessor = nullptr;
+    map = nullptr;
 }
 
 
-GameEngine& GameEngine::operator=(const GameEngine &otherGameEngine) {
+GameEngine& GameEngine::operator=(const GameEngine& otherGameEngine) {
     //  Check for self-assignment
     if (this != &otherGameEngine) {
-
-
-        //  Initialize the command processor member variable (get a copy)
+        this->currentStateIndex = otherGameEngine.currentStateIndex;
+        this->isRunning = otherGameEngine.isRunning;
+        this->states = otherGameEngine.states;
+        this->transitionDatabase = otherGameEngine.transitionDatabase;
         this->commandProcessor = otherGameEngine.commandProcessor->clone();
+        this->players = otherGameEngine.getPlayers();
+
+        //  Checks if map is not a nullptr. If not, creates a copy.
+        this->map = (otherGameEngine.map == nullptr) ? nullptr : new Map(*otherGameEngine.map);
     }
 
     return *this;
@@ -510,13 +525,37 @@ void GameEngine::processCommand(TransitionData transitionData, const std::string
 std::vector<State> GameEngine::getStates() const { return states; }
 std::vector<TransitionData> GameEngine::getTransitionDatabase() const { return transitionDatabase; }
 bool GameEngine::isGameRunning() const { return isRunning; }
+std::vector<Player*> GameEngine::getPlayers() const { return players; }
+Map* GameEngine::getMap() const { return map; }
 
 //  Setter/Mutator methods
 void GameEngine::setStates(std::vector<State> newStates) { this->states = std::move(newStates); }
 void GameEngine::setTransitionData(std::vector<TransitionData> newTransitionDatabase) { this->transitionDatabase = std::move(newTransitionDatabase); }
 void GameEngine::setCommandProcessor(const CommandProcessor& newCommandProcessor) { this->commandProcessor = newCommandProcessor.clone(); }
+void GameEngine::setMap(Map* newMap) { this->map = newMap; }
 
+void GameEngine::setPlayers(std::vector<Player*> newPlayers) {
+    for (auto* playerPtr : this->players) {
+        delete playerPtr;
+    }
 
+    this->players = std::move(newPlayers);
+}
+
+void GameEngine::addPlayer(Player&& playerData) {
+    auto* newPlayer = new Player();
+    newPlayer->setPlayerName(playerData.getPlayerName());
+    newPlayer->setOrdersList(playerData.getOrdersList());
+    newPlayer->setHandCards(playerData.getHandCards());
+    newPlayer->setTerritories(playerData.getTerritories());
+
+    playerData.setPlayerName("");
+    playerData.setOrdersList(nullptr);
+    playerData.setHandCards({});
+    playerData.setTerritories({});
+
+    players.push_back(newPlayer);
+}
 
 
 #ifdef __GNUC__

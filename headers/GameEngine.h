@@ -16,7 +16,8 @@
 
 
 //  Forward declaration of required classes from other header files. (included in .cpp file)
-class Player;           //  Player.h
+class Player;               //  Player.h
+class Map;                  //  Map.h
 
 //  Forward declaration of classes
 class GameEngine;
@@ -226,6 +227,10 @@ public:
     std::vector<TransitionData> getTransitionDatabase() const;
     /** \brief Returns whether the game is running. */
     bool isGameRunning() const;
+    /** \brief Returns a vector of currently added players. */
+    std::vector<Player*> getPlayers() const;
+    /** \brief Returns the currently loaded map. */
+    Map* getMap() const;
 
     //  Setter/Mutator methods
     /** \brief Sets the states configuration of the object. */
@@ -234,23 +239,38 @@ public:
     void setTransitionData(std::vector<TransitionData>);
     /** \brief Sets the command processor for the object. */
     void setCommandProcessor(const CommandProcessor&);
+    /** \brief Sets the command vector. */
+    void setPlayers(std::vector<Player*>);
+    /** \brief Sets the currently loaded map. */
+    void setMap(Map*);
+
+    //  Additional behavior for Setter/Mutators
+    /** \brief Appends a player instance to the end of the player vector. Moves data. */
+    void addPlayer(Player&&);
 
 private:
+
+    //  The index of the current state of the game engine
+    size_t currentStateIndex = 0;
+
+    //  Whether the game running or not
+    bool isRunning;
+
     //  A vector of states
     std::vector<State> states;
 
     //  A vector of TransitionData objects 'connecting' the states together
     std::vector<TransitionData> transitionDatabase;
 
-    //  The index of the current state of the game engine
-    size_t currentStateIndex = 0;
-
     //  The command processor to take commands from
     CommandProcessor* commandProcessor;
 
-    //  Whether the game running or not
-    bool isRunning;
+    //  A vector containing the list of currently added players
+    std::vector<Player*> players;
 
+    //  The playing map
+    Map* map;
+    
 
 
     //  Returns the index of the appropriate transition struct given the current state and the given transition name
