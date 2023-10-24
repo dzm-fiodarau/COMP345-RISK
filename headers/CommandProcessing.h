@@ -32,10 +32,13 @@ public:
     Command();
     /** \brief Constructs a Command object with a given raw command string. */
     explicit Command(const std::string&);
+    /** \brief Constructs a Command object with the given values. */
+    Command(const std::string&, std::string , const bool*);
     /** \brief Constructs a Command object from another Command object. */
     Command(const Command&);
     /** \brief Deconstructs a Command object. */
     ~Command();
+
 
     //  Operator overrides
     /** \brief Assigns values from another Command object to the current object. */
@@ -46,12 +49,13 @@ public:
 
     //  Getter/Accessor methods
     /** \brief Gets the raw command. */
-    std::string& getRawCommand() const;
+    std::string getRawCommand() const;
     /** \brief Gets the effect of command execution, if executed. */
-    std::string& getEffect() const;
+    std::string getEffect() const;
     /** \brief Returns a pointer to a boolean variable indicating whether or not execution was successful or not.
      *  \remarks A 'nullptr' indicates that the command has not been executed yet. */
     const bool* getIsValidExecution() const;
+
 
     //  Setter/Mutator methods
     /** \brief Updates the raw command. */
@@ -61,9 +65,10 @@ public:
     /** \brief Sets the execution status of the command. */
     void setExecutionStatus(bool);
 
+
     //  Other methods
     /** \brief Returns the first token in the raw command string. */
-    std::string& getFirstToken() const;
+    std::string getFirstToken() const;
     /** \brief Returns a vector containing the remaining tokens from the raw command string.
      * Returns a string list (//vector) containing every token but the first. */
     std::vector<std::string> getRemainingTokens() const;
@@ -72,16 +77,16 @@ public:
 
 private:
     //  The raw command, as read from an input stream.
-    std::string* rawCommand;
+    std::string rawCommand;
 
     //  The effect message, or execution message. Could be an error or success message.
-    std::string* effect;
+    std::string effect;
 
     //  Boolean on whether the command executed properly.
     bool* isValidExecution;
 
     //  A vector of tokens.
-    std::vector<std::string>* tokens;
+    std::vector<std::string> tokens;
 };
 
 
@@ -96,9 +101,7 @@ public:
     //  Constructors/Deconstructor
     /** \brief Constructs a default CommandProcessor object. */
     CommandProcessor();
-    /** \brief Constructs a CommandProcessor object. Takes in primitive arrays. */
-    CommandProcessor(State*, TransitionData*, size_t, size_t);
-    /** \brief Constructs a CommandProcessor object. Takes in std::vector objects. */
+    /** \brief Constructs a CommandProcessor object. */
     CommandProcessor(std::vector<State>, std::vector<TransitionData>);
     /** \brief Constructs a CommandProcessor object using data from a GameEngine object. */
     explicit CommandProcessor(const GameEngine&);
@@ -112,7 +115,7 @@ public:
     virtual Command& getCommand(const State&) = 0;
 
     /** \brief Returns a deep copy of the object. */
-    virtual CommandProcessor* clone() const = 0;
+    virtual CommandProcessor* clone() const noexcept = 0;
 
     //  Other methods
     /** \brief Determines if a command is valid given the current state.
@@ -123,17 +126,11 @@ public:
 
 
 protected:
-    //  A list of valid states.
-    State* states;
+    //  A vector of states
+    std::vector<State> states;
 
-    //  List containing transition data.
-    TransitionData* transitionDatabase;
-
-    //  The size of the valid states list/array.
-    size_t* sizeOfStates;
-
-    //  The size of the transition data list/array.
-    size_t* sizeOfTransitionDatabase;
+    //  A vector of objects containing the transition data
+    std::vector<TransitionData> transitionDatabase;
 
     /** \brief Returns a collection of help strings (for commands that contain the correct syntax) given the current
      *  state. */
@@ -149,11 +146,7 @@ public:
     //  Constructors/Deconstructor
     /** \brief Constructs a 'default' ConsoleCommandProcessorAdapter object. */
     ConsoleCommandProcessorAdapter();
-    /** \brief Constructs a ConsoleCommandProcessorAdapter given a configuration of states and transitions.
-     *         Takes in a primitive array. */
-    ConsoleCommandProcessorAdapter(State*, TransitionData*, size_t, size_t);
-    /** \brief Constructs a ConsoleCommandProcessorAdapter given a configuration of states and transitions.
-     *         Takes in std::vector.*/
+    /** \brief Constructs a ConsoleCommandProcessorAdapter given a configuration of states and transitions. */
     ConsoleCommandProcessorAdapter(std::vector<State>, std::vector<TransitionData>);
     /** \brief Constructs a ConsoleCommandProcessorAdapter using data from a GameEngine object. */
     explicit ConsoleCommandProcessorAdapter(const GameEngine&);
@@ -164,7 +157,7 @@ public:
     /** \brief Gets a valid command object given the valid state. */
     Command& getCommand(const State&) override;
     /** \brief Returns a deep copy of the object. */
-    ConsoleCommandProcessorAdapter* clone() const override;
+    ConsoleCommandProcessorAdapter* clone() const noexcept override;
 };
 
 
@@ -176,11 +169,11 @@ public:
     //  Constructors/Deconstructors
     /** \brief Constructs a 'default' FileCommandProcessorAdapter object. */
     FileCommandProcessorAdapter();
-    /** \brief Constructs a FileCommandProcessorAdapter given a configuration of states and transitions. */
-    FileCommandProcessorAdapter(State*, TransitionData*, size_t, size_t, const std::string&);
+    /** \brief Constructs a FileCommandProcessorAdapter object from a configuration of states and transition data. */
+    FileCommandProcessorAdapter(std::vector<State>, std::vector<TransitionData>, std::string );
     /** \brief Constructs a FileCommandProcessorAdapter given a configuration of states and transitions from a
      * GameObject */
-    FileCommandProcessorAdapter(const GameEngine&, const std::string&);
+    FileCommandProcessorAdapter(const GameEngine&, std::string );
     /** \brief Deconstructs a FileCommandProcessorAdapter object. */
     ~FileCommandProcessorAdapter() override;
 
@@ -188,18 +181,18 @@ public:
     /** \brief Gets a valid command object given the valid state. */
     Command& getCommand(const State&) override;
     /** \brief Returns a deep copy of the object. */
-    FileCommandProcessorAdapter* clone() const override;
+    FileCommandProcessorAdapter* clone() const noexcept override;
 
 private:
     //  A queue of commands.
-    std::queue<Command>* commandQueue;
+    std::queue<Command> commandQueue;
 
     //  The path of the file to read from.
-    std::string* filePath;
+    std::string filePath;
 
     //  A backup command processor. Used to take commands from in the case that the commands from the specified file
     //  have been exhausted / run out.
-    ConsoleCommandProcessorAdapter* backupCommandProcessor;
+    ConsoleCommandProcessorAdapter* backupCommandProcessor = nullptr;
 
     //  Loads the contents from the specified file to the command queue.
     //  THROWS an exception if the specified file could not be found.

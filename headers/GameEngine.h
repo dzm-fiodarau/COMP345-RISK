@@ -9,10 +9,14 @@
 #pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 #endif
 
+#include <memory>
 #include <string>
 #include <vector>
 
 
+
+//  Forward declaration of required classes from other header files. (included in .cpp file)
+class Player;           //  Player.h
 
 //  Forward declaration of classes
 class GameEngine;
@@ -196,20 +200,16 @@ public:
     //  Constructors/Deconstructor
     /** \brief Constructs a default GameEngine object with the specification as shown in the instructions. */
     GameEngine();
+    /** \brief Constructs a GameEngine object. */
+    GameEngine(std::vector<State>, std::vector<TransitionData>, CommandProcessor*);
     /** \brief Constructs a GameEngine object from another GameEngine object. Copy constructor. */
     GameEngine(const GameEngine&);
-    /** \brief Constructs a GameEngine object from another then deallocates all variables and sets pointer to an
-     *  unspecified state. Move constructor. */
-    GameEngine(GameEngine&&) noexcept;
     /** \brief Deconstructs a GameEngine object. */
     ~GameEngine();
 
     //  Operator overrides
     /** \brief Assigns the values of the passed GameEngine object to the current. Copy assignment operator. */
     GameEngine& operator=(const GameEngine&);
-    /** \brief Assigns the values of the passed GameEngine object to the current, then deallocates dynamic variables
-     *  and sets values to an unspecified state. Move assignment operator. */
-    GameEngine& operator=(GameEngine&&) noexcept;
     /** \brief Prints a brief description of the current internal configurations of the instance. */
     friend std::ostream& operator<<(std::ostream&, const GameEngine&);
 
@@ -217,51 +217,40 @@ public:
     /** \brief Starts the execution of the game object. Main entry point. */
     void execute();
     /** \brief Sets the game running flag to false */
-    void stopRunning() { *isRunning = false; }
+    void stopRunning();
 
     //  Getter/Accessor methods
-    /** \brief Gets the list of states of the game engine. */
-    const State* getStates() const;
-    /** \brief Gets a list of 'TransitionData' objects that contain data about transitions from state to state. */
-    const TransitionData* getTransitionsDatabase() const;
-    /** \brief Gets the size of the states list. */
-    size_t getStatesSize() const;
-    /** \brief Gets the size of the transitions database list. */
-    size_t getTransitionDatabaseSize() const;
+    /** \brief Returns the state configuration of the game engine. */
+    std::vector<State> getStates() const;
+    /** \brief Returns the transition data configuration of the game engine. */
+    std::vector<TransitionData> getTransitionDatabase() const;
+    /** \brief Returns whether the game is running. */
+    bool isGameRunning() const;
 
     //  Setter/Mutator methods
-    /** \brief Sets the states configuration of the object. Takes a raw array. */
-    void setStates(State*, size_t);
-    /** \brief Sets the states configuration of the object. Takes a std::vector<State> object. */
+    /** \brief Sets the states configuration of the object. */
     void setStates(std::vector<State>);
-    /** \brief Sets the transition database configuration of the object. Takes a raw array. */
-    void setTransitionData(TransitionData*, size_t);
-    /** \brief Sets the transition database configuration of the object. Takes in a std::vector<TransitionData> object. */
+    /** \brief Sets the transition database configuration of the object. */
     void setTransitionData(std::vector<TransitionData>);
     /** \brief Sets the command processor for the object. */
     void setCommandProcessor(const CommandProcessor&);
 
 private:
-    //  A list of states
-    State* states;
+    //  A vector of states
+    std::vector<State> states;
 
-    //  A list of TransitionData objects (contains the data about transitions)
-    TransitionData* transitionDatabase;
+    //  A vector of TransitionData objects 'connecting' the states together
+    std::vector<TransitionData> transitionDatabase;
 
     //  The index of the current state of the game engine
-    size_t* currentStateIndex;
-
-    //  The size of the list of states member array
-    size_t* statesSize;
-
-    //  The size of the list of the transition data member array
-    size_t* transitionDatabaseSize;
-
-    //  Whether the game running or not
-    bool* isRunning;
+    size_t currentStateIndex = 0;
 
     //  The command processor to take commands from
     CommandProcessor* commandProcessor;
+
+    //  Whether the game running or not
+    bool isRunning;
+
 
 
     //  Returns the index of the appropriate transition struct given the current state and the given transition name
@@ -273,9 +262,6 @@ private:
 
     //  Further process a command. Calls the corresponding transition function.
     void processCommand(TransitionData, const std::string&);
-
-    //  Assigns the 'commandProcessor' member variable on initialization. Meant to be called in the constructor.
-    void initializeCommandProcessor();
 };
 
 #ifdef __GNUC__

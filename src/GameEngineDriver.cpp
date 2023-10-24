@@ -26,7 +26,7 @@
             TransitionData(6, 4, 0, "endexecorders", "endexecorders", &game_endExecuteOrders),                      \
             TransitionData(6, 7, 0, "win", "win", &game_winGame),                                                   \
             TransitionData(7, 0, 0, "replay", "replay", &game_restart),                                             \
-            TransitionData(7, 8, 0, "quit", "quit", &game_quit)                                               \
+            TransitionData(7, 8, 0, "quit", "quit", &game_quit)                                                     \
 
 
 

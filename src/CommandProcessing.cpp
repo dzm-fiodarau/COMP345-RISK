@@ -7,6 +7,7 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "modernize-use-nodiscard"
 #pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+#pragma ide diagnostic ignored "readability-use-anyofallof"
 #endif
 
 
@@ -81,89 +82,78 @@ static void printErrorMenu(std::vector<std::string> helpStrings) {
 //----------------------------------------------------------------------------------------------------------------------
 //  Class: 'Command' implementation
 
-Command::Command()
-: rawCommand(new std::string("")), effect(new std::string("NOT EXECUTED")), isValidExecution(nullptr) {
-
-    std::vector<std::string> extractedTokens = getTokens(*rawCommand);
-    tokens = new std::vector<std::string>(extractedTokens);
+Command::Command() : Command("") {
+    //  Empty
 }
 
-Command::Command(const std::string& rawCommand)
-: rawCommand(new std::string(rawCommand)), effect(new std::string("NOT EXECUTED")), isValidExecution(nullptr) {
-
-    std::vector<std::string> extractedTokens = getTokens(*(this->rawCommand));
-    tokens = new std::vector<std::string>(extractedTokens);
+Command::Command(const std::string& rawCommand) : Command(rawCommand, "NOT EXECUTED", nullptr) {
+    //  Empty
 }
 
-Command::Command(const Command& otherCommand) {
-    //  Ensure that the value is not a null pointer first.
-    this->rawCommand = (otherCommand.rawCommand == nullptr) ? nullptr : new std::string(*otherCommand.rawCommand);
-    this->effect = (otherCommand.effect == nullptr) ? nullptr : new std::string(*otherCommand.effect);
-    this->isValidExecution = (otherCommand.isValidExecution == nullptr) ? nullptr : new bool(*otherCommand.isValidExecution);
-    this->tokens = (otherCommand.tokens == nullptr) ? nullptr : new std::vector<std::string>(*otherCommand.tokens);
+Command::Command(const std::string& rawCommand, std::string effect, const bool* isValidExecution)
+        : rawCommand(rawCommand), effect(std::move(effect)), isValidExecution(new bool(isValidExecution)), tokens(getTokens(rawCommand)) {
+    //  Empty
+}
+
+Command::Command(const Command& otherCommand)
+        : Command(otherCommand.getRawCommand(), otherCommand.getEffect(), otherCommand.getIsValidExecution()) {
+    //  Empty
 }
 
 Command::~Command() {
     //  Deallocate memory pointed to by pointers.
-    delete rawCommand;
-    delete effect;
     delete isValidExecution;
-    delete tokens;
 
     //  Set to nullptr, removes dangling pointers.
-    rawCommand = nullptr;
-    effect = nullptr;
     isValidExecution = nullptr;
-    tokens = nullptr;
 }
 
 Command &Command::operator=(const Command& otherCommand) {
     //  Check for self-assignment
     if (this != &otherCommand) {
-        this->rawCommand = (otherCommand.rawCommand == nullptr) ? nullptr : new std::string(*otherCommand.rawCommand);
-        this->effect = (otherCommand.effect == nullptr) ? nullptr : new std::string(*otherCommand.effect);
-        this->isValidExecution = (otherCommand.isValidExecution == nullptr) ? nullptr : new bool(*otherCommand.isValidExecution);
-        this->tokens = (otherCommand.tokens == nullptr) ? nullptr : new std::vector<std::string>(*otherCommand.tokens);
+        this->rawCommand = otherCommand.getRawCommand();
+        this->effect = otherCommand.getEffect();
+        this->isValidExecution = new bool(otherCommand.getIsValidExecution());
+        this->tokens = getTokens(this->rawCommand);     //  Works since member variable is already updated
     }
 
     return *this;
 }
 
 std::ostream& operator<<(std::ostream& os, const Command& command) {
-    unsigned int numberOfInitializedValues = 0;
-    std::ostringstream oss;
-
-    if (command.rawCommand != nullptr) {
-        numberOfInitializedValues++;
-        oss << "\"" << *command.rawCommand << "\"";
+    if (command.isValidExecution == nullptr) {
+        os << "[1/3]  "<< "\"" << command.rawCommand << "\"";
+    } else {
+        os << "[3/3]  "
+           << "\"" << command.rawCommand << "\" | "
+           << "\"" << command.effect << "\" | "
+           << (*command.isValidExecution == 0 ? "false" : "true");
     }
-
-    if (command.effect != nullptr) {
-        numberOfInitializedValues++;
-        oss << " | " << *command.effect;
-    }
-
-    if (command.isValidExecution != nullptr) {
-        numberOfInitializedValues++;
-        oss << " | " << (*command.isValidExecution == 0 ? "false" : "true");
-    }
-
-    os << "[" << numberOfInitializedValues << "/3]  "<< oss.str();
     return os;
 }
 
 //  GETTER/ACCESSOR METHODS
-std::string &Command::getRawCommand() const { return *rawCommand; }
+/** \brief Gets the raw command. */
+std::string Command::getRawCommand() const { return rawCommand; }
 
-std::string &Command::getEffect() const { return *effect; }
+/** \brief Gets the effect of the command. */
+std::string Command::getEffect() const { return effect; }
 
+/** \brief Gets the execution status of the command.
+ * \return Bool pointer: 'nullptr' for an un-executed command, false for invalid execution, true otherwise.*/
 const bool* Command::getIsValidExecution() const { return isValidExecution; }
 
 //  SETTER/MUTATOR METHODS
-void Command::setRawCommand(const std::string& newRawCommand) { this->rawCommand = new std::string(newRawCommand); }
+/** \brief Sets the value of the raw command member variable. */
+void Command::setRawCommand(const std::string& newRawCommand) { rawCommand = newRawCommand; }
 
-void Command::setEffect(const std::string& newEffect) { this->effect = new std::string(newEffect); }
+/** \brief Sets the value of the effect member variable. */
+void Command::setEffect(const std::string& newEffect) { effect = newEffect; }
 
+/** \brief  Sets the execution status of the command
+ *  \param newStatus The new status. False for unsuccessful execution, true otherwise.
+ *  \remarks Member variable originally set to a 'nullptr', which indicates that the command has not been executed yet.
+ */
 void Command::setExecutionStatus(bool newStatus) {
     if (isValidExecution == nullptr) {
         isValidExecution = new bool(newStatus);
@@ -173,12 +163,12 @@ void Command::setExecutionStatus(bool newStatus) {
     *isValidExecution = newStatus;
 }
 
-std::string &Command::getFirstToken() const {
-    return tokens->front();
+std::string Command::getFirstToken() const {
+    return tokens.front();
 }
 
 std::vector<std::string> Command::getRemainingTokens() const {
-    std::vector<std::string> remainingTokens(tokens->begin() + 1, tokens->end());
+    std::vector<std::string> remainingTokens(tokens.begin() + 1, tokens.end());     //  Get a subset of the vector
     return remainingTokens;
 }
 
@@ -191,71 +181,42 @@ size_t Command::getNumberOfArguments() const {
 //----------------------------------------------------------------------------------------------------------------------
 //  Class: 'CommandProcessor' implementation
 
-CommandProcessor::CommandProcessor()
-: states(new State[0]), transitionDatabase(new TransitionData[0]), sizeOfStates(new size_t(0)),
-  sizeOfTransitionDatabase(new size_t(0)) {
-
+CommandProcessor::CommandProcessor() : CommandProcessor({}, {}) {
     //  Empty
     DEBUG_PRINT("Called [CommandProcessor, Default Constructor]")
 }
 
-CommandProcessor::CommandProcessor(State* states, TransitionData* transitionDatabase, size_t sizeOfStates,
-                                   size_t sizeOfTransitionDatabase)
-: states(new State[sizeOfStates]), transitionDatabase(new TransitionData[sizeOfTransitionDatabase]),
-sizeOfStates(new size_t(sizeOfStates)), sizeOfTransitionDatabase(new size_t(sizeOfTransitionDatabase)) {
-
-    //  Deep copying dynamic array values
-    for (size_t i = 0; i < *this->sizeOfStates; i++)
-        this->states[i] = State(states[i]);
-
-    for (size_t i = 0; i < *this->sizeOfTransitionDatabase; i++)
-        this->transitionDatabase[i] = TransitionData(transitionDatabase[i]);
-    DEBUG_PRINT("Called [CommandProcessor, Parameterized Constructor (State*, TransitionData*, size_t, size_t)]")
-}
-
-CommandProcessor::CommandProcessor(std::vector<State> states, std::vector<TransitionData> transitionData)
-    : CommandProcessor(states.data(), transitionData.data(), states.size(), transitionData.size()) {
-
+CommandProcessor::CommandProcessor(std::vector<State> states, std::vector<TransitionData> transitionDatabase)
+    : states(std::move(states)), transitionDatabase(std::move(transitionDatabase)) {
     //  Empty
     DEBUG_PRINT("Called [CommandProcessor, Parameterized Constructor (std::vector<State>, std::vector<TransitionData>)]")
 }
 
 CommandProcessor::CommandProcessor(const GameEngine& gameEngine)
-: states(new State[gameEngine.getStatesSize()]),
-  transitionDatabase(new TransitionData[gameEngine.getTransitionDatabaseSize()]),
-  sizeOfStates(new size_t(gameEngine.getStatesSize())),
-  sizeOfTransitionDatabase(new size_t(gameEngine.getTransitionDatabaseSize())) {
-
-    //  Deep copying dynamic array values
-    auto* statesValues = gameEngine.getStates();
-    for (size_t i = 0; i < *sizeOfStates; i++)
-        states[i] = State(statesValues[i]);
-
-    auto* transitionDatabaseValues = gameEngine.getTransitionsDatabase();
-    for (size_t i = 0; i < *sizeOfTransitionDatabase; i++)
-        transitionDatabase[i] = TransitionData(transitionDatabaseValues[i]);
+    : states(gameEngine.getStates()), transitionDatabase(gameEngine.getTransitionDatabase()) {
+    //  Empty
     DEBUG_PRINT("Called [CommandProcessor, Parameterized Constructor (const GameEngine&)]")
 }
 
 CommandProcessor::~CommandProcessor() {
-    delete[] states;
-    delete[] transitionDatabase;
-    delete sizeOfStates;
-    delete sizeOfTransitionDatabase;
-
-    states = nullptr;
-    transitionDatabase = nullptr;
-    sizeOfStates = nullptr;
-    sizeOfTransitionDatabase = nullptr;
-
+    //  Empty
+    //  Nothing to deallocate
     DEBUG_PRINT("Called [CommandProcessor, DECONSTRUCTOR]")
 }
 
 
+/**
+ * \brief Checks if the given command is valid given a current state.
+ * \param command       The command object to validate
+ * \param currentState  The current state in the
+ * \return True if command is valid, false otherwise
+ *
+ * TODO CHECK IF VALID, RE WRITTEN
+ */
 bool CommandProcessor::validate(const Command& command, const State& currentState) {
     //  Get the id of the current state on the states list
     int stateIndex = -1;
-    for (size_t i = 0; i < *sizeOfStates; i++) {
+    for (size_t i = 0; i < states.size(); i++) {
         if (states[i] == currentState) {
             stateIndex = static_cast<int>(i);
         }
@@ -264,12 +225,17 @@ bool CommandProcessor::validate(const Command& command, const State& currentStat
         return false;
     }
 
-    //  Search for a transition that matches the command transition name given the current state
-    for (size_t i = 0; i < *sizeOfTransitionDatabase; i++) {
-        if ((transitionDatabase[i].getIndex1() == stateIndex)    // Ensuring states are equal
-            && (transitionDatabase[i].getTransitionName() == command.getFirstToken())   // Ensuring transition names eq.
-            && (transitionDatabase[i].getNumberOfArguments() == command.getNumberOfArguments())) // Ensuring no of args.
-        {
+    //  A function that takes in a transition data object and returns true if its index1 equals the variable 'stateIndex'
+    auto equalState = [stateIndex] (const TransitionData& transitionData) -> bool { return transitionData.getIndex1() == stateIndex; };
+    //  Copy of the transition database
+    auto databaseCopy = std::vector<TransitionData>(transitionDatabase);
+    //  Erases all entries whose 'index1' value does not equal the value of the local variable 'stateIndex'
+    databaseCopy.erase(std::remove_if(databaseCopy.begin(), databaseCopy.end(), equalState), databaseCopy.end());
+
+    //  Iterates through the array and searches whether the data in the command object matches one of the transition data objects
+    for (const auto& transitionData : transitionDatabase) {
+        if (transitionData.getTransitionName() == command.getFirstToken() &&
+            transitionData.getNumberOfArguments() == command.getNumberOfArguments()) {
             return true;
         }
     }
@@ -279,7 +245,7 @@ bool CommandProcessor::validate(const Command& command, const State& currentStat
 std::vector<std::string> CommandProcessor::getHelpStrings(const State& currentState) const {
     //  Get the index of the passed states in the states list
     int currentStateIndex = -1;
-    for (size_t i = 0; i < *sizeOfStates; i++) {
+    for (size_t i = 0; i < states.size(); i++) {
         if (states[i] == currentState) {
             currentStateIndex = static_cast<int>(i);
             break;
@@ -288,8 +254,7 @@ std::vector<std::string> CommandProcessor::getHelpStrings(const State& currentSt
 
     //  Iterate through the transition database, adding any help strings to the collection
     std::vector<std::string> helpStrings;
-    for (size_t i = 0 ; i < *sizeOfTransitionDatabase; i++) {
-        TransitionData transitionData = transitionDatabase[i];
+    for (const auto& transitionData : transitionDatabase) {
         if (transitionData.getIndex1() == currentStateIndex) {
             helpStrings.push_back(transitionData.getHelpString());
         }
@@ -304,28 +269,18 @@ std::vector<std::string> CommandProcessor::getHelpStrings(const State& currentSt
 //  Class: 'ConsoleCommandProcessorAdapter' implementation
 
 ConsoleCommandProcessorAdapter::ConsoleCommandProcessorAdapter() : CommandProcessor() {
-
     //  Empty
     DEBUG_PRINT("Called [ConsoleCommandProcessorAdapter, Default Constructor]")
 }
 
-ConsoleCommandProcessorAdapter::ConsoleCommandProcessorAdapter(State* states, TransitionData* transitionDatabase,
-                                                               size_t sizeOfStates, size_t sizeOfTransitionDatabase)
-: CommandProcessor(states, transitionDatabase, sizeOfStates, sizeOfTransitionDatabase) {
-
-    //  Empty
-    DEBUG_PRINT("Called [ConsoleCommandProcessorAdapter, Parameterized Constructor (State*, TransitionData*, size_t, size_t)]")
-}
-
-ConsoleCommandProcessorAdapter::ConsoleCommandProcessorAdapter(std::vector<State> states,
-                                                               std::vector<TransitionData> transitionDatabase)
+ConsoleCommandProcessorAdapter::ConsoleCommandProcessorAdapter(std::vector<State> states, std::vector<TransitionData> transitionDatabase)
     : CommandProcessor(std::move(states), std::move(transitionDatabase)) {
-
+    //  Empty
+    DEBUG_PRINT("Called [ConsoleCommandProcessorAdapter, Parameterized Constructor (std::vector<State>, st::vector<TransitionData>)]")
 }
 
 ConsoleCommandProcessorAdapter::ConsoleCommandProcessorAdapter(const GameEngine& gameEngine)
-: CommandProcessor(gameEngine) {
-
+    : CommandProcessor(gameEngine) {
     //  Empty
     DEBUG_PRINT("Called [ConsoleCommandProcessorAdapter, Parameterized Constructor (const GameEngine&)]")
 }
@@ -363,9 +318,8 @@ Command& ConsoleCommandProcessorAdapter::getCommand(const State& currentState) {
     }
 }
 
-ConsoleCommandProcessorAdapter* ConsoleCommandProcessorAdapter::clone() const {
-    return new ConsoleCommandProcessorAdapter(this->states, this->transitionDatabase, *this->sizeOfStates,
-                                              *this->sizeOfTransitionDatabase);
+ConsoleCommandProcessorAdapter* ConsoleCommandProcessorAdapter::clone() const noexcept {
+    return new ConsoleCommandProcessorAdapter(states, transitionDatabase);
 }
 
 
@@ -373,48 +327,55 @@ ConsoleCommandProcessorAdapter* ConsoleCommandProcessorAdapter::clone() const {
 //----------------------------------------------------------------------------------------------------------------------
 //  Class: 'FileCommandProcessorAdapter' implementation
 
-FileCommandProcessorAdapter::FileCommandProcessorAdapter()
-        : CommandProcessor(), filePath(new std::string("")), commandQueue(new std::queue<Command>()) {
+FileCommandProcessorAdapter::FileCommandProcessorAdapter() : CommandProcessor(), commandQueue(), filePath() {
 
     //  Initialize the backup command processor
-    this->backupCommandProcessor = new ConsoleCommandProcessorAdapter(states, transitionDatabase, *sizeOfStates,
-                                                                      *sizeOfTransitionDatabase);
+    backupCommandProcessor = new ConsoleCommandProcessorAdapter(this->states, this->transitionDatabase);
+
+    //  Debug mode print
     DEBUG_PRINT("Called [FileCommandProcessorAdapter, Default Constructor]")
 }
 
-FileCommandProcessorAdapter::FileCommandProcessorAdapter(State* states, TransitionData* transitionDatabase,
-                                                         size_t sizeOfStates, size_t sizeOfTransitionDatabase,
-                                                         const std::string& filePath)
-        : CommandProcessor(states, transitionDatabase, sizeOfStates, sizeOfTransitionDatabase),
-          filePath(new std::string(filePath)), commandQueue(new std::queue<Command>()) {
+/**
+ * \brief   Instantiates a 'FileCommandProcessorAdapter' object given a vector of states and transition data.
+ */
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(std::vector<State> states,
+                                                         std::vector<TransitionData> transitionDatabase,
+                                                         std::string filePath)
+    : CommandProcessor(std::move(states), std::move(transitionDatabase)), commandQueue(), filePath(std::move(filePath)) {
 
     //  Initialize the backup command processor
-    this->backupCommandProcessor = new ConsoleCommandProcessorAdapter(states, transitionDatabase, sizeOfStates,
-                                                                      sizeOfTransitionDatabase);
+    backupCommandProcessor = new ConsoleCommandProcessorAdapter(this->states, this->transitionDatabase);
+
     //  Load file contents
     loadFileContents();
-    DEBUG_PRINT("Called [FileCommandProcessorAdapter, Parameterized Constructor (State*, TransitionData*, size_t, size_t, const string&)]")
+
+    //  Debug mode print
+    DEBUG_PRINT("Called [FileCommandProcessorAdapter, Parameterized Constructor (std::vector<State>, std::vector<TransitionData>, std::string)]")
 }
 
-FileCommandProcessorAdapter::FileCommandProcessorAdapter(const GameEngine& gameEngine, const std::string& filePath)
-        : CommandProcessor(gameEngine), filePath(new std::string(filePath)), commandQueue(new std::queue<Command>()) {
+/**
+ * \brief   Instantiate a 'FileCommandProcessorAdapter' object using a given game object.
+ */
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(const GameEngine& gameEngine, std::string filePath)
+    : CommandProcessor(gameEngine.getStates(), gameEngine.getTransitionDatabase()), commandQueue(), filePath(std::move(filePath)) {
 
     //  Initialize the backup command processor
-    this->backupCommandProcessor = new ConsoleCommandProcessorAdapter(states, transitionDatabase, *sizeOfStates,
-                                                                      *sizeOfTransitionDatabase);
+    backupCommandProcessor = new ConsoleCommandProcessorAdapter(this->states, this->transitionDatabase);
+
     //  Load file contents
     loadFileContents();
+
+    //  Debug mode print
     DEBUG_PRINT("Called [FileCommandProcessorAdapter, Parameterized Constructor (const GameEngine&, const string&)]")
 }
 
 FileCommandProcessorAdapter::~FileCommandProcessorAdapter() {
-    delete commandQueue;
-    delete filePath;
+    //  Deallocate resources
     delete backupCommandProcessor;
-
-    commandQueue = nullptr;
-    filePath = nullptr;
     backupCommandProcessor = nullptr;
+
+    //  Debug mode print
     DEBUG_PRINT("Called [FileCommandProcessorAdapter, DECONSTRUCTOR]")
 }
 
@@ -425,11 +386,11 @@ Command& FileCommandProcessorAdapter::getCommand(const State& currentState) {
     std::string AnsiRed = "\033[31m";
     std::string AnsiClear = "\033[0m";
 
-    while (!commandQueue->empty()) {
-        if (validate(commandQueue->front(), currentState)) {
-            auto* commandCopy = new Command(commandQueue->front());     //  Copy command
-            commandQueue->pop();                                        //  Dequeue
-            return *commandCopy;                                        //  Return
+    while (!commandQueue.empty()) {
+        if (validate(commandQueue.front(), currentState)) {
+            auto* commandCopy = new Command(commandQueue.front());     //  Copy command
+            commandQueue.pop();                                        //  Dequeue
+            return *commandCopy;                                       //  Return
         }
 
         //  The first time entering an invalid command, print the list of valid commands to input
@@ -437,19 +398,22 @@ Command& FileCommandProcessorAdapter::getCommand(const State& currentState) {
             printErrorMenu(getHelpStrings(currentState));
 
         //  Print invalid command state
-        std::cout << AnsiRed << "[" << (count + 1) << "]\t" << "INVALID COMMAND: " << commandQueue->front() << AnsiClear
+        std::cout << AnsiRed << "[" << (count + 1) << "]\t" << "INVALID COMMAND: " << commandQueue.front() << AnsiClear
                   << std::endl;
         count++;
-        commandQueue->pop();
+        commandQueue.pop();
     }
 
     //  Reaching here means there are no more commands to take from the file.
     //  Takes a command from the backup command processor.
+    if (backupCommandProcessor == nullptr) {
+        backupCommandProcessor = new ConsoleCommandProcessorAdapter(states, transitionDatabase);
+    }
     return backupCommandProcessor->getCommand(currentState);
 }
 
 void FileCommandProcessorAdapter::loadFileContents() {
-    auto* file = new std::ifstream(*filePath);
+    auto* file = new std::ifstream(filePath);
 
     //  Check if the specified file exists
     if (!*file) {
@@ -460,7 +424,7 @@ void FileCommandProcessorAdapter::loadFileContents() {
     //  Read from the file, encapsulate into 'Command' object, and enqueue
     std::string line;
     while (std::getline(*file, line)) {
-        commandQueue->push(Command(line));
+        commandQueue.emplace(line);
     }
 
     //  Deallocate and close all values
@@ -470,9 +434,8 @@ void FileCommandProcessorAdapter::loadFileContents() {
     DEBUG_PRINT("SUCCESSFULLY LOADED FILE")
 }
 
-FileCommandProcessorAdapter* FileCommandProcessorAdapter::clone() const {
-    return new FileCommandProcessorAdapter(this->states, this->transitionDatabase, *this->sizeOfStates,
-                                           *this->sizeOfTransitionDatabase, *this->filePath);
+FileCommandProcessorAdapter* FileCommandProcessorAdapter::clone() const noexcept {
+    return new FileCommandProcessorAdapter(states, transitionDatabase, filePath);
 }
 
 
