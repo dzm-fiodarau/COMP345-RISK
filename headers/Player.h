@@ -40,7 +40,6 @@ public:
     ~Player();
 
     // Some member functions
-    string getPlayerName() const;
     void toAttack();
     void toDefend();
     /**
@@ -57,6 +56,19 @@ public:
     // Operator Overloads
     Player &operator=(const Player &other);
     friend ostream &operator<<(ostream &out, const Player &player);
+
+    //  TODO IMPLEMENT THESE METHODS
+    //  Getter/Accessor methods
+    string getPlayerName() const;
+    OrdersList* getOrdersList() const;
+    vector<Card *> getHandCards() const;
+    vector<Territory *> getTerritories() const;
+
+    //  Setter/Mutator methods
+    void setPlayerName(string);
+    void setOrdersList(OrdersList *);
+    void setHandCards(vector<Card *>);
+    void setTerritories(vector<Territory *>);
 };
 
 #endif // PLAYER_H

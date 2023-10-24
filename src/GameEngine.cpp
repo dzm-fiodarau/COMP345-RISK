@@ -1,7 +1,16 @@
 //----------------------------------------------------------------------------------------------------------------------
 //  Macros
 
-//  System includes
+//  Compiler specific macros
+//  Disables clang modernize suggestions
+#ifdef __GNUC__
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "modernize-use-nodiscard"
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+#pragma ide diagnostic ignored "UnusedParameter"
+#endif
+
+
 #include <utility>
 #include <string>
 #include <iostream>
@@ -10,9 +19,11 @@
 #include <numeric>
 #include <memory>
 
-//  Project includes
 #include "../headers/GameEngine.h"
 #include "../headers/CommandProcessing.h"
+#include "../headers/Map.h"
+#include "../headers/Player.h"
+
 
 #define PRESS_ENTER_TO_CONTINUE(clearConsole)                       \
     std::string _IGNORE_STRING;                                     \
@@ -38,6 +49,7 @@
 #else
 #define DEBUG_PRINT(...)
 #endif
+
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -94,173 +106,70 @@ static std::string reduceStringVector(const std::vector<std::string>& tokens) {
 }
 
 
+
 //----------------------------------------------------------------------------------------------------------------------
-//  TRANSITION FUNCTIONS
+//  Game Functions
 
-
-
-bool restart(const std::string& _, GameEngine& gameEngine) {
-    /*
-    //  Split the input string into tokens then asserts that no tokens were passed
-    vector<std::string> tokens = getTokens(_);
-    if (!tokens.empty()) {
-        std::cout << "\033[1;31m" << "FAILED TO LOAD MAP, INVALID NUMBER OF ARGUMENTS, EXPECTED 0, GOT " << tokens.size()
-                  << "\033[0m" << std::endl;
-        return false;
-    }
-     */
+bool game_restart(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_RESTART")
     return true;
 }
 
-
-
-/** \brief Loads a map. Sample command:
- *         |    loadmap FILEPATH
- *  \param input    String of all arguments passed.
- *  \return 'true' if the command executes successfully, 'false' otherwise */
-bool loadMap(const std::string& input, GameEngine& gameEngine) {
-    /*
-    //  Split the string into tokens
-    vector<std::string> tokens = getTokens(input);
-
-    //  Check that only one argument was passed:
-    if (tokens.size() != 1) {
-        std::cout << "\033[1;31m" << "FAILED TO LOAD MAP, INVALID NUMBER OF ARGUMENTS, EXPECTED 1, GOT " << tokens.size()
-                  << "\033[0m" << std::endl;
-        return false;
-    }
-
-    //  Load Map
-    MapLoader* mapLoader = new MapLoader(tokens.front());
-    Map* map = mapLoader->load();
-
-    //  Check if loading was successful (nullptr means fail)
-    if (map == nullptr) {
-        //  failed to load map
-        std::cout << "\033[1;31m" << "FAILED TO LOAD MAP, PERHAPS INVALID FILE" << "\033[0m" << std::endl;
-        return false;
-    }
-    gameEngine.setMap(map);
-
-    //  Deallocate memory and return true
-    delete mapLoader;
-     */
+bool game_loadMap(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_LOAD_MAP")
     return true;
 }
 
-
-
-/** \brief Validates the map. Sample command:
- *       |  validatemap
- *  \param _ String of all arguments passed. Meant to be empty, without tokens.
- *  \return 'true' if the command executes successfully, 'false' otherwise */
-bool validateMap(const std::string& _, GameEngine& gameEngine) {
-    /*
-    //  Split the input string into tokens then asserts that no tokens were passed
-    vector<std::string> tokens = getTokens(_);
-    if (!tokens.empty()) {
-        std::cout << "\033[1;31m" << "FAILED TO LOAD MAP, INVALID NUMBER OF ARGUMENTS, EXPECTED 0, GOT " << tokens.size()
-                  << "\033[0m" << std::endl;
-        return false;
-    }
-
-    //  Double check that the map pointer in the GameEngine is NOT null
-    if (gameEngine.getMap() == nullptr) {
-        std::cout << "\033[1;31m" << "FAILED TO VALIDATE MAP, NO MAP DEFINED IN GameObject\n" << "\033[0m";
-        return false;
-    }
-
-    //  Get the map, validate it and store status
-    Map* map = gameEngine.getMap();
-    bool validationStatus = map->validate();
-
-    if (validationStatus) {
-        //  Map successfully validated
-        std::cout << "\033[34m" << "MAP SUCCESSFULLY VALIDATED" << "\033[0m" << std::endl;
-        return true;
-    } else {
-        //  Map validation unsuccessful
-        std::cout << "\033[1;31m" << "FAILED TO VALIDATE MAP, ERROR WITH MAP CONFIGURATION\n" << "\033[0m";
-        return false;
-    }
-     */
+bool game_validateMap(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_VALIDATE_MAP")
     return true;
 }
 
-
-
-/** \brief Adds a player to the list of players.
- *         |    addplayer PLAYERNAME
- * \param input String of all arguments passed. Only one parameter expected, which will be the player name.
- * \return True if the player addition was successful */
-bool addPlayer(const std::string& input, GameEngine& gameEngine) {
-    /*
-    //  Split the string into tokens and checks that only one argument was passed
-    vector<std::string> tokens = getTokens(input);
-    if (tokens.size() != 1) {
-        std::cout << "\033[1;31m" << "FAILED TO LOAD MAP, INVALID NUMBER OF ARGUMENTS, EXPECTED 1, GOT " << tokens.size()
-                  << "\033[0m" << std::endl;
-        return false;
-    }
-
-    Player newPlayer(tokens.front(), {}, {});   // IMPLEMENT LATER WHEN BETTER UNDERSTANDING
-    gameEngine.addPlayerToGame(newPlayer);
-     */
+bool game_addPlayer(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_ADD_PLAYER")
     return true;
 }
 
-/** \brief Prints the names of all the players in the game.
- *  \param _ String of all arguments passed. Meant to be empty, without tokens.
- *  \return Returns true in all cases. */
-bool printPlayers(const std::string& _, GameEngine& gameEngine) {
-    /*
-    //  Split the input string into tokens then asserts that no tokens were passed
-    vector<std::string> tokens = getTokens(_);
-    if (!tokens.empty()) { return false; }
-
-    std::cout << "PLAYERS LIST:" << std::endl;
-    for (const Player& player : gameEngine.getPlayers()) {
-        std::cout << player.getPlayerName() << std::endl;
-    }
-     */
-    return true;    //  Always return true
-}
-
-bool assignCountries(const std::string& input, GameEngine& gameEngine) {
-    std::cout << "\033[34m" << "assigning countries w/ args:\t" << input << "\033[0m" << std::endl;
+bool game_printPlayers(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_PRINT_PLAYERS")
     return true;
 }
 
-bool issueOrder(const std::string& input, GameEngine& gameEngine) {
-    std::cout << "\033[34m" << "issuing order w/ args:\t" << input << "\033[0m" << std::endl;
+bool game_gameStart(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_GAME_START")
     return true;
 }
 
-bool endIssueOrders(const std::string& input, GameEngine& gameEngine) {
-    std::cout << "\033[34m" << "FINISHED issuing orders w/ args:\t" << input << "\033[0m" << std::endl;
+bool game_issueOrder(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_ISSUE_ORDER")
     return true;
 }
 
-bool executeOrder(const std::string& input, GameEngine& gameEngine) {
-    std::cout << "\033[34m" << "executing order w/ args:\t" << input << "\033[0m" << std::endl;
+bool game_endIssueOrders(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_END_ISSUE_ORDERS")
     return true;
 }
 
-bool endExecuteOrders(const std::string& input, GameEngine& gameEngine) {
-    std::cout << "\033[34m" << "FINISHED executing orders w/ args:\t" << input << "\033[0m" << std::endl;
+bool game_executeOrder(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_EXECUTE_ORDER")
     return true;
 }
 
-bool winGame(const std::string& input, GameEngine& gameEngine) {
-    std::cout << "\033[34m" << "win w/ args:\t" << input << "\033[0m" << std::endl;
+bool game_endExecuteOrders(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_END_EXECUTE_ORDERS")
     return true;
 }
 
-/** \brief Ends the GameEngine execution. */
-bool endProgram(const std::string& _, GameEngine& gameEngine) {
-    gameEngine.stopRunning();
+bool game_winGame(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_WIN_GAME")
     return true;
 }
+
+bool game_quit(const std::vector<std::string>& values, GameEngine& gameEngine) {
+    DEBUG_PRINT("GAME_END_PROGRAM")
+    return true;
+}
+
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -318,12 +227,16 @@ std::string State::getStateName() const {
     return *(this->stateName);
 }
 
+void State::setStateName(const std::string& newStateName) {
+    *this->stateName = newStateName;
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 //  "State" implementations
 
 TransitionData::TransitionData(size_t index1, size_t index2, size_t numberOfArguments, std::string transitionName,
-                               std::string helpString, bool (*transitionFunction)(const std::string &, GameEngine &)) {
+                               std::string helpString, bool (*transitionFunction)(const std::vector<std::string>&, GameEngine&)) {
     this->index1 = new size_t(index1);
     this->index2 = new size_t(index2);
     this->numberOfArguments = new size_t(numberOfArguments);
@@ -377,195 +290,89 @@ std::ostream &operator<<(std::ostream &os, const TransitionData& transitionData)
     return os;
 }
 
+bool TransitionData::execute(const std::vector<std::string>& tokens, GameEngine& gameEngine) {
+    if (transitionFunction == nullptr) {
+        return false;
+    }
+
+    return transitionFunction(tokens, gameEngine);
+}
+
+//  Standard setter/mutator functions
+void TransitionData::setIndex1(size_t newIndex1) { *this->index1 = newIndex1; }
+
+void TransitionData::setIndex2(size_t newIndex2) { *this->index2 = newIndex2; }
+
+void TransitionData::setNumberOfArguments(size_t newNumberOfArguments) { *this->numberOfArguments = newNumberOfArguments; }
+
+void TransitionData::setTransitionName(const std::string& newTransitionName) { *this->transitionName = newTransitionName; }
+
+void TransitionData::setHelpString(const std::string& newHelpString) { *this->helpString = newHelpString; }
+
+void TransitionData::setTransitionFunction(bool (*newTransitionFunction)(const std::vector<std::string>&, GameEngine&))
+{ this->transitionFunction = newTransitionFunction; }
+
+
 
 //----------------------------------------------------------------------------------------------------------------------
 //  "GameEngine" implementations
 
-
 GameEngine::GameEngine()
-    : currentStateIndex(new size_t(0)), statesSize(new size_t(9)), transitionDatabaseSize(new size_t(15)),
-      isRunning(new bool(false)), commandProcessor(nullptr) {
-    states = new State[] {
-        State("start"),
-        State("map loaded"),
-        State("map validated"),
-        State("players added"),
-        State("assign reinforcement"),
-        State("issueorder"),
-        State("execute orders"),
-        State("win"),
-        State("END")
-    };
+    : GameEngine({}, {}, nullptr) {
 
-    transitionDatabase = new TransitionData[] {
-        TransitionData(0, 1, 1, "loadmap", "loadmap [--filepath]", &loadMap),
-        TransitionData(1, 1, 1, "loadmap", "loadmap [--filepath]", &loadMap),
-        TransitionData(1, 2, 0, "validatemap", "validatemap", &validateMap),
-        TransitionData(2, 3, 1, "addplayer", "addplayer [--playername]", &addPlayer),
-        TransitionData(3, 3, 1, "addplayer", "addplayer [--playername]", &addPlayer),
-        TransitionData(3, 3, 0, "viewplayers", "viewplayers", &printPlayers),
-        TransitionData(3, 4, 0, "assigncountries", "assigncountries", &assignCountries),
-        TransitionData(4, 5, 0, "issueorder", "issueorder -SAMPLE ARGUMENTS-", &issueOrder),
-        TransitionData(5, 5, 0, "issueorder", "issueorder -SAMPLE ARGUMENTS-", &issueOrder),
-        TransitionData(5, 6, 0, "endissueorders", "endissueorders", &endIssueOrders),
-        TransitionData(6, 6, 0, "execorder", "execorder -SAMPLE ARGUMENTS-", &executeOrder),
-        TransitionData(6, 4, 0, "endexecorders", "endexecorders", &endExecuteOrders),
-        TransitionData(6, 7, 0, "win", "win", &winGame),
-        TransitionData(7, 0, 0, "replay", "replay", &restart),
-        TransitionData(7, 8, 0, "quit", "quit", &endProgram)
-    };
-
-    //  Initialize the command processor member variable
-    initializeCommandProcessor();
+    //  Empty
+    DEBUG_PRINT("Called [GameEngine, Default Constructor]")
 }
 
+GameEngine::GameEngine(std::vector<State> states, std::vector<TransitionData> transitionDatabase,
+                       CommandProcessor* commandProcessor) : states(std::move(states)),
+                       transitionDatabase(std::move(transitionDatabase)), currentStateIndex(0), isRunning(false),
+                       map(nullptr) {
 
-GameEngine::GameEngine(const GameEngine& otherGameEngine) {
-    //  Initializing the dynamic arrays
-    this->statesSize = new size_t(*otherGameEngine.statesSize);
-    this->transitionDatabaseSize = new size_t(*otherGameEngine.transitionDatabaseSize);
-    this->currentStateIndex = new size_t(*otherGameEngine.currentStateIndex);
-    this->isRunning = new bool(*otherGameEngine.isRunning);
-
-    this->states = new State[*this->statesSize];
-    this->transitionDatabase = new TransitionData[*this->transitionDatabaseSize];
-
-    for (int i = 0; i < *this->statesSize; i++) {
-        this->states[i] = otherGameEngine.states[i];
+    //  In-case the passed command processor is a nullptr, set default to console command processor
+    //  Otherwise, get a copy/clone of the passed command processor
+    if (commandProcessor == nullptr) {
+        this->commandProcessor = new ConsoleCommandProcessorAdapter(this->states, this->transitionDatabase);
+    } else {
+        this->commandProcessor = commandProcessor->clone();
     }
 
-    for (int i = 0; i < *this->transitionDatabaseSize; i++) {
-        this->transitionDatabase[i] = otherGameEngine.transitionDatabase[i];
-    }
-
-    //  Initialize the command processor member variable (get a copy)
-    this->commandProcessor = otherGameEngine.commandProcessor->clone();
+    DEBUG_PRINT("Called [GameEngine, Parameterized Constructor (std::vector<State>, std::vector<TransitionDatabase>, CommandProcessor*)]")
 }
 
+GameEngine::GameEngine(const GameEngine& other) : GameEngine(other.getStates(), other.getTransitionDatabase(), other.commandProcessor) {
 
-GameEngine::GameEngine(GameEngine &&otherGameEngine) noexcept {
-    //  Copy the values from the other object
-    this->isRunning = new bool(*otherGameEngine.isRunning);
-    this->statesSize = new size_t(*otherGameEngine.statesSize);
-    this->transitionDatabaseSize = new size_t(*otherGameEngine.transitionDatabaseSize);
-    this->currentStateIndex = new size_t(*otherGameEngine.currentStateIndex);
-    this->states = new State[*this->statesSize];
-    this->transitionDatabase = new TransitionData[*this->transitionDatabaseSize];
-
-    for (int i = 0; i < *this->statesSize; i++) {
-        this->states[i] = otherGameEngine.states[i];
-    }
-
-    for (int i = 0; i < *this->transitionDatabaseSize; i++) {
-        this->transitionDatabase[i] = otherGameEngine.transitionDatabase[i];
-    }
-
-    //  Initialize the command processor member variable (get a copy)
-    this->commandProcessor = otherGameEngine.commandProcessor->clone();
-
-    //  Deallocates the values of the other GameEngine object and sets the pointers to a null pointer
-    delete[] otherGameEngine.states;
-    delete[] otherGameEngine.transitionDatabase;
-    delete otherGameEngine.currentStateIndex;
-    delete otherGameEngine.statesSize;
-    delete otherGameEngine.transitionDatabaseSize;
-    delete otherGameEngine.isRunning;
-    delete otherGameEngine.commandProcessor;
-
-    otherGameEngine.states = nullptr;
-    otherGameEngine.transitionDatabase = nullptr;
-    otherGameEngine.currentStateIndex = nullptr;
-    otherGameEngine.statesSize = nullptr;
-    otherGameEngine.transitionDatabaseSize = nullptr;
-    otherGameEngine.isRunning = nullptr;
-    otherGameEngine.commandProcessor = nullptr;
+    //  Empty
+    DEBUG_PRINT("Called [GameEngine, Parameterized Constructor (const GameEngine&)]")
 }
 
 
 GameEngine::~GameEngine() {
-    //  Deallocate the values/contents of the pointers
-    delete[] states;
-    delete[] transitionDatabase;
-    delete currentStateIndex;
-    delete statesSize;
-    delete transitionDatabaseSize;
-    delete isRunning;
-    delete commandProcessor;
-
-    //  Set the member pointers to null pointer
-    states = nullptr;
-    transitionDatabase = nullptr;
-    currentStateIndex = nullptr;
-    statesSize = nullptr;
-    transitionDatabaseSize = nullptr;
-    isRunning = nullptr;
-    commandProcessor = nullptr;
-}
-
-GameEngine& GameEngine::operator=(const GameEngine &otherGameEngine) {
-    //  Check for self-assignment
-    if (this != &otherGameEngine) {
-        this->statesSize = new size_t(*otherGameEngine.statesSize);
-        this->transitionDatabaseSize = new size_t(*otherGameEngine.transitionDatabaseSize);
-        this->currentStateIndex = new size_t(*otherGameEngine.currentStateIndex);
-        this->isRunning = new bool(*otherGameEngine.isRunning);
-
-        this->states = new State[*this->statesSize];
-        this->transitionDatabase = new TransitionData[*this->transitionDatabaseSize];
-
-        for (int i = 0; i < *this->statesSize; i++) {
-            this->states[i] = otherGameEngine.states[i];
-        }
-
-        for (int i = 0; i < *this->transitionDatabaseSize; i++) {
-            this->transitionDatabase[i] = otherGameEngine.transitionDatabase[i];
-        }
-
-        //  Initialize the command processor member variable (get a copy)
-        this->commandProcessor = otherGameEngine.commandProcessor->clone();
+    //  Delete/Deallocate all player objects
+    for (auto* playerPtr : players) {
+        delete playerPtr;
     }
 
-    return *this;
+    //  Deallocate other pointer objects
+    delete commandProcessor;
+    delete map;
+    commandProcessor = nullptr;
+    map = nullptr;
 }
 
-GameEngine& GameEngine::operator=(GameEngine &&otherGameEngine) noexcept {
+
+GameEngine& GameEngine::operator=(const GameEngine& otherGameEngine) {
     //  Check for self-assignment
     if (this != &otherGameEngine) {
-        //  Copy the values from the other object
-        this->isRunning = new bool(*otherGameEngine.isRunning);
-        this->statesSize = new size_t(*otherGameEngine.statesSize);
-        this->transitionDatabaseSize = new size_t(*otherGameEngine.transitionDatabaseSize);
-        this->currentStateIndex = new size_t(*otherGameEngine.currentStateIndex);
-        this->states = new State[*this->statesSize];
-        this->transitionDatabase = new TransitionData[*this->transitionDatabaseSize];
-
-        for (int i = 0; i < *this->statesSize; i++) {
-            this->states[i] = otherGameEngine.states[i];
-        }
-
-        for (int i = 0; i < *this->transitionDatabaseSize; i++) {
-            this->transitionDatabase[i] = otherGameEngine.transitionDatabase[i];
-        }
-
-        //  Initialize the command processor member variable (get a copy)
+        this->currentStateIndex = otherGameEngine.currentStateIndex;
+        this->isRunning = otherGameEngine.isRunning;
+        this->states = otherGameEngine.states;
+        this->transitionDatabase = otherGameEngine.transitionDatabase;
         this->commandProcessor = otherGameEngine.commandProcessor->clone();
+        this->players = otherGameEngine.getPlayers();
 
-        //  Deallocates the values of the other GameEngine object and sets the pointers to a null pointer
-        delete[] otherGameEngine.states;
-        delete[] otherGameEngine.transitionDatabase;
-        delete otherGameEngine.currentStateIndex;
-        delete otherGameEngine.statesSize;
-        delete otherGameEngine.transitionDatabaseSize;
-        delete otherGameEngine.isRunning;
-        delete otherGameEngine.commandProcessor;
-
-        otherGameEngine.states = nullptr;
-        otherGameEngine.transitionDatabase = nullptr;
-        otherGameEngine.currentStateIndex = nullptr;
-        otherGameEngine.statesSize = nullptr;
-        otherGameEngine.transitionDatabaseSize = nullptr;
-        otherGameEngine.isRunning = nullptr;
-        otherGameEngine.commandProcessor = nullptr;
+        //  Checks if map is not a nullptr. If not, creates a copy.
+        this->map = (otherGameEngine.map == nullptr) ? nullptr : new Map(*otherGameEngine.map);
     }
 
     return *this;
@@ -573,33 +380,48 @@ GameEngine& GameEngine::operator=(GameEngine &&otherGameEngine) noexcept {
 
 std::ostream& operator<<(std::ostream& os, const GameEngine& gameEngine) {
     os << "STATES:\n";
-    for (int i = 0; i < *gameEngine.statesSize; i++) {
+    for (int i = 0; i < gameEngine.states.size(); i++) {
         os << "[" << i << "] " << gameEngine.states[i] << std::endl;
     }
 
     os << "\nTRANSITIONS:\n";
-    for (int i = 0; i < *gameEngine.transitionDatabaseSize; i++) {
+    for (int i = 0; i < gameEngine.transitionDatabase.size(); i++) {
         os << "[" << i << "] " << gameEngine.transitionDatabase[i] << std::endl;
     }
 
-    os << "\nCURRENT STATE: " << gameEngine.states[*gameEngine.currentStateIndex].getStateName();
-    os << "\nIS RUNNING:    " << (*gameEngine.isRunning ? "true" : "false");
+    os << "\nCURRENT STATE: " << gameEngine.states[gameEngine.currentStateIndex].getStateName();
+    os << "\nIS RUNNING:    " << (gameEngine.isRunning ? "true" : "false");
     return os;
 }
 
-
+/** Implementation Details:
+ *  - First, the method checks if all of the member variables have been instantiated and provide some info. There must
+ *    at least one state and at least one TransitionData object. Furthermore, a CommandProcessor object must be given.
+ *
+ *  - Second the game loop then starts, starting when a member variable 'isRunning' is set to true, and ending when set
+ *    to false.
+ *    The client is prompted and then input is taken through the command processor object. Command is encapsulated in a
+ *    'Command' object. The command is then verified. If valid, then it is executed by calling the respective transition
+ *    function. If invalid, then an error message is printed.
+ */
 void GameEngine::execute() {
-    //  Set the isRunning status variable to 'true'
-    *isRunning = true;
+    //  Checks if all the required variables have been instantiated and checks for the presence of any data
+    if (states.empty() || transitionDatabase.empty() || commandProcessor == nullptr) {
+        std::cerr << "ERROR: GameEngine not fully instantiated. Dependencies missing" << std::endl;
+        return;
+    }
 
-    while (*isRunning) {
+    //  Set the isRunning status variable to 'true'
+    isRunning = true;
+
+    while (isRunning) {
         //  Printing out prompt
-        std::string currentStateName = states[*currentStateIndex].getStateName();
+        std::string currentStateName = states[currentStateIndex].getStateName();
         std::cout << "CURRENT STATE:\t[" << currentStateName << "]" << std::endl;
         std::cout << "Please enter a command:\n";
 
         //  Taking input
-        auto command = std::make_unique<Command>(commandProcessor->getCommand(states[*currentStateIndex]));
+        auto command = std::make_unique<Command>(commandProcessor->getCommand(states[currentStateIndex]));
 
         //  If input is empty, refresh
         if (command->getRawCommand().empty()) {
@@ -616,8 +438,8 @@ void GameEngine::execute() {
             processCommand(transitionDatabase[transitionDataIndex], argumentsRaw);
         } else {
             //  Transition is invalid, print series of error messages
-            std::cout << "\033[1;31m" << "INVALID COMMAND. View the valid commands below:" << "\033[0m";
-            std::cout << getHelpStrings() << std::endl;
+            std::cerr << "\033[1;31m" << "INVALID COMMAND. View the valid commands below:" << "\033[0m";
+            std::cerr << getHelpStrings() << std::endl;
         }
 
         //  Press enter to continue.
@@ -625,10 +447,27 @@ void GameEngine::execute() {
     }
 }
 
+/**
+ * \brief Flags the game engine to stop running.
+ */
+void GameEngine::stopRunning() {
+    this->isRunning = false;
+}
+
+/**
+ * \brief Returns the corresponding TransitionData object using the currentStateIndex member variable and the given
+ *        transition name.
+ * \return  Returns the index of the corresponding TransitionData object in the transitionDatabase vector
+ *
+ * Implementation details:
+ * Iterates through the transition database vector, comparing transition.index1 and transition.transitionName to
+ * 'currentStateIndex' and 'givenTransitionName' respectively for equality. Returns the index of the first match, -1
+ * otherwise.
+ */
 int GameEngine::indexOfTransition(const std::string& givenTransitionName) const {
-    for (int i = 0 ; i < *transitionDatabaseSize; i++) {
+    for (int i = 0 ; i < transitionDatabase.size(); i++) {
         TransitionData transitionData = transitionDatabase[i];
-        if ((transitionData.getIndex1() == *currentStateIndex)
+        if ((transitionData.getIndex1() == currentStateIndex)
             && (transitionData.getTransitionName() == givenTransitionName)) {
             return i;
         }
@@ -637,22 +476,35 @@ int GameEngine::indexOfTransition(const std::string& givenTransitionName) const 
     return -1;
 }
 
+/**
+ * \brief Returns a string of all the help strings associated with each transition in the current state.
+ *
+ * Implementation details:
+ * Iterates through the transition database vector, comparing the 'transition.index1' to 'currentStateIndex'. Equality
+ * indicates a possible transition from the given state to another. For each transition data, take the help string and
+ * append to the return string.
+ */
 std::string GameEngine::getHelpStrings() const {
     std::string stringBuilder;
-
-    for (int i = 0 ; i < *transitionDatabaseSize; i++) {
-        TransitionData transitionData = transitionDatabase[i];
-        if (transitionData.getIndex1() == *currentStateIndex) {
+    for (const auto& transitionData : transitionDatabase) {
+        if (transitionData.getIndex1() == currentStateIndex) {
             stringBuilder += "\n\"" + transitionData.getHelpString() + "\"";
         }
     }
-
     return stringBuilder;
 }
 
+/**
+ * \brief Further processes a command, calling its respective transition function.
+ *
+ * Implementation details:
+ * Calls the respective transition function given a command. A 'true' status indicates a successful operation. 'False'
+ * indicates an error with the provided arguments or an error somewhere down the line of execution. If 'true', then
+ * we transition into the next state, updating the 'currentStateIndex' member variable.
+ */
 void GameEngine::processCommand(TransitionData transitionData, const std::string& argumentsRaw) {
     //  Call the transition function and then return the status
-    bool status = transitionData.getTransitionFunction()(argumentsRaw, *this);
+    bool status = transitionData.execute(getTokens(argumentsRaw), *this);
 
     if (!status) {
         //  An error occurred, print error message, and then return
@@ -662,44 +514,50 @@ void GameEngine::processCommand(TransitionData transitionData, const std::string
     }
 
     //  Transition into the next state
-    *currentStateIndex = transitionData.getIndex2();
+    currentStateIndex = transitionData.getIndex2();
 
     //  Print that you have switched states
-    std::string newCurrentStateName = states[*currentStateIndex].getStateName();
+    std::string newCurrentStateName = states[currentStateIndex].getStateName();
     std::cout << "\033[34m" << "SWITCHED STATES TO:\t[" << newCurrentStateName << "]\033[0m" << std::endl;
 }
 
-const State* GameEngine::getStates() const {
-    auto* statesCopy = new State[*this->statesSize];
+//  Getter/Accessor methods
+std::vector<State> GameEngine::getStates() const { return states; }
+std::vector<TransitionData> GameEngine::getTransitionDatabase() const { return transitionDatabase; }
+bool GameEngine::isGameRunning() const { return isRunning; }
+std::vector<Player*> GameEngine::getPlayers() const { return players; }
+Map* GameEngine::getMap() const { return map; }
 
-    for (size_t i = 0; i < *this->statesSize; i++)
-        statesCopy[i] = State(this->states[i]);
+//  Setter/Mutator methods
+void GameEngine::setStates(std::vector<State> newStates) { this->states = std::move(newStates); }
+void GameEngine::setTransitionData(std::vector<TransitionData> newTransitionDatabase) { this->transitionDatabase = std::move(newTransitionDatabase); }
+void GameEngine::setCommandProcessor(const CommandProcessor& newCommandProcessor) { this->commandProcessor = newCommandProcessor.clone(); }
+void GameEngine::setMap(Map* newMap) { this->map = newMap; }
 
-    return statesCopy;
+void GameEngine::setPlayers(std::vector<Player*> newPlayers) {
+    for (auto* playerPtr : this->players) {
+        delete playerPtr;
+    }
+
+    this->players = std::move(newPlayers);
 }
 
-const TransitionData* GameEngine::getTransitionsDatabase() const {
-    auto* transitionDatabaseCopy = new TransitionData[*this->transitionDatabaseSize];
+void GameEngine::addPlayer(Player&& playerData) {
+    auto* newPlayer = new Player();
+    newPlayer->setPlayerName(playerData.getPlayerName());
+    newPlayer->setOrdersList(playerData.getOrdersList());
+    newPlayer->setHandCards(playerData.getHandCards());
+    newPlayer->setTerritories(playerData.getTerritories());
 
-    for (size_t i = 0; i < *this->transitionDatabaseSize; i++)
-        transitionDatabaseCopy[i] = TransitionData(this->transitionDatabase[i]);
+    playerData.setPlayerName("");
+    playerData.setOrdersList(nullptr);
+    playerData.setHandCards({});
+    playerData.setTerritories({});
 
-    return transitionDatabaseCopy;
+    players.push_back(newPlayer);
 }
 
-size_t GameEngine::getStatesSize() const { return *statesSize; }
 
-size_t GameEngine::getTransitionDatabaseSize() const { return *transitionDatabaseSize; }
-
-void GameEngine::setCommandProcessor(const CommandProcessor& newCommandProcessor) {
-    this->commandProcessor = newCommandProcessor.clone();
-}
-
-void GameEngine::initializeCommandProcessor() {
-    //  TODO find a way to make the command processor dependent on the command line arguments
-    commandProcessor = new ConsoleCommandProcessorAdapter(states, transitionDatabase, *statesSize,
-                                                          *transitionDatabaseSize);
-
-    //  commandProcessor = new FileCommandProcessorAdapter(states, transitionDatabase, *statesSize, *transitionDatabaseSize,
-    //                                                     "../commands.txt");
-}
+#ifdef __GNUC__
+#pragma clang diagnostic pop
+#endif
