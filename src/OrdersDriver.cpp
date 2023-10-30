@@ -3,6 +3,9 @@
 #include "../headers/Map.h"
 #include "../headers/Cards.h"
 
+/**
+ * \brief Tests Order-related functionality specified for Assignment I
+ */
 void testOrdersLists()
 {
     Player *player1 = new Player();
@@ -71,4 +74,11 @@ void testOrdersLists()
     }
 
     cout << "\n-------------------------------------------------------------\n\n";
+}
+
+/**
+ * \brief Tests Order execution-related functionality specified for Assignment II
+ */
+void testOrderExecution()
+{
 }

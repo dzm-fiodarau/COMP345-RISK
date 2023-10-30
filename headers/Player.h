@@ -13,15 +13,11 @@
 #include <string>
 
 //  Forward declaration of required classes from other header files. (included in .cpp file)
-class OrdersList;   //  Orders.h
-class Card;         //  Cards.h
-class Territory;    //  Map.h
-
-
+class OrdersList; //  Orders.h
+class Card;       //  Cards.h
+class Territory;  //  Map.h
 
 using namespace std;
-
-
 
 /**
  * \class   Player
@@ -32,10 +28,16 @@ class Player
 private:
     string playerName;
     OrdersList *ordersList;
+    // Number of armu units the player has to deploy
+    int reinforcementPool;
+    // Indication of whether the player has to draw a card at the end of his turn or not
+    bool drawCard;
 
 public:
     vector<Card *> handCard;
     vector<Territory *> territory;
+    vector<Player *> playersInNegotiation;
+    static Player *neutralPlayer;
 
     // Default constructor
     Player();
@@ -57,7 +59,7 @@ public:
      * \param   source  Source of territory
      * \param   player  Player name
      */
-    void issueOrder(const string& type, Territory *target, int armyUnits, Territory *source, Player *player);
+    void issueOrder(const string &type, Territory *target, int armyUnits, Territory *source, Player *player);
 
     // Operator Overloads
     Player &operator=(const Player &other);
@@ -65,15 +67,19 @@ public:
 
     //  Getter/Accessor methods
     string getPlayerName() const;
-    OrdersList* getOrdersList() const;
+    OrdersList *getOrdersList() const;
     vector<Card *> getHandCards() const;
     vector<Territory *> getTerritories() const;
+    int getReinforcementPool() const;
+    bool getDrawCard() const;
 
     //  Setter/Mutator methods
     void setPlayerName(std::string);
     void setOrdersList(OrdersList *);
     void setHandCards(vector<Card *>);
     void setTerritories(vector<Territory *>);
+    void addToReinforcementPool(int units);
+    void setDrawCard(bool drawCard);
 };
 
 #ifdef __GNUC__
