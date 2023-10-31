@@ -5,12 +5,21 @@
 #include "../headers/Map.h"
 #include "../headers/Cards.h"
 
-Player *Player::neutralPlayer = new Player();
+Player *Player::neutralPlayer = new Player("Neutral");
 
 // Default constructor
 Player::Player()
 {
     playerName = "";
+    ordersList = new OrdersList(this);
+    reinforcementPool = 0;
+    drawCard = false;
+}
+
+// Name constructor
+Player::Player(string pn)
+{
+    playerName = pn;
     ordersList = new OrdersList(this);
     reinforcementPool = 0;
     drawCard = false;

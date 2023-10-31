@@ -41,6 +41,8 @@ public:
 
     // Default constructor
     Player();
+    // Name constructor
+    Player(string pn);
     // Constructor
     Player(string pn, vector<Territory *> t, vector<Card *> hc);
     // Copy constructor
