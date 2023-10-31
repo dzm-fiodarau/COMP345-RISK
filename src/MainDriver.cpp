@@ -2,6 +2,7 @@ void testCards();
 void testGameStates();
 void testLoadMaps();
 void testOrdersLists();
+void testOrderExecution();
 void testPlayers();
 void testCommandProcessing();
 
@@ -9,18 +10,17 @@ void testCommandProcessing();
 #ifndef DEBUG
 int main()
 {
-    testLoadMaps();
-    testOrdersLists();
-    testCards();
-    testPlayers();
+    // testLoadMaps();
+    // testOrdersLists();
+    testOrderExecution();
+    // testCards();
+    // testPlayers();
     testGameStates();
     testCommandProcessing();
 
     return 0;
 }
 #endif
-
-
 
 #ifdef DEBUG
 int main()

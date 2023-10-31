@@ -28,7 +28,7 @@ OrdersList &OrdersList::operator=(const OrdersList &ordersList)
 
 ostream &operator<<(ostream &outs, const OrdersList &ordersList)
 {
-    outs << "Orders List: {\n";
+    outs << "{\n";
     list<Order *>::const_iterator itr;
     for (itr = ordersList.orders.begin(); itr != ordersList.orders.end(); ++itr)
     {
@@ -377,6 +377,7 @@ string AdvanceOrder::execute()
                                                     target->getOwner()->territory.end());
                 target->setOwner(ordersList->owner);
                 ordersList->owner->territory.push_back(target);
+                source->setNumberOfArmies(source->getNumberOfArmies() - armyUnits);
                 target->setNumberOfArmies(armyUnits > attackerUnitsKilled ? armyUnits - attackerUnitsKilled : 0);
                 ordersList->owner->setDrawCard(true);
                 cout << *this << " has been executed." << endl;
