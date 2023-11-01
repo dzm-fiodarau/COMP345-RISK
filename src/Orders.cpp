@@ -1,10 +1,10 @@
 #include <iostream>
+#include <algorithm>
 
 #include "../headers/Orders.h"
 #include "../headers/Map.h"
 #include "../headers/Player.h"
 #include "../headers/Cards.h"
-
 
 //----------------------------------------------------------------------------------------------------------------------
 //  ORDERS LIST
@@ -19,8 +19,10 @@ OrdersList::OrdersList(OrdersList &ordersList)
     owner = ordersList.owner;
 }
 
-Order *OrdersList::operator[](size_t index) {
-    if (index < orders.size()) {
+Order *OrdersList::operator[](size_t index)
+{
+    if (index < orders.size())
+    {
         auto iterator = orders.begin();
         std::advance(iterator, index);
         return *iterator;
@@ -31,8 +33,8 @@ Order *OrdersList::operator[](size_t index) {
 
 OrdersList &OrdersList::operator=(const OrdersList &ordersList)
 {
-    if (this == &ordersList) {
-
+    if (this == &ordersList)
+    {
     }
 
     orders = ordersList.orders;
@@ -42,7 +44,7 @@ OrdersList &OrdersList::operator=(const OrdersList &ordersList)
 
 ostream &operator<<(ostream &outs, const OrdersList &ordersList)
 {
-    outs << "Orders List: {\n";
+    outs << "{\n";
     list<Order *>::const_iterator itr;
     for (itr = ordersList.orders.begin(); itr != ordersList.orders.end(); ++itr)
     {
@@ -52,8 +54,10 @@ ostream &operator<<(ostream &outs, const OrdersList &ordersList)
     return outs;
 }
 
-bool OrdersList::addOrder(Order *order) {
-    if (order != nullptr) {
+bool OrdersList::addOrder(Order *order)
+{
+    if (order != nullptr)
+    {
         orders.push_back(order);
         return true;
     }
@@ -61,19 +65,27 @@ bool OrdersList::addOrder(Order *order) {
     return false;
 }
 
-const Player* OrdersList::getOwner() const {
+const Player *OrdersList::getOwner() const
+{
     return this->owner;
 }
 
-Order *OrdersList::getNextOrder() {
-    auto* nextOrder = orders.front();
-    orders.pop_front();
+Order *OrdersList::getNextOrder()
+{
+    auto *nextOrder = !orders.empty() ? orders.front() : nullptr;
+    if (!orders.empty())
+    {
+        orders.pop_front();
+    }
     return nextOrder;
 }
 
-void OrdersList::apply(void (*func)(Order*)) {
-    for (auto* order : orders) {
-        if (order != nullptr) {
+void OrdersList::apply(void (*func)(Order *))
+{
+    for (auto *order : orders)
+    {
+        if (order != nullptr)
+        {
             func(order);
         }
     }
@@ -118,7 +130,8 @@ bool OrdersList::move(Order *order, int index)
 
 //----------------------------------------------------------------------------------------------------------------------
 //  ORDER
-Order::Order(Player *owner, const string& type, Territory *target) {
+Order::Order(Player *owner, const string &type, Territory *target)
+{
     this->owner = owner;
     this->type = type;
     this->target = target;
@@ -135,7 +148,8 @@ Order::~Order() = default;
 
 Order &Order::operator=(const Order &order)
 {
-    if (this != &order) {
+    if (this != &order)
+    {
         owner = order.owner;
         type = order.type;
         target = order.target;
@@ -146,7 +160,14 @@ Order &Order::operator=(const Order &order)
 
 ostream &operator<<(ostream &outs, const Order &order)
 {
-    return outs << "Order: type = " << order.type << ", target = " << order.target;
+    if (order.target)
+    {
+        return outs << "Order: type = " << order.type << ", target = " << order.target->getName();
+    }
+    else
+    {
+        return outs << "Order: type = " << order.type << ", target = NULL";
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -167,7 +188,8 @@ DeployOrder::~DeployOrder() = default;
 
 DeployOrder &DeployOrder::operator=(const DeployOrder &order)
 {
-    if (this != &order) {
+    if (this != &order)
+    {
         Order::operator=(order);
         armyUnits = order.armyUnits;
     }
@@ -177,7 +199,7 @@ DeployOrder &DeployOrder::operator=(const DeployOrder &order)
 
 ostream &operator<<(ostream &outs, const DeployOrder &order)
 {
-    return outs << "DeployOrder: type = " << order.type << ", target = " << order.target
+    return outs << "DeployOrder: type = " << order.type << ", target = " << order.target->getName()
                 << ", army units = " << order.armyUnits;
 }
 
@@ -201,7 +223,8 @@ AdvanceOrder::~AdvanceOrder() = default;
 
 AdvanceOrder &AdvanceOrder::operator=(const AdvanceOrder &order)
 {
-    if (this != &order) {
+    if (this != &order)
+    {
         Order::operator=(order);
         armyUnits = order.armyUnits;
         source = order.source;
@@ -212,8 +235,8 @@ AdvanceOrder &AdvanceOrder::operator=(const AdvanceOrder &order)
 
 ostream &operator<<(ostream &outs, const AdvanceOrder &order)
 {
-    return outs << "AdvanceOrder: type = " << order.type << ", target = " << order.target
-                << ", army units = " << order.armyUnits << ", source = " << order.source;
+    return outs << "AdvanceOrder: type = " << order.type << ", target = " << order.target->getName()
+                << ", army units = " << order.armyUnits << ", source = " << order.source->getName();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -234,7 +257,8 @@ BombOrder::~BombOrder() = default;
 
 BombOrder &BombOrder::operator=(const BombOrder &order)
 {
-    if (this != &order) {
+    if (this != &order)
+    {
         Order::operator=(order);
     }
 
@@ -243,7 +267,7 @@ BombOrder &BombOrder::operator=(const BombOrder &order)
 
 ostream &operator<<(ostream &outs, const BombOrder &order)
 {
-    return outs << "BombOrder: type = " << order.type << ", target = " << order.target;
+    return outs << "BombOrder: type = " << order.type << ", target = " << order.target->getName();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -264,7 +288,8 @@ BlockadeOrder::~BlockadeOrder() = default;
 
 BlockadeOrder &BlockadeOrder::operator=(const BlockadeOrder &order)
 {
-    if (this != &order) {
+    if (this != &order)
+    {
         Order::operator=(order);
     }
 
@@ -273,7 +298,7 @@ BlockadeOrder &BlockadeOrder::operator=(const BlockadeOrder &order)
 
 ostream &operator<<(ostream &outs, const BlockadeOrder &order)
 {
-    return outs << "BlockadeOrder: type = " << order.type << ", target = " << order.target;
+    return outs << "BlockadeOrder: type = " << order.type << ", target = " << order.target->getName();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -296,7 +321,8 @@ AirliftOrder::~AirliftOrder() = default;
 
 AirliftOrder &AirliftOrder::operator=(const AirliftOrder &order)
 {
-    if (this != &order) {
+    if (this != &order)
+    {
         Order::operator=(order);
         armyUnits = order.armyUnits;
         source = order.source;
@@ -307,8 +333,8 @@ AirliftOrder &AirliftOrder::operator=(const AirliftOrder &order)
 
 ostream &operator<<(ostream &outs, const AirliftOrder &order)
 {
-    return outs << "AirliftOrder: type = " << order.type << ", target = " << order.target
-                << ", army units = " << order.armyUnits << ", source = " << order.source;
+    return outs << "AirliftOrder: type = " << order.type << ", target = " << order.target->getName()
+                << ", army units = " << order.armyUnits << ", source = " << order.source->getName();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -329,7 +355,8 @@ NegotiateOrder::~NegotiateOrder() = default;
 
 NegotiateOrder &NegotiateOrder::operator=(const NegotiateOrder &order)
 {
-    if (this != &order) {
+    if (this != &order)
+    {
         Order::operator=(order);
         player = order.player;
     }
@@ -339,7 +366,7 @@ NegotiateOrder &NegotiateOrder::operator=(const NegotiateOrder &order)
 
 ostream &operator<<(ostream &outs, const NegotiateOrder &order)
 {
-    return outs << "NegotiateOrder: type = " << order.type << ", target player = " << order.player;
+    return outs << "NegotiateOrder: type = " << order.type << ", target player = " << order.player->getPlayerName();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -351,64 +378,59 @@ bool Order::validate()
 
 bool DeployOrder::validate()
 {
-    // TO DO: add verification of number of army units specified validity (reinforcement pool)
-    return Order::validate() && armyUnits > 0 && ((find(begin(owner->territory), end(owner->territory), target)) != end(owner->territory));
+    return Order::validate() && ((find(begin(owner->territory), end(owner->territory), target)) != end(owner->territory));
 }
 
 bool AdvanceOrder::validate()
 {
-    return Order::validate() && source && armyUnits > 0 && armyUnits <= (*target).numberOfArmies && (find(begin((*source).adjacentTerritories), end((*source).adjacentTerritories), target) != end((*source).adjacentTerritories)) && ((find(begin(owner->territory), end(owner->territory), source)) != end(owner->territory));
+
+    return Order::validate() && source && armyUnits > 0 && armyUnits <= (*source).numberOfArmies && (find(begin((*source).adjacentTerritories), end((*source).adjacentTerritories), target) != end((*source).adjacentTerritories)) && ((find(begin(owner->territory), end(owner->territory), source)) != end(owner->territory)) && source != target && ((find(begin(owner->playersInNegotiation), end(owner->playersInNegotiation), target->getOwner())) == end(owner->playersInNegotiation));
+}
+
+bool validateEnemyAdjacent(Player *attacker, Territory *target)
+{
+    for (unsigned int i = 0; i < attacker->territory.size(); i++)
+    {
+        if ((find(begin(attacker->territory[i]->adjacentTerritories), end(attacker->territory[i]->adjacentTerritories), target)) != end(attacker->territory[i]->adjacentTerritories))
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool BombOrder::validate()
 {
-    return Order::validate() && (find_if(begin(owner->handCard), end(owner->handCard), [](const Card *card) -> bool
-                                         { return (*card).getCardType() == type::bomb; }) != end(owner->handCard)) &&
-           ((find(begin(owner->territory), end(owner->territory), target)) == end(owner->territory));
+    return Order::validate() &&
+           ((find(begin(owner->territory), end(owner->territory), target)) == end(owner->territory)) && validateEnemyAdjacent(owner, target) && ((find(begin(owner->playersInNegotiation), end(owner->playersInNegotiation), target->getOwner())) == end(owner->playersInNegotiation));
 }
 
 bool BlockadeOrder::validate()
 {
-    return Order::validate() && ((find(begin(owner->territory), end(owner->territory), target)) != end(owner->territory)) && (find_if(begin(owner->handCard), end(owner->handCard), [](const Card *card) -> bool
-                                                                                                                                                                          { return (*card).getCardType() == type::blockade; }) != end((owner->handCard)));
+    return Order::validate() && ((find(begin(owner->territory), end(owner->territory), target)) != end(owner->territory));
 }
 
 bool AirliftOrder::validate()
 {
-    return Order::validate() && source && armyUnits > 0 && armyUnits <= (*target).numberOfArmies && (find_if(begin(owner->handCard), end(owner->handCard), [](const Card *card) -> bool
-                                                                                                             { return (*card).getCardType() == type::airlift; }) != end(owner->handCard)) &&
-           ((find(begin(owner->territory), end(owner->territory), source)) != end(owner->territory));
+    return Order::validate() && source && armyUnits > 0 && armyUnits <= (*source).numberOfArmies &&
+           ((find(begin(owner->territory), end(owner->territory), source)) != end(owner->territory)) &&
+           ((find(begin(owner->territory), end(owner->territory), target)) != end(owner->territory));
 }
 
 bool NegotiateOrder::validate()
 {
-    return (find(begin(allowedOrders), end(allowedOrders), type) != end(allowedOrders)) && player && (find_if(begin(owner->handCard), end(owner->handCard), [](const Card *card) -> bool
-                                                                                                              { return (*card).getCardType() == type::diplomacy; }) != end(owner->handCard));
+    return (find(begin(allowedOrders), end(allowedOrders), type) != end(allowedOrders)) && player && owner != player;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 //  ORDER EXECUTES
-string Order::execute()
-{
-    if (validate())
-    {
-        cout << *this << " has been executed.\n" << endl;
-        return "Order has been executed.";
-    }
-    else
-    {
-        cout << *this << " is an invalid order. No action is executed" << endl;
-        return "Invalid order.";
-    }
-}
-
-// TO DO: Implement DeployOrder's actions
 string DeployOrder::execute()
 {
     if (validate())
     {
+        target->setNumberOfArmies(target->getNumberOfArmies() + armyUnits);
         cout << *this << " has been executed." << endl;
-        return "DeployOrder has been executed.";
+        return to_string(armyUnits) + " units were added to " + target->getName() + ". It now has " + to_string(target->getNumberOfArmies()) + " units.";
     }
     else
     {
@@ -417,13 +439,57 @@ string DeployOrder::execute()
     }
 }
 
-// TO DO: Implement AdvanceOrder's actions
 string AdvanceOrder::execute()
 {
     if (validate())
     {
-        cout << *this << " has been executed." << endl;
-        return "AdvanceOrder has been executed.";
+        if (source->getOwner() == target->getOwner())
+        {
+            source->setNumberOfArmies(source->getNumberOfArmies() - armyUnits);
+            target->setNumberOfArmies(target->getNumberOfArmies() + armyUnits);
+            cout << *this << " has been executed." << endl;
+            return to_string(armyUnits) + " units were moved from " + source->getName() + " to " + target->getName() + ".";
+        }
+        else
+        {
+            int defenderUnitsKilled = 0;
+            int attackerUnitsKilled = 0;
+            for (int i = 0; i < armyUnits; i++)
+            {
+                float random = (float)rand() / RAND_MAX;
+                if (random <= 0.6f)
+                {
+                    defenderUnitsKilled++;
+                }
+            }
+            for (int i = 0; i < target->getNumberOfArmies(); i++)
+            {
+                float random = (float)rand() / RAND_MAX;
+                if (random <= 0.7f)
+                {
+                    attackerUnitsKilled++;
+                }
+            }
+            if (defenderUnitsKilled >= target->getNumberOfArmies())
+            {
+                target->getOwner()->territory.erase(remove(target->getOwner()->territory.begin(), target->getOwner()->territory.end(), target),
+                                                    target->getOwner()->territory.end());
+                target->setOwner(owner);
+                owner->territory.push_back(target);
+                source->setNumberOfArmies(source->getNumberOfArmies() - armyUnits);
+                target->setNumberOfArmies(armyUnits > attackerUnitsKilled ? armyUnits - attackerUnitsKilled : 0);
+                owner->setDrawCard(true);
+                cout << *this << " has been executed." << endl;
+                return owner->getPlayerName() + " has captured " + target->getName() + ". It is now occupied by " + to_string(target->getNumberOfArmies()) + " units.";
+            }
+            else
+            {
+                target->setNumberOfArmies(target->getNumberOfArmies() - defenderUnitsKilled);
+                source->setNumberOfArmies(armyUnits >= attackerUnitsKilled ? source->getNumberOfArmies() - attackerUnitsKilled : source->getNumberOfArmies() - armyUnits);
+                cout << *this << " has been executed." << endl;
+                return "The attack resulted in " + source->getName() + " having " + to_string(source->getNumberOfArmies()) + "units and " + target->getName() + " having " + to_string(target->getNumberOfArmies()) + " units left.";
+            }
+        }
     }
     else
     {
@@ -432,13 +498,13 @@ string AdvanceOrder::execute()
     }
 }
 
-// TO DO: Implement BombOrder's actions
 string BombOrder::execute()
 {
     if (validate())
     {
+        target->setNumberOfArmies(target->getNumberOfArmies() / 2);
         cout << *this << " has been executed." << endl;
-        return "BombOrder has been executed.";
+        return target->getName() + " was bombed. It has" + to_string(target->getNumberOfArmies()) + " units left.";
     }
     else
     {
@@ -447,13 +513,18 @@ string BombOrder::execute()
     }
 }
 
-// TO DO: Implement BlockadeOrder's actions
 string BlockadeOrder::execute()
 {
     if (validate())
     {
+        target->getOwner()->territory.erase(remove(target->getOwner()->territory.begin(), target->getOwner()->territory.end(), target),
+                                            target->getOwner()->territory.end());
+        owner->neutralPlayer->territory.push_back(target);
+        target->setOwner(owner->neutralPlayer);
+        target->setNumberOfArmies(target->getNumberOfArmies() * 2);
+
         cout << *this << " has been executed." << endl;
-        return "BlockadeOrder has been executed.";
+        return "Neutral player now owns " + target->getName() + " with " + to_string(target->getNumberOfArmies()) + " units on it.";
     }
     else
     {
@@ -462,13 +533,14 @@ string BlockadeOrder::execute()
     }
 }
 
-// TO DO: Implement AirliftOrder's actions
 string AirliftOrder::execute()
 {
     if (validate())
     {
+        source->setNumberOfArmies(source->getNumberOfArmies() - armyUnits);
+        target->setNumberOfArmies(target->getNumberOfArmies() + armyUnits);
         cout << *this << " has been executed." << endl;
-        return "AirliftOrder has been executed.";
+        return to_string(armyUnits) + " units have been moved from " + source->getName() + " to " + target->getName() + ".";
     }
     else
     {
@@ -477,13 +549,14 @@ string AirliftOrder::execute()
     }
 }
 
-// TO DO: Implement NegotiateOrder's actions
 string NegotiateOrder::execute()
 {
     if (validate())
     {
+        owner->playersInNegotiation.push_back(player);
+        player->playersInNegotiation.push_back(owner);
         cout << *this << " has been executed." << endl;
-        return "NegotiateOrder has been executed.";
+        return owner->getPlayerName() + " and " + player->getPlayerName() + " are now negotiating.";
     }
     else
     {
