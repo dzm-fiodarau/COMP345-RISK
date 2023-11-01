@@ -116,7 +116,6 @@ void Player::toDefend()
     }
 }
 
-// TODO: Implement card verification and update if bomb, blockade, airlift, or negotiate orders are issued
 void Player::issueOrder(const string &type, Territory *target, int armyUnits, Territory *source, Player *player)
 {
     Order *order;
@@ -125,7 +124,7 @@ void Player::issueOrder(const string &type, Territory *target, int armyUnits, Te
     {
         if (armyUnits > 0 && armyUnits <= reinforcementPool)
         {
-            order = new DeployOrder(ordersList, target, armyUnits);
+            order = new DeployOrder(this, target, armyUnits);
             reinforcementPool -= armyUnits;
         }
         else
@@ -136,7 +135,7 @@ void Player::issueOrder(const string &type, Territory *target, int armyUnits, Te
     }
     else if (type == "advance")
     {
-        order = new AdvanceOrder(ordersList, target, armyUnits, source);
+        order = new AdvanceOrder(this, target, armyUnits, source);
     }
     else if (type == "bomb")
     {
@@ -152,7 +151,7 @@ void Player::issueOrder(const string &type, Territory *target, int armyUnits, Te
         }
         if (cardPresent)
         {
-            order = new BombOrder(ordersList, target);
+            order = new BombOrder(this, target);
         }
         else
         {
@@ -174,7 +173,7 @@ void Player::issueOrder(const string &type, Territory *target, int armyUnits, Te
         }
         if (cardPresent)
         {
-            order = new BlockadeOrder(ordersList, target);
+            order = new BlockadeOrder(this, target);
         }
         else
         {
@@ -196,7 +195,7 @@ void Player::issueOrder(const string &type, Territory *target, int armyUnits, Te
         }
         if (cardPresent)
         {
-            order = new AirliftOrder(ordersList, target, armyUnits, source);
+            order = new AirliftOrder(this, target, armyUnits, source);
         }
         else
         {
@@ -218,7 +217,7 @@ void Player::issueOrder(const string &type, Territory *target, int armyUnits, Te
         }
         if (cardPresent)
         {
-            order = new NegotiateOrder(ordersList, player);
+            order = new NegotiateOrder(this, player);
         }
         else
         {
@@ -228,14 +227,11 @@ void Player::issueOrder(const string &type, Territory *target, int armyUnits, Te
     }
     else
     {
-        //  TODO Issue some message that the order issued is invalid, either try again or notify nothing is added to queue
-        //  No order is issued if order is invalid
-        //  order = new Order(ordersList, type, target);
         cout << "Specified order is not allowed. No order was added to the orders list." << endl;
         return;
     }
 
-    (*ordersList).orders.push_back(order);
+    ordersList->addOrder(order);
 }
 
 OrdersList *Player::getOrdersList() const

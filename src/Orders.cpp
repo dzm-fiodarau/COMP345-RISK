@@ -19,8 +19,24 @@ OrdersList::OrdersList(OrdersList &ordersList)
     owner = ordersList.owner;
 }
 
+Order *OrdersList::operator[](size_t index)
+{
+    if (index < orders.size())
+    {
+        auto iterator = orders.begin();
+        std::advance(iterator, index);
+        return *iterator;
+    }
+
+    return nullptr;
+}
+
 OrdersList &OrdersList::operator=(const OrdersList &ordersList)
 {
+    if (this == &ordersList)
+    {
+    }
+
     orders = ordersList.orders;
     owner = ordersList.owner;
     return *this;
@@ -36,6 +52,43 @@ ostream &operator<<(ostream &outs, const OrdersList &ordersList)
     }
     outs << "}";
     return outs;
+}
+
+bool OrdersList::addOrder(Order *order)
+{
+    if (order != nullptr)
+    {
+        orders.push_back(order);
+        return true;
+    }
+
+    return false;
+}
+
+const Player *OrdersList::getOwner() const
+{
+    return this->owner;
+}
+
+Order *OrdersList::getNextOrder()
+{
+    auto *nextOrder = !orders.empty() ? orders.front() : nullptr;
+    if (!orders.empty())
+    {
+        orders.pop_front();
+    }
+    return nextOrder;
+}
+
+void OrdersList::apply(void (*func)(Order *))
+{
+    for (auto *order : orders)
+    {
+        if (order != nullptr)
+        {
+            func(order);
+        }
+    }
 }
 
 void OrdersList::remove(Order *order)
@@ -77,25 +130,31 @@ bool OrdersList::move(Order *order, int index)
 
 //----------------------------------------------------------------------------------------------------------------------
 //  ORDER
-Order::Order(OrdersList *ordersList, string type, Territory *target)
+Order::Order(Player *owner, const string &type, Territory *target)
 {
-    Order::ordersList = ordersList;
-    Order::type = type;
-    Order::target = target;
+    this->owner = owner;
+    this->type = type;
+    this->target = target;
 }
 
 Order::Order(Order &order)
 {
-    ordersList = order.ordersList;
+    owner = order.owner;
     type = order.type;
     target = order.target;
 }
 
+Order::~Order() = default;
+
 Order &Order::operator=(const Order &order)
 {
-    ordersList = order.ordersList;
-    type = order.type;
-    target = order.target;
+    if (this != &order)
+    {
+        owner = order.owner;
+        type = order.type;
+        target = order.target;
+    }
+
     return *this;
 }
 
@@ -113,8 +172,8 @@ ostream &operator<<(ostream &outs, const Order &order)
 
 //----------------------------------------------------------------------------------------------------------------------
 //  DEPLOY ORDER
-DeployOrder::DeployOrder(OrdersList *ordersList, Territory *target, int armyUnits)
-    : Order(ordersList, "deploy", target)
+DeployOrder::DeployOrder(Player *owner, Territory *target, int armyUnits)
+    : Order(owner, "deploy", target)
 {
     DeployOrder::armyUnits = armyUnits;
 }
@@ -125,10 +184,16 @@ DeployOrder::DeployOrder(DeployOrder &order)
     DeployOrder::armyUnits = order.armyUnits;
 }
 
+DeployOrder::~DeployOrder() = default;
+
 DeployOrder &DeployOrder::operator=(const DeployOrder &order)
 {
-    Order::operator=(order);
-    armyUnits = order.armyUnits;
+    if (this != &order)
+    {
+        Order::operator=(order);
+        armyUnits = order.armyUnits;
+    }
+
     return *this;
 }
 
@@ -140,8 +205,8 @@ ostream &operator<<(ostream &outs, const DeployOrder &order)
 
 //----------------------------------------------------------------------------------------------------------------------
 //  ADVANCE ORDER
-AdvanceOrder::AdvanceOrder(OrdersList *ordersList, Territory *target, int armyUnits, Territory *source)
-    : Order(ordersList, "advance", target)
+AdvanceOrder::AdvanceOrder(Player *owner, Territory *target, int armyUnits, Territory *source)
+    : Order(owner, "advance", target)
 {
     AdvanceOrder::armyUnits = armyUnits;
     AdvanceOrder::source = source;
@@ -154,11 +219,17 @@ AdvanceOrder::AdvanceOrder(AdvanceOrder &order)
     AdvanceOrder::source = order.source;
 }
 
+AdvanceOrder::~AdvanceOrder() = default;
+
 AdvanceOrder &AdvanceOrder::operator=(const AdvanceOrder &order)
 {
-    Order::operator=(order);
-    armyUnits = order.armyUnits;
-    source = order.source;
+    if (this != &order)
+    {
+        Order::operator=(order);
+        armyUnits = order.armyUnits;
+        source = order.source;
+    }
+
     return *this;
 }
 
@@ -170,19 +241,27 @@ ostream &operator<<(ostream &outs, const AdvanceOrder &order)
 
 //----------------------------------------------------------------------------------------------------------------------
 //  BOMB ORDER
-BombOrder::BombOrder(OrdersList *ordersList, Territory *target)
-    : Order(ordersList, "bomb", target)
+BombOrder::BombOrder(Player *owner, Territory *target)
+    : Order(owner, "bomb", target)
 {
+    //  Empty
 }
 
 BombOrder::BombOrder(BombOrder &order)
     : Order(order)
 {
+    //  Empty
 }
+
+BombOrder::~BombOrder() = default;
 
 BombOrder &BombOrder::operator=(const BombOrder &order)
 {
-    Order::operator=(order);
+    if (this != &order)
+    {
+        Order::operator=(order);
+    }
+
     return *this;
 }
 
@@ -193,19 +272,27 @@ ostream &operator<<(ostream &outs, const BombOrder &order)
 
 //----------------------------------------------------------------------------------------------------------------------
 //  BLOCKADE ORDER
-BlockadeOrder::BlockadeOrder(OrdersList *ordersList, Territory *target)
-    : Order(ordersList, "blockade", target)
+BlockadeOrder::BlockadeOrder(Player *owner, Territory *target)
+    : Order(owner, "blockade", target)
 {
+    //  Empty
 }
 
 BlockadeOrder::BlockadeOrder(BlockadeOrder &order)
     : Order(order)
 {
+    //  Empty
 }
+
+BlockadeOrder::~BlockadeOrder() = default;
 
 BlockadeOrder &BlockadeOrder::operator=(const BlockadeOrder &order)
 {
-    Order::operator=(order);
+    if (this != &order)
+    {
+        Order::operator=(order);
+    }
+
     return *this;
 }
 
@@ -216,8 +303,8 @@ ostream &operator<<(ostream &outs, const BlockadeOrder &order)
 
 //----------------------------------------------------------------------------------------------------------------------
 //  AIRLIFT ORDER
-AirliftOrder::AirliftOrder(OrdersList *ordersList, Territory *target, int armyUnits, Territory *source)
-    : Order(ordersList, "airlift", target)
+AirliftOrder::AirliftOrder(Player *owner, Territory *target, int armyUnits, Territory *source)
+    : Order(owner, "airlift", target)
 {
     AirliftOrder::armyUnits = armyUnits;
     AirliftOrder::source = source;
@@ -230,11 +317,17 @@ AirliftOrder::AirliftOrder(AirliftOrder &order)
     AirliftOrder::source = order.source;
 }
 
+AirliftOrder::~AirliftOrder() = default;
+
 AirliftOrder &AirliftOrder::operator=(const AirliftOrder &order)
 {
-    Order::operator=(order);
-    armyUnits = order.armyUnits;
-    source = order.source;
+    if (this != &order)
+    {
+        Order::operator=(order);
+        armyUnits = order.armyUnits;
+        source = order.source;
+    }
+
     return *this;
 }
 
@@ -246,8 +339,8 @@ ostream &operator<<(ostream &outs, const AirliftOrder &order)
 
 //----------------------------------------------------------------------------------------------------------------------
 //  NEGOTIATE ORDER
-NegotiateOrder::NegotiateOrder(OrdersList *ordersList, Player *player)
-    : Order(ordersList, "negotiate", NULL)
+NegotiateOrder::NegotiateOrder(Player *owner, Player *player)
+    : Order(owner, "negotiate", nullptr)
 {
     NegotiateOrder::player = player;
 }
@@ -258,10 +351,16 @@ NegotiateOrder::NegotiateOrder(NegotiateOrder &order)
     player = order.player;
 }
 
+NegotiateOrder::~NegotiateOrder() = default;
+
 NegotiateOrder &NegotiateOrder::operator=(const NegotiateOrder &order)
 {
-    Order::operator=(order);
-    player = order.player;
+    if (this != &order)
+    {
+        Order::operator=(order);
+        player = order.player;
+    }
+
     return *this;
 }
 
@@ -279,12 +378,13 @@ bool Order::validate()
 
 bool DeployOrder::validate()
 {
-    return Order::validate() && ((find(begin(ordersList->owner->territory), end(ordersList->owner->territory), target)) != end(ordersList->owner->territory));
+    return Order::validate() && ((find(begin(owner->territory), end(owner->territory), target)) != end(owner->territory));
 }
 
 bool AdvanceOrder::validate()
 {
-    return Order::validate() && source && armyUnits > 0 && armyUnits <= (*source).numberOfArmies && (find(begin((*source).adjacentTerritories), end((*source).adjacentTerritories), target) != end((*source).adjacentTerritories)) && ((find(begin(ordersList->owner->territory), end(ordersList->owner->territory), source)) != end(ordersList->owner->territory)) && source != target && ((find(begin(ordersList->owner->playersInNegotiation), end(ordersList->owner->playersInNegotiation), target->getOwner())) == end(ordersList->owner->playersInNegotiation));
+
+    return Order::validate() && source && armyUnits > 0 && armyUnits <= (*source).numberOfArmies && (find(begin((*source).adjacentTerritories), end((*source).adjacentTerritories), target) != end((*source).adjacentTerritories)) && ((find(begin(owner->territory), end(owner->territory), source)) != end(owner->territory)) && source != target && ((find(begin(owner->playersInNegotiation), end(owner->playersInNegotiation), target->getOwner())) == end(owner->playersInNegotiation));
 }
 
 bool validateEnemyAdjacent(Player *attacker, Territory *target)
@@ -302,29 +402,28 @@ bool validateEnemyAdjacent(Player *attacker, Territory *target)
 bool BombOrder::validate()
 {
     return Order::validate() &&
-           ((find(begin(ordersList->owner->territory), end(ordersList->owner->territory), target)) == end(ordersList->owner->territory)) && validateEnemyAdjacent(ordersList->owner, target) && ((find(begin(ordersList->owner->playersInNegotiation), end(ordersList->owner->playersInNegotiation), target->getOwner())) == end(ordersList->owner->playersInNegotiation));
+           ((find(begin(owner->territory), end(owner->territory), target)) == end(owner->territory)) && validateEnemyAdjacent(owner, target) && ((find(begin(owner->playersInNegotiation), end(owner->playersInNegotiation), target->getOwner())) == end(owner->playersInNegotiation));
 }
 
 bool BlockadeOrder::validate()
 {
-    return Order::validate() && ((find(begin(ordersList->owner->territory), end(ordersList->owner->territory), target)) != end(ordersList->owner->territory));
+    return Order::validate() && ((find(begin(owner->territory), end(owner->territory), target)) != end(owner->territory));
 }
 
 bool AirliftOrder::validate()
 {
     return Order::validate() && source && armyUnits > 0 && armyUnits <= (*source).numberOfArmies &&
-           ((find(begin(ordersList->owner->territory), end(ordersList->owner->territory), source)) != end(ordersList->owner->territory)) &&
-           ((find(begin(ordersList->owner->territory), end(ordersList->owner->territory), target)) != end(ordersList->owner->territory));
+           ((find(begin(owner->territory), end(owner->territory), source)) != end(owner->territory)) &&
+           ((find(begin(owner->territory), end(owner->territory), target)) != end(owner->territory));
 }
 
 bool NegotiateOrder::validate()
 {
-    return (find(begin(allowedOrders), end(allowedOrders), type) != end(allowedOrders)) && player && ordersList->owner != player;
+    return (find(begin(allowedOrders), end(allowedOrders), type) != end(allowedOrders)) && player && owner != player;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 //  ORDER EXECUTES
-
 string DeployOrder::execute()
 {
     if (validate())
@@ -375,13 +474,13 @@ string AdvanceOrder::execute()
             {
                 target->getOwner()->territory.erase(remove(target->getOwner()->territory.begin(), target->getOwner()->territory.end(), target),
                                                     target->getOwner()->territory.end());
-                target->setOwner(ordersList->owner);
-                ordersList->owner->territory.push_back(target);
+                target->setOwner(owner);
+                owner->territory.push_back(target);
                 source->setNumberOfArmies(source->getNumberOfArmies() - armyUnits);
                 target->setNumberOfArmies(armyUnits > attackerUnitsKilled ? armyUnits - attackerUnitsKilled : 0);
-                ordersList->owner->setDrawCard(true);
+                owner->setDrawCard(true);
                 cout << *this << " has been executed." << endl;
-                return ordersList->owner->getPlayerName() + " has captured " + target->getName() + ". It is now occupied by " + to_string(target->getNumberOfArmies()) + " units.";
+                return owner->getPlayerName() + " has captured " + target->getName() + ". It is now occupied by " + to_string(target->getNumberOfArmies()) + " units.";
             }
             else
             {
@@ -420,8 +519,8 @@ string BlockadeOrder::execute()
     {
         target->getOwner()->territory.erase(remove(target->getOwner()->territory.begin(), target->getOwner()->territory.end(), target),
                                             target->getOwner()->territory.end());
-        ordersList->owner->neutralPlayer->territory.push_back(target);
-        target->setOwner(ordersList->owner->neutralPlayer);
+        owner->neutralPlayer->territory.push_back(target);
+        target->setOwner(owner->neutralPlayer);
         target->setNumberOfArmies(target->getNumberOfArmies() * 2);
 
         cout << *this << " has been executed." << endl;
@@ -454,10 +553,10 @@ string NegotiateOrder::execute()
 {
     if (validate())
     {
-        ordersList->owner->playersInNegotiation.push_back(player);
-        player->playersInNegotiation.push_back(ordersList->owner);
+        owner->playersInNegotiation.push_back(player);
+        player->playersInNegotiation.push_back(owner);
         cout << *this << " has been executed." << endl;
-        return ordersList->owner->getPlayerName() + " and " + player->getPlayerName() + " are now negotiating.";
+        return owner->getPlayerName() + " and " + player->getPlayerName() + " are now negotiating.";
     }
     else
     {

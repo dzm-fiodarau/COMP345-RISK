@@ -9,9 +9,6 @@
 class Territory;    //  Map.h
 class Player;       //  Player.h
 
-//  Forward declaration of classes
-class OrdersList;
-
 
 
 using namespace std;
@@ -19,6 +16,8 @@ using namespace std;
 
 // Global string array containing all allowed orders
 const string allowedOrders[6] = {"deploy", "advance", "bomb", "blockade", "airlift", "negotiate"};
+
+
 
 /**
  * \class   Order
@@ -32,12 +31,18 @@ public:
      * \param   type Type of the Order object created
      * \param   target Territory targeted by the order
      */
-    Order(OrdersList *ordersList, string type, Territory *target);
+    Order(Player *owner, const string& type, Territory *target);
+
     /**
      * \brief   Constructs an Order object using values from another Order object
      * \param   order Other Order object to copy member variables from
      */
     Order(Order &order);
+
+    /**
+     * \brief   Deallocates dynamically declared memory during runtime
+     */
+    virtual ~Order();
 
     /**
      * \brief   Verifies if the order is valid, has to be implemented in child classes
@@ -63,8 +68,8 @@ public:
     friend ostream &operator<<(ostream &outs, const Order &order);
 
 protected:
-    // OrdersList object that holds order
-    OrdersList *ordersList;
+    //  Pointer to the player that owns the object
+    Player *owner;
     //  Type of order
     string type;
     // Territory targeted by the order
@@ -78,15 +83,11 @@ protected:
 class OrdersList
 {
 public:
-    // List of pointers to Order objects
-    list<Order *> orders;
-    // Owner of orders list
-    Player *owner;
-
     /**
      * \brief   Constructs an OrdersList object with an empty list of orders
      */
     explicit OrdersList(Player *owner);
+
     /**
      * \brief   Constructs an OrdersList object using values from another OrdersList object
      * \param   ordersList Other OrdersList object to copy member variables from
@@ -94,11 +95,39 @@ public:
     OrdersList(OrdersList &ordersList);
 
     /**
+     * \brief   Appends a pointer to the end of the orders list - if it is not null
+     * \param order Pointer to an Order object
+     * \return  Returns true if append was successful, false otherwise
+     */
+    bool addOrder(Order* order);
+
+    /**
+     * \brief   Pops the head pointer in the list
+     * \return  Pointer to an Order object; head of the list
+     */
+    Order* getNextOrder();
+
+    /**
+     * \brief   Gets the owner
+     * \return  Pointer to a player object
+     */
+    const Player* getOwner() const;
+
+    /**
+     * \brief   Takes in a function, then applies that function to each order in the list
+     * \param func  Function to apply to each Order element in the list
+     * \remarks Solution to external iteration. Now iteration can occur internally through passing of a function.
+     *          Upholds encapsulation.
+     */
+    void apply(void (*func)(Order*));
+
+    /**
      * \brief   Removes the specified order from the list
      * \param   order Order to be removed from the list
      * \return  True if order removal is successful, false otherwise
      */
     void remove(Order *order);
+
     /**
      * \brief   Moves specified order to specified index in the list
      * \param   order Order to be moved
@@ -106,6 +135,14 @@ public:
      * \return  True if order moving is successful, false otherwise
      */
     bool move(Order *order, int index);
+
+    /**
+     * \brief   Directly accesses the internal orders list
+     * \param index Index of internal list
+     * \return  Returns a Order pointer using the passed index. Returns nullptr if invalid index.
+     */
+    Order* operator[](std::size_t index);
+
     /**
      * \brief   Assigns new values to member variables of the OrdersList object
      * \param   ordersList OrdersList object from which new values are to be taken
@@ -116,6 +153,12 @@ public:
      * \brief   Stream insertion override, prints all orders contained in the list
      */
     friend ostream &operator<<(ostream &outs, const OrdersList &ordersList);
+
+private:
+    // List of pointers to Order objects
+    list<Order *> orders;
+    // Owner of orders list
+    Player *owner;
 };
 
 /**
@@ -132,12 +175,18 @@ public:
      * \param   target Territory to which troops are to be deployed
      * \param   armyUnits Number of army units to be deployed
      */
-    DeployOrder(OrdersList *ordersList, Territory *target, int armyUnits);
+    DeployOrder(Player *owner, Territory *target, int armyUnits);
+
     /**
      * \brief   Constructs a DeployOrder object using values from another DeployOrder object
      * \param   order Other DeployOrder object to copy member variables from
      */
     DeployOrder(DeployOrder &order);
+
+    /**
+     * \brief   Deconstructs a DeployOrder object
+     */
+    ~DeployOrder() override;
 
     /**
      * \brief   Verifies if the order is valid
@@ -182,12 +231,18 @@ public:
      * \param   armyUnits Number of army units to be moved
      * \param   source  Territory from which troops are to be moved
      */
-    AdvanceOrder(OrdersList *ordersList, Territory *target, int armyUnits, Territory *source);
+    AdvanceOrder(Player *owner, Territory *target, int armyUnits, Territory *source);
+
     /**
      * \brief   Constructs an AdvanceOrder object using values from another AdvanceOrder object
      * \param   order Other AdvanceOrder object to copy member variables from
      */
     AdvanceOrder(AdvanceOrder &order);
+
+    /**
+     * \brief   Deconstructs an AdvanceOrder object
+     */
+    ~AdvanceOrder() override;
 
     /**
      * \brief   Verifies if the order is valid
@@ -230,12 +285,17 @@ public:
      * \param   type Type of the Order object created
      * \param   target Territory to be bombed
      */
-    BombOrder(OrdersList *ordersList, Territory *target);
+    BombOrder(Player *owner, Territory *target);
     /**
      * \brief   Constructs a BombOrder object using values from another BombOrder object
      * \param   order Other BombOrder object to copy member variables from
      */
     BombOrder(BombOrder &order);
+
+    /**
+     * \brief   Deconstructs a BombOrder object.
+     */
+    ~BombOrder() override;
 
     /**
      * \brief   Verifies if the order is valid
@@ -272,12 +332,17 @@ public:
      * \param   type Type of the Order object created
      * \param   target Territory to be blockaded
      */
-    BlockadeOrder(OrdersList *ordersList, Territory *target);
+    BlockadeOrder(Player *owner, Territory *target);
     /**
      * \brief   Constructs a BlockadeOrder object using values from another BlockadeOrder object
      * \param   order Other BlockadeOrder object to copy member variables from
      */
     BlockadeOrder(BlockadeOrder &order);
+
+    /**
+     * \brief   Deconstructs a BlockadeOrder object.
+     */
+    ~BlockadeOrder() override;
 
     /**
      * \brief   Verifies if the order is valid
@@ -316,12 +381,17 @@ public:
      * \param   armyUnits Number of army units to be moved
      * \param   source  Territory from which troops are to be moved
      */
-    AirliftOrder(OrdersList *ordersList, Territory *target, int armyUnits, Territory *source);
+    AirliftOrder(Player *owner, Territory *target, int armyUnits, Territory *source);
     /**
      * \brief   Constructs an AirliftOrder object using values from another AirliftOrder object
      * \param   order Other AirliftOrder object to copy member variables from
      */
     AirliftOrder(AirliftOrder &order);
+
+    /**
+     * \brief   Deconstructs an AirliftOrder object.
+     */
+    ~AirliftOrder() override;
 
     /**
      * \brief   Verifies if the order is valid
@@ -364,12 +434,17 @@ public:
      * \param   type Type of the Order object created
      * \param   player Player with whom negotiation happens
      */
-    NegotiateOrder(OrdersList *ordersList, Player *player);
+    NegotiateOrder(Player *owner, Player *player);
     /**
      * \brief   Constructs a NegotiateOrder object using values from another NegotiateOrder object
      * \param   order Other NegotiateOrder object to copy member variables from
      */
     NegotiateOrder(NegotiateOrder &order);
+
+    /**
+     * \brief   Deconstructs a NegotiateOrder object.
+     */
+    ~NegotiateOrder() override;
 
     /**
      * \brief   Verifies if the order is valid
