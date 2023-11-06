@@ -1,0 +1,7 @@
+loadmap ../../maps/Cornwall.map
+validatemap
+addplayer jose
+addplayer mami
+addplayer aaron
+viewplayers
+gamestart
