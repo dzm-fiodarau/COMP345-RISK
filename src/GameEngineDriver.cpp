@@ -8,6 +8,7 @@
 #include "../headers/gameengine/TransitionFunctions.h"
 
 #include "../headers/commandprocessing/ConsoleCommandProcessorAdapter.h"
+#include "../headers/commandprocessing/FileCommandProcessorAdapter.h"
 
 
 
@@ -39,7 +40,7 @@ void testGameStates()
     //  Dependencies instantiation
     std::vector<State> states = { STATES_CONTENTS };
     std::vector<TransitionData> transitionDatabase = { TRANSITIONS_CONTENTS };
-    auto commandProcessor = std::make_unique<ConsoleCommandProcessorAdapter>(states, transitionDatabase);
+    auto commandProcessor = std::make_unique<FileCommandProcessorAdapter>(states, transitionDatabase, "../../commands.txt");
 
 
     //  Main objects

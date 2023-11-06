@@ -103,6 +103,8 @@ private:
  *  \brief A class that controls the flow of the game through notations of state and transitions. */
 class GameEngine {
 public:
+    const static int MAX_PLAYERS = 6;
+
     //  Constructors/Deconstructor
     /** \brief Constructs a default GameEngine object with the specification as shown in the instructions. */
     GameEngine();
@@ -144,14 +146,16 @@ public:
     void setTransitionData(std::vector<TransitionData>);
     /** \brief Sets the command processor for the object. */
     void setCommandProcessor(const CommandProcessor&);
-    /** \brief Sets the command vector. */
-    void setPlayers(std::vector<Player*>);
+    /** \brief Sets the players. Returns a vector of the previous players. */
+    std::vector<Player*> setPlayers(std::vector<Player*>);
     /** \brief Sets the currently loaded map. */
     void setMap(Map*);
 
     //  Additional behavior for Setter/Mutators
     /** \brief Appends a player instance to the end of the player vector. Moves data. */
-    void addPlayer(Player&&);
+    void addPlayer(Player*);
+    /** \brief Returns the number of currently registered players. */
+    size_t numberOfPlayers() const;
 
 private:
 

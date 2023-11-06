@@ -98,7 +98,11 @@ public:
      */
     Deck();
 
-    Card *draw();
+    /**
+     * \brief
+     * \return
+     */
+    Card *draw() const;
 
     /**
      * \brief               Add a Card to the deck.

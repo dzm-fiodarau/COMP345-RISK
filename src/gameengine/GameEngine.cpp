@@ -353,9 +353,7 @@ void GameEngine::processCommand(TransitionData transitionData, const std::string
     bool status = transitionData.execute(getTokens(argumentsRaw), *this);
 
     if (!status) {
-        //  An error occurred, print error message, and then return
-        std::cout << "\033[1;31m" << "INVALID COMMAND. View the valid commands below:" << "\033[0m";
-        std::cout << getHelpStrings() << std::endl;
+        //  PRINTING OF ERROR MESSAGES IS DELEGATED TO TRANSITION FUNCTIONS.
         return;
     }
 
@@ -380,28 +378,15 @@ void GameEngine::setTransitionData(std::vector<TransitionData> newTransitionData
 void GameEngine::setCommandProcessor(const CommandProcessor& newCommandProcessor) { this->commandProcessor = newCommandProcessor.clone(); }
 void GameEngine::setMap(Map* newMap) { this->map = newMap; }
 
-void GameEngine::setPlayers(std::vector<Player*> newPlayers) {
-    for (auto* playerPtr : this->players) {
-        delete playerPtr;
-    }
-
-    this->players = std::move(newPlayers);
+std::vector<Player*> GameEngine::setPlayers(std::vector<Player*> newPlayers) {
+    auto tempVector = std::move(players);       //  Store old list of players
+    this->players = std::move(newPlayers);      //  Set the new list of players
+    return tempVector;                          //  Return old list through temp variable
 }
 
-void GameEngine::addPlayer(Player&& playerData) {
-    auto* newPlayer = new Player();
-    newPlayer->setPlayerName(playerData.getPlayerName());
-    newPlayer->setOrdersList(playerData.getOrdersList());
-    newPlayer->setHandCards(playerData.getHandCards());
-    newPlayer->setTerritories(playerData.getTerritories());
+void GameEngine::addPlayer(Player* playerPtr) { players.push_back(playerPtr); }
 
-    playerData.setPlayerName("");
-    playerData.setOrdersList(nullptr);
-    playerData.setHandCards({});
-    playerData.setTerritories({});
-
-    players.push_back(newPlayer);
-}
+size_t GameEngine::numberOfPlayers() const { return players.size(); }
 
 
 #ifdef __GNUC__

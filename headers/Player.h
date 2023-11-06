@@ -28,7 +28,7 @@ class Player
 private:
     string playerName;
     OrdersList *ordersList;
-    // Number of armu units the player has to deploy
+    // Number of army units the player has to deploy
     int reinforcementPool;
     // Indication of whether the player has to draw a card at the end of his turn or not
     bool drawCard;
@@ -42,7 +42,7 @@ public:
     // Default constructor
     Player();
     // Name constructor
-    Player(string pn);
+    explicit Player(string pn);
     // Constructor
     Player(string pn, vector<Territory *> t, vector<Card *> hc);
     // Copy constructor
@@ -82,6 +82,9 @@ public:
     void setTerritories(vector<Territory *>);
     void addToReinforcementPool(int units);
     void setDrawCard(bool drawCard);
+
+    void addTerritory(Territory *newTerritory);
+    void addHandCard(Card *newCard);
 };
 
 #ifdef __GNUC__

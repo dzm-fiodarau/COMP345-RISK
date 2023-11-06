@@ -303,3 +303,11 @@ void Player::setDrawCard(bool drawCard)
 {
     this->drawCard = drawCard;
 }
+
+void Player::addTerritory(Territory *newTerritory) {
+    territory.push_back(newTerritory);
+}
+
+void Player::addHandCard(Card *newCard) {
+    handCard.push_back(newCard);
+}
