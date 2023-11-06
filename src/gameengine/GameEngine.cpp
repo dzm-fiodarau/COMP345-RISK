@@ -19,11 +19,15 @@
 #include <numeric>
 #include <memory>
 
-#include "../headers/GameEngine.h"
-#include "../headers/CommandProcessing.h"
-#include "../headers/Map.h"
-#include "../headers/Player.h"
+#include "../../headers/gameengine/GameEngine.h"
+#include "../../headers/gameengine/State.h"
 
+#include "../../headers/macros/DebugMacros.h"
+
+#include "../../headers/commandprocessing/ConsoleCommandProcessorAdapter.h"
+
+#include "../../headers/Map.h"
+#include "../../headers/Player.h"
 
 #define PRESS_ENTER_TO_CONTINUE(clearConsole)                       \
     std::string _IGNORE_STRING;                                     \
@@ -35,43 +39,12 @@
     }                                                               \
 
 
-#ifdef RED_DEBUG_OUTPUT
-#define ANSI_RED_INSERT "\033[31m" <<
-#define ANSI_RESET_INSERT "\033[0m" <<
-#else
-#define ANSI_RED_INSERT
-#define ANSI_RESET_INSERT
-#endif
-
-
-#ifdef DEBUG
-#define DEBUG_PRINT(...) print(__VA_ARGS__);
-#else
-#define DEBUG_PRINT(...)
-#endif
-
 
 
 //----------------------------------------------------------------------------------------------------------------------
 //  Static functions
 
 
-/** \brief Returns a std::string pointer with the given string. Memory management is delegated to another entity. */
-static std::string* stringToPointer(std::string str) {
-    return new std::string(std::move(str));
-}
-
-/** \brief Base case for recursively printing function 'print(...)' */
-static void print() {
-    std::cout << std::endl;
-}
-
-/** \brief Variadic template function to print multiple passed arguments. */
-template<typename T, typename... Args>
-static void print(T first, Args... rest) {
-    std::cout << ANSI_RED_INSERT first << ANSI_RESET_INSERT "";
-    print(rest...);  // Recursive call with one less argument
-}
 
 /** \brief Splits a string by spaces and returns a vector of string tokens. */
 static std::vector<std::string> getTokens(std::string input) {
@@ -105,135 +78,8 @@ static std::string reduceStringVector(const std::vector<std::string>& tokens) {
     return stringBuilder;
 }
 
-
-
 //----------------------------------------------------------------------------------------------------------------------
-//  Game Functions
-
-bool game_restart(const std::vector<std::string>& values, GameEngine& gameEngine) {
-    DEBUG_PRINT("GAME_RESTART")
-    return true;
-}
-
-bool game_loadMap(const std::vector<std::string>& values, GameEngine& gameEngine) {
-    DEBUG_PRINT("GAME_LOAD_MAP")
-    return true;
-}
-
-bool game_validateMap(const std::vector<std::string>& values, GameEngine& gameEngine) {
-    DEBUG_PRINT("GAME_VALIDATE_MAP")
-    return true;
-}
-
-bool game_addPlayer(const std::vector<std::string>& values, GameEngine& gameEngine) {
-    DEBUG_PRINT("GAME_ADD_PLAYER")
-    return true;
-}
-
-bool game_printPlayers(const std::vector<std::string>& values, GameEngine& gameEngine) {
-    DEBUG_PRINT("GAME_PRINT_PLAYERS")
-    return true;
-}
-
-bool game_gameStart(const std::vector<std::string>& values, GameEngine& gameEngine) {
-    DEBUG_PRINT("GAME_GAME_START")
-    return true;
-}
-
-bool game_issueOrder(const std::vector<std::string>& values, GameEngine& gameEngine) {
-    DEBUG_PRINT("GAME_ISSUE_ORDER")
-    return true;
-}
-
-bool game_endIssueOrders(const std::vector<std::string>& values, GameEngine& gameEngine) {
-    DEBUG_PRINT("GAME_END_ISSUE_ORDERS")
-    return true;
-}
-
-bool game_executeOrder(const std::vector<std::string>& values, GameEngine& gameEngine) {
-    DEBUG_PRINT("GAME_EXECUTE_ORDER")
-    return true;
-}
-
-bool game_endExecuteOrders(const std::vector<std::string>& values, GameEngine& gameEngine) {
-    DEBUG_PRINT("GAME_END_EXECUTE_ORDERS")
-    return true;
-}
-
-bool game_winGame(const std::vector<std::string>& values, GameEngine& gameEngine) {
-    DEBUG_PRINT("GAME_WIN_GAME")
-    return true;
-}
-
-bool game_quit(const std::vector<std::string>& values, GameEngine& gameEngine) {
-    DEBUG_PRINT("GAME_END_PROGRAM")
-    return true;
-}
-
-
-
-//----------------------------------------------------------------------------------------------------------------------
-//  "State" implementations
-
-
-State::State()
-    : stateName(stringToPointer("DEFAULT")) { }
-
-State::State(const std::string& stateName)
-    : stateName(stringToPointer(stateName)) { }
-
-State::State(const State& otherState)
-    : stateName(stringToPointer(otherState.getStateName())) { }
-
-State& State::operator=(const State& otherState) {
-    //  Check for self-assignment
-    if (this != &otherState) {
-        std::string stateNameValue = otherState.getStateName();
-        this->stateName = stringToPointer(stateNameValue);
-    }
-    return *this;
-}
-
-State::State(State&& otherState) noexcept
-    : stateName(stringToPointer(otherState.getStateName())) {
-    otherState.stateName->clear();   //  Clear the contents of the string
-}
-
-State &State::operator=(State&& otherState) noexcept {
-    //  Check for self-assignment
-    if (this != &otherState) {
-        std::string stateNameValue = otherState.getStateName();
-        this->stateName = stringToPointer(stateNameValue);
-
-        otherState.stateName->clear();
-    }
-    return *this;
-}
-State::~State() {
-    delete stateName;       //  Deallocate memory
-    stateName = nullptr;    //  Set to null ptr
-}
-
-std::ostream &operator<<(std::ostream& os, const State& otherState) {
-    os <<  "State Name:\t" << otherState.getStateName();
-    return os;
-}
-
-bool State::operator==(const State& otherState) const {
-    return this->getStateName() == otherState.getStateName();
-}
-
-std::string State::getStateName() const {
-    return *(this->stateName);
-}
-
-void State::setStateName(const std::string& newStateName) {
-    *this->stateName = newStateName;
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-//  "State" implementations
+//  "TransitionData" implementations
 
 TransitionData::TransitionData(size_t index1, size_t index2, size_t numberOfArguments, std::string transitionName,
                                std::string helpString, bool (*transitionFunction)(const std::vector<std::string>&, GameEngine&)) {

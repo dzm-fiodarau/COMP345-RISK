@@ -109,10 +109,15 @@ endif()
 #   BUILDING FILES
 # Defining the variables for the source files
 set(HEADERS
-        headers/Cards.h headers/GameEngine.h headers/Map.h headers/Orders.h headers/Player.h headers/CommandProcessing.h)
+        headers/Cards.h headers/gameengine/GameEngine.h headers/Map.h headers/Orders.h headers/Player.h
+        headers/commandprocessing/CommandProcessing.h headers/gameengine/State.h headers/gameengine/TransitionFunctions.h
+        headers/macros/DebugMacros.h headers/commandprocessing/ConsoleCommandProcessorAdapter.h
+        headers/commandprocessing/FileCommandProcessorAdapter.h)
 
 set(SOURCES
-        src/Cards.cpp src/GameEngine.cpp src/Map.cpp src/Orders.cpp src/Player.cpp src/CommandProcessing.cpp)
+        src/Cards.cpp src/gameengine/GameEngine.cpp src/Map.cpp src/Orders.cpp src/Player.cpp src/commandprocessing/CommandProcessing.cpp
+        src/gameengine/State.cpp src/gameengine/TransitionFunctions.cpp src/commandprocessing/ConsoleCommandProcessorAdapter.cpp
+        src/commandprocessing/FileCommandProcessorAdapter.cpp)
 
 set(DRIVERS
         src/CardsDriver.cpp src/GameEngineDriver.cpp src/MapDriver.cpp src/OrdersDriver.cpp src/PlayerDriver.cpp

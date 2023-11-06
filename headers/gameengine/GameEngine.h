@@ -13,109 +13,14 @@
 #include <string>
 #include <vector>
 
-
-
 //  Forward declaration of required classes from other header files. (included in .cpp file)
 class Player;               //  Player.h
 class Map;                  //  Map.h
+class State;                //  gameengine/State.h
 
 //  Forward declaration of classes
 class GameEngine;
 class CommandProcessor;
-
-
-
-/** \brief Restarts the game after concluding. */
-bool game_restart(const std::vector<std::string>&, GameEngine&);
-
-/** \brief Select and load a map from a list of .map files. */
-bool game_loadMap(const std::vector<std::string>&, GameEngine&);
-
-/** \brief Validates the map. */
-bool game_validateMap(const std::vector<std::string>&, GameEngine&);
-
-/** \brief Adds a player into the game.
- *  \remarks Only up to 6 players can be added into the game. */
-bool game_addPlayer(const std::vector<std::string>&, GameEngine&);
-
-/** \brief Prints a list of the players. */
-bool game_printPlayers(const std::vector<std::string>&, GameEngine&);
-
-/** \brief Starts the game.
- *  \remarks - Fairly distributes all the territories to the players.
- *           - Establish (randomly) the order of play between the players.
- *           - Give 50 initial army units to all players, placed in their respective reinforcement pools.
- *           - Give the players 2 drawn cards from the deck. */
-bool game_gameStart(const std::vector<std::string>&, GameEngine&);
-
-/** \brief Issue an order. */
-bool game_issueOrder(const std::vector<std::string>&, GameEngine&);
-
-/** \brief End the issuing orders phase. */
-bool game_endIssueOrders(const std::vector<std::string>&, GameEngine&);
-
-/** \brief Execute an order. */
-bool game_executeOrder(const std::vector<std::string>&, GameEngine&);
-
-/** \brief End the executing orders phase. */
-bool game_endExecuteOrders(const std::vector<std::string>&, GameEngine&);
-
-/** \brief Enter the game Win phase. */
-bool game_winGame(const std::vector<std::string>&, GameEngine&);
-
-/** \brief Quits the game phase. Stops the game engine. */
-bool game_quit(const std::vector<std::string>&, GameEngine&);
-
-
-
-/** \class State
- *  \brief Class to represent a state. */
-class State {
-public:
-    //  Constructors/Deconstructor
-    /** \brief Constructs a default state object. */
-    State();
-    /** \brief Constructs a state object with the specified state name.
-     *  \param stateName The name of the state. */
-    explicit State(const std::string& stateName);
-    /** \brief Constructs a state object from another state object. Copy constructor.
-     *  \param otherState The other state object to copy. */
-    State(const State& otherState);
-    /** \brief Constructs a state object from another state object then sets the values of the other state object to
-     *        unspecified. Move constructor.
-     *  \param otherState The other state object to extract values from. */
-    State(State&& otherState) noexcept;
-    /** \brief Deallocates a State object. */
-    ~State();
-
-    //  Operator overrides
-    /** \brief Assigns the values of the passed state object into the current state object. Copy assignment operator.
-     *  \param otherState The other state object to copy values from.
-     *  \return The current state object with changed values. */
-    State& operator=(const State& otherState);
-    /** \brief Assigns the values of the passed state object into the current state object then sets the values of the
-     *        other state object to unspecified. Move assignment operator.
-     *  \param otherState The other state object to extract values from.
-     *  \return The current state object with changed values. */
-    State& operator=(State&& otherState) noexcept;
-    /** \brief Prints the name of the state into the output stream. Stream insertion operator.*/
-    friend std::ostream& operator<<(std::ostream& os, const State& otherState);
-    /** \brief Compares two state objects and returns true if they are equal. False otherwise. */
-    bool operator==(const State& otherState) const;
-
-    //  Getter/Accessor methods
-    /** /brief   Gets the name of the state. */
-    std::string getStateName() const;
-
-    //  Setter/Mutator methods
-    /** \brief   Changes the name of the state. */
-    void setStateName(const std::string&);
-
-private:
-    //  The name of the state
-    std::string* stateName;
-};
-
 
 
 /** \class TransitionData
