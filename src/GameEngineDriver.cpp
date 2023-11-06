@@ -2,8 +2,12 @@
 #include <memory>
 #include <vector>
 #include <string>
-#include "../headers/GameEngine.h"
-#include "../headers/CommandProcessing.h"
+
+#include "../headers/gameengine/GameEngine.h"
+#include "../headers/gameengine/State.h"
+#include "../headers/gameengine/TransitionFunctions.h"
+
+#include "../headers/commandprocessing/ConsoleCommandProcessorAdapter.h"
 
 
 

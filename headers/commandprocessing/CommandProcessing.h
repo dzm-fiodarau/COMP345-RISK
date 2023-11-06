@@ -14,14 +14,10 @@
 #include <iostream>
 #include <queue>
 
-
-
 //  Forward declaration of required classes from other header files. (included in .cpp file)
 class State;                //  GameEngine.h
 class TransitionData;       //  GameEngine.h
 class GameEngine;           //  GameEngine.h
-
-
 
 /** \class Command
  *  \brief Class that encapsulates a command, storing additional information and providing helpful methods. */
@@ -135,68 +131,9 @@ protected:
     /** \brief Returns a collection of help strings (for commands that contain the correct syntax) given the current
      *  state. */
     std::vector<std::string> getHelpStrings(const State&) const;
-};
 
-
-
-/** \class ConsoleCommandProcessorAdapter
- *  \brief A class that supplies commands from the standard cpp input stream. */
-class ConsoleCommandProcessorAdapter : public CommandProcessor {
-public:
-    //  Constructors/Deconstructor
-    /** \brief Constructs a 'default' ConsoleCommandProcessorAdapter object. */
-    ConsoleCommandProcessorAdapter();
-    /** \brief Constructs a ConsoleCommandProcessorAdapter given a configuration of states and transitions. */
-    ConsoleCommandProcessorAdapter(std::vector<State>, std::vector<TransitionData>);
-    /** \brief Constructs a ConsoleCommandProcessorAdapter using data from a GameEngine object. */
-    explicit ConsoleCommandProcessorAdapter(const GameEngine&);
-    /** \brief Deconstructs a ConsoleCommandProcessorAdapter object. */
-    ~ConsoleCommandProcessorAdapter() override = default;
-
-    //  Overridden methods
-    /** \brief Gets a valid command object given the valid state. */
-    Command& getCommand(const State&) override;
-    /** \brief Returns a deep copy of the object. */
-    ConsoleCommandProcessorAdapter* clone() const noexcept override;
-};
-
-
-
-/** \class FileCommandProcessorAdapter
- *  \brief A class that supplies commands from a specified file. */
-class FileCommandProcessorAdapter : public CommandProcessor {
-public:
-    //  Constructors/Deconstructors
-    /** \brief Constructs a 'default' FileCommandProcessorAdapter object. */
-    FileCommandProcessorAdapter();
-    /** \brief Constructs a FileCommandProcessorAdapter object from a configuration of states and transition data. */
-    FileCommandProcessorAdapter(std::vector<State>, std::vector<TransitionData>, std::string );
-    /** \brief Constructs a FileCommandProcessorAdapter given a configuration of states and transitions from a
-     * GameObject */
-    FileCommandProcessorAdapter(const GameEngine&, std::string );
-    /** \brief Deconstructs a FileCommandProcessorAdapter object. */
-    ~FileCommandProcessorAdapter() override;
-
-    //  Overridden methods
-    /** \brief Gets a valid command object given the valid state. */
-    Command& getCommand(const State&) override;
-    /** \brief Returns a deep copy of the object. */
-    FileCommandProcessorAdapter* clone() const noexcept override;
-
-private:
-    //  A queue of commands.
-    std::queue<Command> commandQueue;
-
-    //  The path of the file to read from.
-    std::string filePath;
-
-    //  A backup command processor. Used to take commands from in the case that the commands from the specified file
-    //  have been exhausted / run out.
-    ConsoleCommandProcessorAdapter* backupCommandProcessor = nullptr;
-
-    //  Loads the contents from the specified file to the command queue.
-    //  THROWS an exception if the specified file could not be found.
-    void loadFileContents();
+    /** \brief Prints an error block in case an incorrect raw command was inputted. */
+    static void printErrorMenu(std::vector<std::string> helpStrings);
 };
 
 #ifdef __GNUC__
