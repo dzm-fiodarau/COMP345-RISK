@@ -1,5 +1,5 @@
 #include "../headers/Orders.h"
-#include "../headers/Player.h"
+#include "../headers/player/Player.h"
 #include "../headers/Map.h"
 #include "../headers/Cards.h"
 
@@ -8,78 +8,65 @@
  */
 void testOrdersLists()
 {
-     auto *player1 = new Player();
-     auto *player2 = new Player();
+     auto* player1 = new Player("player1");
+     auto* player2 = new Player("player1");
+
      player1->addToReinforcementPool(3);
      player2->addToReinforcementPool(2);
-     player1->handCard.push_back(new Card(type::blockade));
-     player1->handCard.push_back(new Card(type::bomb));
-     player1->handCard.push_back(new Card(type::airlift));
-     player1->handCard.push_back(new Card(type::diplomacy));
-     player2->handCard.push_back(new Card(type::blockade));
-     player2->handCard.push_back(new Card(type::bomb));
-     player2->handCard.push_back(new Card(type::airlift));
-     player2->handCard.push_back(new Card(type::diplomacy));
 
-     auto *europe = new Continent("Europe", 100);
+     player1->addCard(*(new Card(type::bomb)));
+     player1->addCard(*(new Card(type::bomb)));
+     player1->addCard(*(new Card(type::airlift)));
+     player1->addCard(*(new Card(type::diplomacy)));
 
-     auto *france = new Territory("France", 5, 5, europe, player1, 5);
-     auto *belgium = new Territory("Belgium", 6, 4, europe, player1, 5);
-     auto *england = new Territory("England", 5, 3, europe, player2, 5);
-     auto *greece = new Territory("Greece", 10, 12, europe, player1, 5);
+     player2->addCard(*(new Card(type::blockade)));
+     player2->addCard(*(new Card(type::bomb)));
+     player2->addCard(*(new Card(type::airlift)));
+     player2->addCard(*(new Card(type::diplomacy)));
 
-     france->addAdjacentTerritory(belgium);
-     france->addAdjacentTerritory(england);
-     belgium->addAdjacentTerritory(france);
-     belgium->addAdjacentTerritory(england);
-     england->addAdjacentTerritory(france);
-     england->addAdjacentTerritory(belgium);
+     auto europe = make_shared<Continent>("Europe", 100);
 
-     player1->issueOrder("deploy", france, 3, nullptr, nullptr);
-     player1->issueOrder("advance", belgium, 4, france, nullptr);
-     player1->issueOrder("bomb", england, 0, nullptr, nullptr);
-     player1->issueOrder("blockade", belgium, 0, nullptr, nullptr);
-     player1->issueOrder("airlift", greece, 3, france, nullptr);
-     player1->issueOrder("negotiate", nullptr, 0, nullptr, player2);
+     auto france =  make_shared<Territory>("France", 5, 5, europe.get(), player1, 5);
+     auto belgium = make_shared<Territory>("Belgium", 6, 4, europe.get(), player1, 5);
+     auto england = make_shared<Territory>("England", 5, 3, europe.get(), player2, 5);
+     auto greece =  make_shared<Territory>("Greece", 10, 12, europe.get(), player1, 5);
 
-     player2->issueOrder("deploy", france, 2, nullptr, nullptr);
-     player2->issueOrder("advance", belgium, 4, france, nullptr);
-     player2->issueOrder("bomb", greece, 0, nullptr, nullptr);
-     player2->issueOrder("blockade", france, 0, nullptr, nullptr);
-     player2->issueOrder("airlift", england, 2, france, nullptr);
-     player2->issueOrder("negotiate", nullptr, 0, nullptr, player2);
-     cout << "ORDERS PART\n-------------------------------------------------------------\n";
+    france->addAdjacentTerritory(belgium.get());
+    france->addAdjacentTerritory(england.get());
+    belgium->addAdjacentTerritory(france.get());
+    belgium->addAdjacentTerritory(england.get());
+    england->addAdjacentTerritory(france.get());
+    england->addAdjacentTerritory(belgium.get());
 
-     OrdersList *player1_ordersList = player1->getOrdersList();
-     OrdersList *player2_ordersList = player2->getOrdersList();
+    player1->issueOrder("deploy", france.get(), 3, nullptr, nullptr);
+    player1->issueOrder("advance", belgium.get(), 4, france.get(), nullptr);
+    player1->issueOrder("bomb", england.get(), 0, nullptr, nullptr);
+    player1->issueOrder("blockade", belgium.get(), 0, nullptr, nullptr);
+    player1->issueOrder("airlift", greece.get(), 3, france.get(), nullptr);
+    player1->issueOrder("negotiate", nullptr, 0, nullptr, player2);
 
-     // Verify OrdersList.move()
-     cout << *(player2_ordersList) << endl;
-     player2_ordersList->move((*player2_ordersList)[0], 4); // Moves first element to index 4 of the list
-     cout << *(player2_ordersList) << endl;
-     player2_ordersList->move((*player2_ordersList)[0], -2); //  Invalid case
-     player2_ordersList->move((*player1_ordersList)[0], 4);  //  Invalid case
-     cout << "\n";
+    player2->issueOrder("deploy", france.get(), 2, nullptr, nullptr);
+    player2->issueOrder("advance", belgium.get(), 4, france.get(), nullptr);
+    player2->issueOrder("bomb", greece.get(), 0, nullptr, nullptr);
+    player2->issueOrder("blockade", france.get(), 0, nullptr, nullptr);
+    player2->issueOrder("airlift", england.get(), 2, france.get(), nullptr);
+    player2->issueOrder("negotiate", nullptr, 0, nullptr, player2);
 
-     // Verify OrdersList.remove()
-     player2_ordersList->remove((*player2_ordersList)[0]); // Removes first element of the list
-     cout << *(player2->getOrdersList()) << endl;
-     player2_ordersList->remove((*player1_ordersList)[0]); // Invalid case
-     cout << "\n";
+    auto player1_ordersList = player1->getOrdersList();
+    auto player2_ordersList = player2->getOrdersList();
 
-     //  Anonymous function that takes an order and calls its 'execute()' function
-     auto executeOrderFunction = [](Order *order)
-     { order->execute(); return; };
+    //  Anonymous function that takes an order and calls its 'execute()' function
+    auto executeOrderFunction = [](Order *order)
+    { order->execute(); return; };
 
-     // Verify validate() and execute() of different Order types
-     // Calling execute() suffices because each execute uses validate() in its implementation
-     cout << "Valid Orders:\n";
-     player1->getOrdersList()->apply(executeOrderFunction);
+    cout << "Valid Orders:\n";
+    player1->getOrdersList()->apply(executeOrderFunction);
 
-     cout << "\nInvalid Orders:\n";
-     player2->getOrdersList()->apply(executeOrderFunction);
+    cout << "\nInvalid Orders:\n";
+    player2->getOrdersList()->apply(executeOrderFunction);
 
-     cout << "\n-------------------------------------------------------------\n\n";
+    delete player1;
+    delete player2;
 }
 
 /**
@@ -93,15 +80,15 @@ void testOrderExecution()
      player1->setPlayerName("Shadow");
      player2->addToReinforcementPool(2);
      player2->setPlayerName("Lucy");
-     player1->handCard.push_back(new Card(type::blockade));
-     player1->handCard.push_back(new Card(type::bomb));
-     player1->handCard.push_back(new Card(type::airlift));
-     player1->handCard.push_back(new Card(type::diplomacy));
-     player2->handCard.push_back(new Card(type::blockade));
-     player2->handCard.push_back(new Card(type::bomb));
-     player2->handCard.push_back(new Card(type::bomb));
-     player2->handCard.push_back(new Card(type::airlift));
-     player2->handCard.push_back(new Card(type::diplomacy));
+     player1->addCard(*(new Card(type::blockade)));
+     player1->addCard(*(new Card(type::bomb)));
+     player1->addCard(*(new Card(type::airlift)));
+     player1->addCard(*(new Card(type::diplomacy)));
+     player2->addCard(*(new Card(type::blockade)));
+     player2->addCard(*(new Card(type::bomb)));
+     player2->addCard(*(new Card(type::bomb)));
+     player2->addCard(*(new Card(type::airlift)));
+     player2->addCard(*(new Card(type::diplomacy)));
 
      Continent *europe = new Continent("Europe", 100);
 
@@ -144,7 +131,7 @@ void testOrderExecution()
      england->setNumberOfArmies(100);
      player2->issueOrder("advance", france, 90, england, NULL);
      cout << "BEFORE:\n"
-          << *player1 << *player2 << "Lucy's draw card at the end of turn indication: " << player2->getDrawCard() << endl
+          << *player1 << *player2 << "Lucy's draw card at the end of turn indication: " << player2->drawsCard() << endl
           << endl;
      cout << *england << endl
           << *france << endl
@@ -154,7 +141,7 @@ void testOrderExecution()
      {
      }
      cout << "\nAFTER:\n"
-          << *player1 << *player2 << "Lucy's draw card at the end of turn indication: " << player2->getDrawCard() << endl
+          << *player1 << *player2 << "Lucy's draw card at the end of turn indication: " << player2->drawsCard() << endl
           << endl;
      cout << *england << endl
           << *france << endl;

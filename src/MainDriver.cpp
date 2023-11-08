@@ -35,6 +35,7 @@ int main()
 
 #ifdef EXECUTE_ORDERS
     testOrdersLists();
+    testOrderExecution();
 #endif
 
 #ifdef EXECUTE_PLAYER

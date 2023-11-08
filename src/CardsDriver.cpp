@@ -3,7 +3,7 @@
 
 #include "../headers/Cards.h"
 #include "../headers/Map.h"
-#include "../headers/Player.h"
+#include "../headers/player/Player.h"
 
 void testCards()
 {
