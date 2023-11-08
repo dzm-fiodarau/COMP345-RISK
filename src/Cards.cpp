@@ -75,9 +75,8 @@ Card &Card::operator=(const Card &otherCard)
 
 std::ostream &operator<<(std::ostream &os, const Card &card)
 {
-    os << "Card of type: ";
-    os << convertTypeToString(card.getCardType()) << std::endl;
-
+    //  os << "Card of type: ";
+    os << convertTypeToString(card.getCardType());
     return os;
 }
 
@@ -123,7 +122,7 @@ Deck::Deck()
     }
 }
 
-Card *Deck::draw()
+Card *Deck::draw() const
 {
     std::random_device r;
     std::mt19937 rng(r());
@@ -135,8 +134,9 @@ Card *Deck::draw()
     // The card that got randomly chosen
     Card *cardSelected = cardList[randNum];
 
+    // TODO REVIEW: not completely sure if card should be deleted from the deck
     // Delete it from the deck
-    cardList.erase(cardList.begin() + randNum);
+    //  cardList.erase(cardList.begin() + randNum);
 
     // Return the card
     return cardSelected;

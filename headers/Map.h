@@ -1,6 +1,14 @@
 #ifndef MAP_H
 #define MAP_H
 
+//  Compiler specific macros
+//  Disables clang modernize suggestions
+#ifdef __GNUC__
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "modernize-use-nodiscard"
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+#endif
+
 #include <vector>
 #include <string>
 #include <fstream>
@@ -155,6 +163,9 @@ public:
      */
     int getNumberOfArmies() const;
 
+    inline int getX() const { return x; }
+    inline int getY() const {return y; }
+
     int numberOfArmies;                           // Number of armies present in the territory.
     std::vector<Territory *> adjacentTerritories; // Vector of territories adjacent to this territory.
 
@@ -281,6 +292,11 @@ public:
      */
     void setIsValid(bool valid) { isValid = valid; }
 
+    /**
+     * \brief Gets the all the territories in the map.
+     */
+    std::vector<Territory *> getTerritories() const;
+
 private:
     std::vector<Continent *> continents;    // Vector of continents present in the map.
     std::vector<Territory *> territories;   // Vector of territories present in the map.
@@ -372,4 +388,9 @@ private:
     void parseTerritoryLine(const std::string &line, Map &map);
 };
 
+#ifdef __GNUC__
+#pragma clang diagnostic pop
 #endif
+
+
+#endif  //  MAP_H

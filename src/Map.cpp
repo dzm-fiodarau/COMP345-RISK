@@ -663,3 +663,7 @@ void MapLoader::parseTerritoryLine(const std::string &line, Map &map)
     // Store the adjacent territory
     parsedTerritoryAdjacencies[territoryName] = adjacentNames;
 }
+
+std::vector<Territory *> Map::getTerritories() const {
+    return territories;
+}

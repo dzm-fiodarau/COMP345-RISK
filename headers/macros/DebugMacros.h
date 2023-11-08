@@ -17,8 +17,12 @@
 #define ANSI_COLOR_INSERT "\033[34m" <<
 #define ANSI_RESET_INSERT "\033[0m" <<
 #else
+#ifndef ANSI_COLOR_INSERT
 #define ANSI_COLOR_INSERT
+#endif
+#ifndef ANSI_RESET_INSERT
 #define ANSI_RESET_INSERT
+#endif
 #endif
 
 //  Output to print to console/std::out
