@@ -2,7 +2,7 @@
 #include <algorithm>
 
 #include "../headers/Map.h"
-#include "../headers/Player.h"
+#include "../headers/player/Player.h"
 
 
 
@@ -13,7 +13,7 @@ Territory::Territory(const std::string &name, int xCoord, int yCoord, Continent 
 {
     if (owner)
     {
-        owner->territory.push_back(this);
+        owner->addTerritory(*this);
     }
 }
 
@@ -60,7 +60,7 @@ std::ostream &operator<<(std::ostream &os, const Territory &territory)
     // Check for null owner pointer
     if (territory.owner)
     {
-        os << ", Owner: " << territory.owner->getPlayerName();
+        os << ", Owner: " << territory.owner->getName();
     }
     else
     {
@@ -92,6 +92,10 @@ std::vector<Territory *> Territory::getAdjacentTerritories() const
     return adjacentTerritories;
 }
 
+bool Territory::isTerritoryAdjacent(Territory *territory) const {
+    return find(begin(adjacentTerritories), end(adjacentTerritories), territory) != end(adjacentTerritories);
+}
+
 void Territory::setOwner(Player *newOwner)
 {
     owner = newOwner;
@@ -111,6 +115,10 @@ int Territory::getNumberOfArmies() const
 {
     return numberOfArmies;
 }
+
+Territory::~Territory() = default;
+
+
 
 // Continent Implementation
 
@@ -228,7 +236,7 @@ std::ostream &operator<<(std::ostream &os, const Map &map)
         for (const auto &territory : continent->getTerritories())
         {
             os << " - " << territory->getName()
-               << ": owner=" << (territory->getOwner() ? territory->getOwner()->getPlayerName() : "None")
+               << ": owner=" << (territory->getOwner() ? territory->getOwner()->getName() : "None")
                << "; armies=" << territory->getNumberOfArmies()
                << "; " << territory->getAdjacentTerritories().size() << " adjacent territories: ";
 
@@ -250,6 +258,7 @@ std::ostream &operator<<(std::ostream &os, const Map &map)
 // Destructor
 Map::~Map()
 {
+/*
     // Delete all territories
     for (Territory *territory : territories)
     {
@@ -261,6 +270,7 @@ Map::~Map()
     {
         delete continent;
     }
+ */
 }
 
 void Map::addTerritory(Territory *territory)
@@ -405,7 +415,7 @@ void Map::printMap() const
         for (const auto &territory : continent->getTerritories())
         {
             std::cout << " - " << territory->getName()
-                      << ": owner=" << (territory->getOwner() ? territory->getOwner()->getPlayerName() : "None")
+                      << ": owner=" << (territory->getOwner() ? territory->getOwner()->getName() : "None")
                       << "; armies=" << territory->getNumberOfArmies()
                       << "; " << territory->getAdjacentTerritories().size() << " adjacent territories: ";
             const auto &adjacentTerritories = territory->getAdjacentTerritories();

@@ -8,7 +8,7 @@
 #include "../../headers/gameengine/GameEngine.h"
 #include "../../headers/macros/DebugMacros.h"
 #include "../../headers/Map.h"
-#include "../../headers/Player.h"
+#include "../../headers/player/Player.h"
 #include "../../headers/Cards.h"
 
 #include <iostream>
@@ -32,7 +32,7 @@ static void distributeTerritories(const std::vector<Player*>& players, const std
         if (playersVectorIndex >= players.size())
             playersVectorIndex = 0;
 
-        players[playersVectorIndex++]->addTerritory(territory);
+        players[playersVectorIndex++]->addTerritory(*territory);
     }
 }
 
@@ -47,25 +47,25 @@ static void printPlayerInfo(const std::vector<Player*>& players) {
         auto* currentPlayer = players[i];
 
         //  Print out player name + their position in the order of play
-        std::cout << "[" << (i + 1) << "].    " << currentPlayer->getPlayerName() << std::endl;
+        std::cout << "[" << (i + 1) << "].    " << currentPlayer->getName() << std::endl;
 
         //  Print out owned territories
         std::cout << "  Territories:" << std::endl;
         std::cout << "  FORMAT: NAME(x, y); CONTINENT" << std::endl;
-        for (Territory* territory : currentPlayer->getTerritories()) {
+        for (const auto& territory : currentPlayer->getTerritories()) {
             std::cout << "      - " << territory->getName() << "(" << territory->getX() << ", " << territory->getY()
                       << "); " << territory->getContinent()->getName() << std::endl;
         }
 
         //  Print out drawn cards
         std::cout << "  Cards:" << std::endl;
-        for (Card* card : currentPlayer->getHandCards()) {
+        for (const auto& card : currentPlayer->getCards()) {
             std::cout << "      - " << *card << std::endl;
         }
 
         //  Prints out units in the reinforcement pool
         std::cout << "  Units: (in reinforcement pool)" << std::endl;
-        std::cout << "      - " << currentPlayer->getReinforcementPool() << std::endl;
+        std::cout << "      - " << currentPlayer->getUnits() << std::endl;
 
         //  Add extra space for good formatting
         std::cout << std::endl;
@@ -175,7 +175,7 @@ bool game_printPlayers(const std::vector<std::string>& _ignored_, GameEngine& ga
 
     std::cout << "  CURRENT PLAYERS" << std::endl;
     for (auto* player : players) {
-        std::cout << "  " << (playerCount++) << ". " << player->getPlayerName() << std::endl;
+        std::cout << "  " << (playerCount++) << ". " << player->getName() << std::endl;
     }
 
     return true;
@@ -222,11 +222,11 @@ bool game_gameStart(const std::vector<std::string>& values, GameEngine& gameEngi
         player->addToReinforcementPool(50);
 
     //  4.  Let each player draw 2 initial cards from the deck using the deck's 'draw()' method
-    const Deck& deck = Deck::getInstance();
+    Deck& deck = Deck::getInstance();
     for (Player* player : players) {
         //  Draw two cards from the deck
-        player->addHandCard(deck.draw());
-        player->addHandCard(deck.draw());
+        player->addCard(*deck.draw());
+        player->addCard(*deck.draw());
     }
 
     //  Print current config.

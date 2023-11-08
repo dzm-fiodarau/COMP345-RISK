@@ -3,7 +3,7 @@
 
 #include "../headers/Orders.h"
 #include "../headers/Map.h"
-#include "../headers/Player.h"
+#include "../headers/player/Player.h"
 #include "../headers/Cards.h"
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -130,10 +130,67 @@ bool OrdersList::move(Order *order, int index)
 
 //----------------------------------------------------------------------------------------------------------------------
 //  ORDER
-Order::Order(Player *owner, const string &type, Territory *target)
+
+Order::OrderType Order::parseOrderType(const string& orderTypeAsString) {
+    if (orderTypeAsString == "deploy")
+        return Order::OrderType::Deploy;
+
+    else if (orderTypeAsString == "advance")
+        return Order::OrderType::Advance;
+
+    else if (orderTypeAsString == "bomb")
+        return Order::OrderType::Bomb;
+
+    else if (orderTypeAsString == "blockade")
+        return Order::OrderType::Blockade;
+
+    else if (orderTypeAsString == "airlift")
+        return Order::OrderType::Airlift;
+
+    else if (orderTypeAsString == "negotiate")
+        return Order::OrderType::Negotiate;
+
+    else
+        return Order::OrderType::Invalid;
+}
+
+string Order::orderTypeToString(Order::OrderType orderType) {
+    switch (orderType) {
+        case Order::OrderType::Deploy:
+            return "deploy";
+
+        case Order::OrderType::Advance:
+            return "advance";
+
+        case Order::OrderType::Bomb:
+            return "bomb";
+
+        case Order::OrderType::Blockade:
+            return "blockade";
+
+        case Order::OrderType::Airlift:
+            return "airlift";
+
+        case Order::OrderType::Negotiate:
+            return "negotiate";
+
+        default:
+            return "invalid";
+    }
+}
+
+
+Order::Order(Player *owner, const string& type, Territory *target)
 {
     this->owner = owner;
-    this->type = type;
+    this->type = parseOrderType(type);
+    this->target = target;
+}
+
+Order::Order(Player *owner, Order::OrderType orderType, Territory *target)
+{
+    this->owner = owner;
+    this->type = orderType;
     this->target = target;
 }
 
@@ -162,11 +219,11 @@ ostream &operator<<(ostream &outs, const Order &order)
 {
     if (order.target)
     {
-        return outs << "Order: type = " << order.type << ", target = " << order.target->getName();
+        return outs << "Order: type = " << Order::orderTypeToString(order.type) << ", target = " << order.target->getName();
     }
     else
     {
-        return outs << "Order: type = " << order.type << ", target = NULL";
+        return outs << "Order: type = " << Order::orderTypeToString(order.type) << ", target = NULL";
     }
 }
 
@@ -199,7 +256,7 @@ DeployOrder &DeployOrder::operator=(const DeployOrder &order)
 
 ostream &operator<<(ostream &outs, const DeployOrder &order)
 {
-    return outs << "DeployOrder: type = " << order.type << ", target = " << order.target->getName()
+    return outs << "DeployOrder: type = " << Order::orderTypeToString(order.type) << ", target = " << order.target->getName()
                 << ", army units = " << order.armyUnits;
 }
 
@@ -235,7 +292,7 @@ AdvanceOrder &AdvanceOrder::operator=(const AdvanceOrder &order)
 
 ostream &operator<<(ostream &outs, const AdvanceOrder &order)
 {
-    return outs << "AdvanceOrder: type = " << order.type << ", target = " << order.target->getName()
+    return outs << "AdvanceOrder: type = " << Order::orderTypeToString(order.type) << ", target = " << order.target->getName()
                 << ", army units = " << order.armyUnits << ", source = " << order.source->getName();
 }
 
@@ -267,7 +324,7 @@ BombOrder &BombOrder::operator=(const BombOrder &order)
 
 ostream &operator<<(ostream &outs, const BombOrder &order)
 {
-    return outs << "BombOrder: type = " << order.type << ", target = " << order.target->getName();
+    return outs << "BombOrder: type = " << Order::orderTypeToString(order.type) << ", target = " << order.target->getName();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -298,7 +355,7 @@ BlockadeOrder &BlockadeOrder::operator=(const BlockadeOrder &order)
 
 ostream &operator<<(ostream &outs, const BlockadeOrder &order)
 {
-    return outs << "BlockadeOrder: type = " << order.type << ", target = " << order.target->getName();
+    return outs << "BlockadeOrder: type = " << Order::orderTypeToString(order.type) << ", target = " << order.target->getName();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -333,14 +390,14 @@ AirliftOrder &AirliftOrder::operator=(const AirliftOrder &order)
 
 ostream &operator<<(ostream &outs, const AirliftOrder &order)
 {
-    return outs << "AirliftOrder: type = " << order.type << ", target = " << order.target->getName()
+    return outs << "AirliftOrder: type = " << Order::orderTypeToString(order.type) << ", target = " << order.target->getName()
                 << ", army units = " << order.armyUnits << ", source = " << order.source->getName();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 //  NEGOTIATE ORDER
 NegotiateOrder::NegotiateOrder(Player *owner, Player *player)
-    : Order(owner, "negotiate", nullptr)
+    : Order(owner, Order::OrderType::Negotiate, nullptr)
 {
     NegotiateOrder::player = player;
 }
@@ -366,60 +423,99 @@ NegotiateOrder &NegotiateOrder::operator=(const NegotiateOrder &order)
 
 ostream &operator<<(ostream &outs, const NegotiateOrder &order)
 {
-    return outs << "NegotiateOrder: type = " << order.type << ", target player = " << order.player->getPlayerName();
+    return outs << "NegotiateOrder: type = " << Order::orderTypeToString(order.type) << ", target player = " << order.player->getName();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 //  ORDER VALIDATIONS
+
+/** \remarks Generally, a valid order is one that is:
+ *           <ul><li> <b>NOT</b> invalid in type.
+ *               <li> A valid target is specified.
+ *           </ul>
+ *           <br>
+ *           Note that <code>Order</code> subclasses may have extra conditions to be valid.
+ */
 bool Order::validate()
 {
-    return (find(begin(allowedOrders), end(allowedOrders), type) != end(allowedOrders)) && target;
+    return type != Order::OrderType::Invalid
+        && (target != nullptr);
 }
 
+/** \remarks A <code>DeployOrder</code> is valid when:
+ *           <ul><li> A valid target is specified. Additionally, the target territory must be owned by he player
+ *                    owning the order.
+ *           </ul>
+ */
 bool DeployOrder::validate()
 {
-    return Order::validate() && ((find(begin(owner->territory), end(owner->territory), target)) != end(owner->territory));
+    return (target != nullptr)
+        && owner->ownsTerritory(*target);
 }
 
+/** \remarks A <code>AdvanceOrder</code> is valid when:
+ *           <ul><li> A valid source and target territories are specified. This source territory does not need to be
+ *                    owned by the player.
+ *               <li> A valid number of army units are specified.
+ *               <li> The owner owns the source territory.
+ *               <li> The target territory is adjacent to the source territory.
+ *               <li> The owner of the target territory must <b>NOT</b> be in negotiations with the current player.
+ *           </ul>
+ */
 bool AdvanceOrder::validate()
 {
-
-    return Order::validate() && source && armyUnits > 0 && armyUnits <= (*source).numberOfArmies && (find(begin((*source).adjacentTerritories), end((*source).adjacentTerritories), target) != end((*source).adjacentTerritories)) && ((find(begin(owner->territory), end(owner->territory), source)) != end(owner->territory)) && source != target && ((find(begin(owner->playersInNegotiation), end(owner->playersInNegotiation), target->getOwner())) == end(owner->playersInNegotiation));
+    return (source != nullptr && target != nullptr)
+        && (armyUnits > 0 && armyUnits <= source->numberOfArmies)   //  TODO: probably a logical bug here
+        && (owner->ownsTerritory(*source))
+        && (source->isTerritoryAdjacent(target))
+        && !(owner->isPlayerInNegotiations(*target->getOwner()));
 }
 
-bool validateEnemyAdjacent(Player *attacker, Territory *target)
-{
-    for (unsigned int i = 0; i < attacker->territory.size(); i++)
-    {
-        if ((find(begin(attacker->territory[i]->adjacentTerritories), end(attacker->territory[i]->adjacentTerritories), target)) != end(attacker->territory[i]->adjacentTerritories))
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
+/** \remarks A <code>BombOrder</code> is valid when:
+ *           <ul><li> A valid target territory is specified. A player <b>CANNOT</b> bomb their own territory.
+ *               <li> The target territory must be adjacent to the player's territories.
+ *               <li> The owner of the target territory must <b>NOT</b> be in negotiations with the current player.
+ *           </ul>
+ */
 bool BombOrder::validate()
 {
-    return Order::validate() &&
-           ((find(begin(owner->territory), end(owner->territory), target)) == end(owner->territory)) && validateEnemyAdjacent(owner, target) && ((find(begin(owner->playersInNegotiation), end(owner->playersInNegotiation), target->getOwner())) == end(owner->playersInNegotiation));
+    return (target != nullptr)
+        && !(owner->ownsTerritory(*target))
+        && (owner->isTerritoryAdjacent(*target))
+        && !(owner->isPlayerInNegotiations(*target->getOwner()));
 }
 
+/** \remarks A <code>BlockadeOrder</code> is valid when:
+ *           <ul><li> A valid target territory is specified. A player <b>CAN ONLY</b> blockade their own territory.
+ *           </ul>
+ */
 bool BlockadeOrder::validate()
 {
-    return Order::validate() && ((find(begin(owner->territory), end(owner->territory), target)) != end(owner->territory));
+    return (target != nullptr)
+        && (owner->ownsTerritory(*target));
 }
 
+/** \remarks A <code>AirliftOrder</code> is valid when:
+ *           <ul><li> Valid source and target territories are specified. The player <b>MUST OWN</b> these territories.
+ *               <li> A valid number of army units are specified.
+ *           </ul>
+ */
 bool AirliftOrder::validate()
 {
-    return Order::validate() && source && armyUnits > 0 && armyUnits <= (*source).numberOfArmies &&
-           ((find(begin(owner->territory), end(owner->territory), source)) != end(owner->territory)) &&
-           ((find(begin(owner->territory), end(owner->territory), target)) != end(owner->territory));
+    return (source != nullptr && target != nullptr)
+        && (source && armyUnits > 0 && armyUnits <= source->numberOfArmies)
+        && (owner->ownsTerritory(*source))
+        && (owner->ownsTerritory(*target));
 }
 
+/** \remarks A <code>NegotiateOrder</code> is valid when:
+ *           <ul><li> A valid player is specified. A player cannot negotiate with themselves.
+ *           </ul>
+ */
 bool NegotiateOrder::validate()
 {
-    return (find(begin(allowedOrders), end(allowedOrders), type) != end(allowedOrders)) && player && owner != player;
+    return (player != nullptr)
+        && (player != owner);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -472,15 +568,14 @@ string AdvanceOrder::execute()
             }
             if (defenderUnitsKilled >= target->getNumberOfArmies())
             {
-                target->getOwner()->territory.erase(remove(target->getOwner()->territory.begin(), target->getOwner()->territory.end(), target),
-                                                    target->getOwner()->territory.end());
-                target->setOwner(owner);
-                owner->territory.push_back(target);
+                target->getOwner()->removeTerritory(*target);    //  The owner of the target no longer owns the target territory
+                target->setOwner(owner);                        //  Set the owner to this player (player that owns the order)
+                owner->addTerritory(*target);
                 source->setNumberOfArmies(source->getNumberOfArmies() - armyUnits);
                 target->setNumberOfArmies(armyUnits > attackerUnitsKilled ? armyUnits - attackerUnitsKilled : 0);
                 owner->setDrawCard(true);
                 cout << *this << " has been executed." << endl;
-                return owner->getPlayerName() + " has captured " + target->getName() + ". It is now occupied by " + to_string(target->getNumberOfArmies()) + " units.";
+                return owner->getName() + " has captured " + target->getName() + ". It is now occupied by " + to_string(target->getNumberOfArmies()) + " units.";
             }
             else
             {
@@ -517,10 +612,9 @@ string BlockadeOrder::execute()
 {
     if (validate())
     {
-        target->getOwner()->territory.erase(remove(target->getOwner()->territory.begin(), target->getOwner()->territory.end(), target),
-                                            target->getOwner()->territory.end());
-        owner->neutralPlayer->territory.push_back(target);
-        target->setOwner(owner->neutralPlayer);
+        target->getOwner()->removeTerritory(*target);        //  The owner of the target no longer owns the target territory
+        Player::neutralPlayer->addTerritory(*target);
+        target->setOwner(Player::neutralPlayer);
         target->setNumberOfArmies(target->getNumberOfArmies() * 2);
 
         cout << *this << " has been executed." << endl;
@@ -553,10 +647,10 @@ string NegotiateOrder::execute()
 {
     if (validate())
     {
-        owner->playersInNegotiation.push_back(player);
-        player->playersInNegotiation.push_back(owner);
+        owner->negotiateWith(*player);
+        player->negotiateWith(*owner);
         cout << *this << " has been executed." << endl;
-        return owner->getPlayerName() + " and " + player->getPlayerName() + " are now negotiating.";
+        return owner->getName() + " and " + player->getName() + " are now negotiating.";
     }
     else
     {

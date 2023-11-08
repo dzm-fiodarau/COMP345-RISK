@@ -102,7 +102,7 @@ public:
      * \brief
      * \return
      */
-    Card *draw() const;
+    Card *draw();
 
     /**
      * \brief               Add a Card to the deck.
