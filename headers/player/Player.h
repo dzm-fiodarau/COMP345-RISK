@@ -112,12 +112,12 @@ public:
     /** \brief  Returns a list of of which <b>neighboring</b> territories are to be attacked. Territories in the front
      *          have higher priorities.
      */
-    vector<shared_ptr<Territory>> toAttack();
+    vector<Territory*> toAttack();
 
     /** \brief  Returns a list of which <b>currently owned</b> territories that are to be defended. Territories in the
      *          front have higher priorities.
      */
-    vector<shared_ptr<Territory>> toDefend();
+    vector<Territory*> toDefend();
 
     /** \brief  Issues an order and adds it to the list of issued orders.
      *  \remarks Order creation is delegated to the <code>PlayerStrategies</code> object.
@@ -144,12 +144,8 @@ public:
 
 
     // Operator Overloads
-    /** \brief Copy assignment operator override.
-     */
     Player &operator=(const Player &other);
 
-    /** \brief Stream insertion operator override.
-     */
     friend ostream &operator<<(ostream &out, const Player &player);
 
 
@@ -167,8 +163,7 @@ public:
      */
     inline int getReinforcementPool() const { return getUnits(); }
 
-    /** \brief Returns whether or not the player is to draw a card at the end of their turn.
-     */
+    /** \brief Returns whether or not the player is to draw a card at the end of their turn. */
     bool drawsCard() const;
 
     /** \brief Returns a vector of territories that is associated to the player.
@@ -186,11 +181,11 @@ public:
      */
     vector<const Player*> getPlayersInNegotiation() const;
 
+    /** \brief Gets the <code>OrdersList</code> object of the class. */
+    OrdersList* getOrdersList() const;
+
 
     //  Setter/Mutator methods
-    /** \brief Sets the name of the player.
-     *  \param playerName The new name of the player.
-     */
     void setPlayerName(const std::string& newName);
 
     /** \brief Adds units to the current reinforcement pool of the player.
@@ -198,51 +193,31 @@ public:
      */
     void addToReinforcementPool(int units);
 
-    /** \brief Sets whether or not the player should draw a card at the end of their turn.
-     */
+    /** \brief Sets whether or not the player should draw a card at the end of their turn. */
     void setDrawCard(bool drawCard);
 
-    /** \brief Adds a <code>Territory</code> object to the list of owned territories.
-     */
+    /** \brief Adds a <code>Territory</code> object to the list of owned territories. */
     void addTerritory(Territory& newTerritory);
 
-    /** \brief Adds a <code>Card</code> object to the list of cards.
-      */
+    /** \brief Adds a <code>Card</code> object to the list of cards. */
     void addCard(Card& newCard);
 
-    /** \brief Adds a player to the list of players currently under negotiation.
-     *  \param player The <code>Player</code> object.
-     */
+    /** \brief Adds a player to the list of players currently under negotiation. */
     void negotiateWith(Player& player);
 
-    /** \brief Removes a territory from the player's owned territory list.
-     *  \param target The <code>Territory</code> object to check if the player owns.
-     *  \remarks In other words, the territory does not belong to the player now.
-     */
+    /** \brief Removes a territory from the player's owned territory list. */
     void removeTerritory(Territory& target);
 
-    /** \brief Checks whether a player owns a specified territory.
-     * \param territory The <code>Territory</code> object to check if the player owns.
-     * \return True if the player owns the territory, false otherwise.
-     */
+    /** \brief Checks whether a player owns a specified territory. */
     bool ownsTerritory(Territory& territory) const;
 
     /** \brief Checks whether a specified territory is adjacent to any of the player's owned territories.
-     *  \param territory The <code>Territory</code> object to check if the player is adjacent to.
-     *  \return True if the target territory is adjacent to the player, false otherwise.
-     *
      *  \remarks <ul><li>In the case that the player owns the target territory, returns true.</ul>
      */
     bool isTerritoryAdjacent(Territory& target) const;
 
-    /** \brief Checks whether another player is currently under negotiations.
-     *  \param player The <code>Player</code> object to check.
-     *  \return True if the player is under negotiation, false otherwise.
-     */
+    /** \brief Checks whether another player is currently under negotiations. */
     bool isPlayerInNegotiations(Player& player) const;
-
-    // TODO: remove whenever possible.
-    OrdersList* getOrdersList() const;
 };
 
 #ifdef __GNUC__

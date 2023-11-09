@@ -1,7 +1,7 @@
 #include "../../headers/player/HumanPlayerStrategy.h"
 #include "../../headers/player/Player.h"
 
-HumanPlayerStrategy::HumanPlayerStrategy(const Player *player) : PlayerStrategy(player) {
+HumanPlayerStrategy::HumanPlayerStrategy(const Player *owner) : PlayerStrategy(owner) {
 
 }
 
@@ -17,14 +17,16 @@ Order *HumanPlayerStrategy::issueOrder() {
     return nullptr;
 }
 
-std::vector<std::shared_ptr<Territory>> HumanPlayerStrategy::toAttack() {
-    return std::vector<std::shared_ptr<Territory>>();
+std::vector<Territory *> HumanPlayerStrategy::toAttack() {
+    return std::vector<Territory *>();
 }
 
-std::vector<std::shared_ptr<Territory>> HumanPlayerStrategy::toDefend() {
-    return std::vector<std::shared_ptr<Territory>>();
+std::vector<Territory *> HumanPlayerStrategy::toDefend() {
+    return std::vector<Territory *>();
 }
 
-HumanPlayerStrategy* HumanPlayerStrategy::clone() {
-    return new HumanPlayerStrategy(new Player());
+PlayerStrategy *HumanPlayerStrategy::clone() {
+    return nullptr;
 }
+
+

@@ -7,6 +7,7 @@
 #pragma ide diagnostic ignored "UnusedParameter"
 #endif
 
+#include <iostream>
 #include <ranges>
 #include <algorithm>
 #include <utility>
@@ -227,11 +228,11 @@ void Player::issueOrder(Order::OrderType orderType, Territory *target, int armyU
     }
 }
 
-vector<shared_ptr<Territory>> Player::toAttack() {
+vector<Territory*> Player::toAttack() {
     return playerStrategy->toAttack();
 }
 
-vector<shared_ptr<Territory>> Player::toDefend() {
+vector<Territory*> Player::toDefend() {
     return playerStrategy->toDefend();
 }
 
@@ -320,7 +321,8 @@ void Player::removeTerritory(Territory& target)
 bool Player::ownsTerritory(Territory& territory) const
 {
     auto it = std::find_if(territories.begin(), territories.end(),
-                           [territory] (Territory* ptr) { return &territory == ptr; });
+                           [&territory] (Territory* ptr) { return &territory == ptr;
+    });
 
     return it != territories.end();
 }
@@ -336,7 +338,7 @@ bool Player::isTerritoryAdjacent(Territory& target) const
 bool Player::isPlayerInNegotiations(Player& player) const
 {
     auto it = std::find_if(playersInNegotiation.begin(), playersInNegotiation.end(),
-                           [player] (Player* ptr) { return &player == ptr; });
+                           [&player] (Player* ptr) { return &player == ptr; });
 
     return it != playersInNegotiation.end();
 }

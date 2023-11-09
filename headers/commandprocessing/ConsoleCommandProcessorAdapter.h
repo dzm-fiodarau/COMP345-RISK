@@ -13,7 +13,6 @@
 
 //  Forward declaration of required classes from other header files. (included in .cpp file)
 class State;                                //  gameengine/State.h
-class TransitionData;                       //  gameengine/GameEngine.h
 class GameEngine;                           //  gameengine/GameEngine.h
 
 /** \class ConsoleCommandProcessorAdapter
@@ -23,16 +22,14 @@ public:
     //  Constructors/Deconstructor
     /** \brief Constructs a 'default' ConsoleCommandProcessorAdapter object. */
     ConsoleCommandProcessorAdapter();
-    /** \brief Constructs a ConsoleCommandProcessorAdapter given a configuration of states and transitions. */
-    ConsoleCommandProcessorAdapter(std::vector<State>, std::vector<TransitionData>);
-    /** \brief Constructs a ConsoleCommandProcessorAdapter using data from a GameEngine object. */
-    explicit ConsoleCommandProcessorAdapter(const GameEngine&);
+
     /** \brief Deconstructs a ConsoleCommandProcessorAdapter object. */
     ~ConsoleCommandProcessorAdapter() override = default;
 
     //  Overridden methods
     /** \brief Gets a valid command object given the valid state. */
     Command& getCommand(const State&) override;
+
     /** \brief Returns a deep copy of the object. */
     ConsoleCommandProcessorAdapter* clone() const noexcept override;
 };

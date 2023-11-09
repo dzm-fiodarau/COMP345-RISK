@@ -10,18 +10,6 @@ ConsoleCommandProcessorAdapter::ConsoleCommandProcessorAdapter() : CommandProces
     DEBUG_PRINT("Called [ConsoleCommandProcessorAdapter, Default Constructor]")
 }
 
-ConsoleCommandProcessorAdapter::ConsoleCommandProcessorAdapter(std::vector<State> states, std::vector<TransitionData> transitionDatabase)
-        : CommandProcessor(std::move(states), std::move(transitionDatabase)) {
-    //  Empty
-    DEBUG_PRINT("Called [ConsoleCommandProcessorAdapter, Parameterized Constructor (std::vector<State>, st::vector<TransitionData>)]")
-}
-
-ConsoleCommandProcessorAdapter::ConsoleCommandProcessorAdapter(const GameEngine& gameEngine)
-        : CommandProcessor(gameEngine) {
-    //  Empty
-    DEBUG_PRINT("Called [ConsoleCommandProcessorAdapter, Parameterized Constructor (const GameEngine&)]")
-}
-
 Command& ConsoleCommandProcessorAdapter::getCommand(const State& currentState) {
     //  Counter to keep track of the number of attempts to get a valid command
     int count = 0;
@@ -47,7 +35,7 @@ Command& ConsoleCommandProcessorAdapter::getCommand(const State& currentState) {
         //  INVALID COMMAND CODE
         //  The first time entering an invalid command, print the list of valid commands to input
         if (count == 0)
-            printErrorMenu(getHelpStrings(currentState));
+            printErrorMenu(currentState.getHelpStringsAsVector());
 
         //  Print invalid command state
         std::cout << AnsiRed << "[" << (count + 1) << "]\t" << "INVALID COMMAND: " << *command << AnsiClear << std::endl;
@@ -56,5 +44,5 @@ Command& ConsoleCommandProcessorAdapter::getCommand(const State& currentState) {
 }
 
 ConsoleCommandProcessorAdapter* ConsoleCommandProcessorAdapter::clone() const noexcept {
-    return new ConsoleCommandProcessorAdapter(states, transitionDatabase);
+    return new ConsoleCommandProcessorAdapter();
 }

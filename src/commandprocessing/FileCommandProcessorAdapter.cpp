@@ -17,44 +17,21 @@
 FileCommandProcessorAdapter::FileCommandProcessorAdapter() : CommandProcessor(), commandQueue(), filePath() {
 
     //  Initialize the backup command processor
-    backupCommandProcessor = std::make_unique<ConsoleCommandProcessorAdapter>(this->states, this->transitionDatabase);
+    backupCommandProcessor = std::make_unique<ConsoleCommandProcessorAdapter>();
 
     //  Debug mode print
     DEBUG_PRINT("Called [FileCommandProcessorAdapter, Default Constructor]")
 }
 
-/**
- * \brief   Instantiates a 'FileCommandProcessorAdapter' object given a vector of states and transition data.
- */
-FileCommandProcessorAdapter::FileCommandProcessorAdapter(std::vector<State> states,
-                                                         std::vector<TransitionData> transitionDatabase,
-                                                         std::string filePath)
-        : CommandProcessor(std::move(states), std::move(transitionDatabase)), commandQueue(), filePath(std::move(filePath)) {
 
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(std::string filePath) : CommandProcessor(), commandQueue(),
+    filePath(std::move(filePath)) {
     //  Initialize the backup command processor
-    backupCommandProcessor = std::make_unique<ConsoleCommandProcessorAdapter>(this->states, this->transitionDatabase);
-
-    //  Load file contents
+    backupCommandProcessor = std::make_unique<ConsoleCommandProcessorAdapter>();
     loadFileContents();
 
     //  Debug mode print
-    DEBUG_PRINT("Called [FileCommandProcessorAdapter, Parameterized Constructor (std::vector<State>, std::vector<TransitionData>, std::string)]")
-}
-
-/**
- * \brief   Instantiate a 'FileCommandProcessorAdapter' object using a given game object.
- */
-FileCommandProcessorAdapter::FileCommandProcessorAdapter(const GameEngine& gameEngine, std::string filePath)
-        : CommandProcessor(gameEngine.getStates(), gameEngine.getTransitionDatabase()), commandQueue(), filePath(std::move(filePath)) {
-
-    //  Initialize the backup command processor
-    backupCommandProcessor = std::make_unique<ConsoleCommandProcessorAdapter>(this->states, this->transitionDatabase);
-
-    //  Load file contents
-    loadFileContents();
-
-    //  Debug mode print
-    DEBUG_PRINT("Called [FileCommandProcessorAdapter, Parameterized Constructor (const GameEngine&, const string&)]")
+    DEBUG_PRINT("Called [FileCommandProcessorAdapter, Parameterized Constructor()]")
 }
 
 FileCommandProcessorAdapter::~FileCommandProcessorAdapter() {
@@ -80,7 +57,7 @@ Command& FileCommandProcessorAdapter::getCommand(const State& currentState) {
 
         //  The first time entering an invalid command, print the list of valid commands to input
         if (count == 0)
-            printErrorMenu(getHelpStrings(currentState));
+            printErrorMenu(currentState.getHelpStringsAsVector());
 
         //  Print invalid command state
         std::cout << AnsiRed << "[" << (count + 1) << "]\t" << "INVALID COMMAND: " << commandQueue.front() << AnsiClear
@@ -117,5 +94,5 @@ void FileCommandProcessorAdapter::loadFileContents() {
 }
 
 FileCommandProcessorAdapter* FileCommandProcessorAdapter::clone() const noexcept {
-    return new FileCommandProcessorAdapter(states, transitionDatabase, filePath);
+    return new FileCommandProcessorAdapter(filePath);
 }

@@ -5,14 +5,14 @@
 
 class HumanPlayerStrategy final : public PlayerStrategy {
 public:
-    explicit HumanPlayerStrategy(const Player* player);
+    explicit HumanPlayerStrategy(const Player* owner);
     ~HumanPlayerStrategy() override;
 
     void play() override;
     Order* issueOrder() override;
-    std::vector<std::shared_ptr<Territory>> toAttack() override;
-    std::vector<std::shared_ptr<Territory>> toDefend() override;
-    HumanPlayerStrategy* clone() override;
+    std::vector<Territory*> toAttack() override;
+    std::vector<Territory*> toDefend() override;
+    PlayerStrategy* clone() override;
 };
 
 #endif  //  HUMAN_PLAYER_STRATEGY_H

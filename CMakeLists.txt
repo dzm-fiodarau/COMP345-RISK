@@ -66,13 +66,6 @@ option(COMPILE_TESTS
        "Enables compilation of tests. Greatly increases compilation time of main application."
        ON)
 
-# Determines whether to generate documentation using doxygen
-option(GENERATE_DOCUMENTATION
-       "Generates documentation using doxygen."
-       ON)
-
-
-
 #_______________________________________________________________________________________________________________________
 #   PROCESSING OPTIONS
 if(DEBUG_MODE)
@@ -109,19 +102,25 @@ endif()
 #   BUILDING FILES
 # Defining the variables for the source files
 set(HEADERS
-        headers/Cards.h headers/gameengine/GameEngine.h headers/Map.h headers/Orders.h headers/Player.h
+        headers/Cards.h headers/gameengine/GameEngine.h headers/Map.h headers/Orders.h
         headers/commandprocessing/CommandProcessing.h headers/gameengine/State.h headers/gameengine/TransitionFunctions.h
         headers/macros/DebugMacros.h headers/commandprocessing/ConsoleCommandProcessorAdapter.h
-        headers/commandprocessing/FileCommandProcessorAdapter.h)
+        headers/commandprocessing/FileCommandProcessorAdapter.h
+        headers/player/Player.h headers/player/AggressivePlayerStrategy.h headers/player/BenevolentPlayerStrategy.h
+        headers/player/CheaterPlayerStrategy.h headers/player/HumanPlayerStrategy.h headers/player/NeutralPlayerStrategy.h
+        headers/player/PlayerStrategies.h)
 
 set(SOURCES
-        src/Cards.cpp src/gameengine/GameEngine.cpp src/Map.cpp src/Orders.cpp src/Player.cpp src/commandprocessing/CommandProcessing.cpp
+        src/Cards.cpp src/gameengine/GameEngine.cpp src/Map.cpp src/Orders.cpp src/commandprocessing/CommandProcessing.cpp
         src/gameengine/State.cpp src/gameengine/TransitionFunctions.cpp src/commandprocessing/ConsoleCommandProcessorAdapter.cpp
-        src/commandprocessing/FileCommandProcessorAdapter.cpp)
+        src/commandprocessing/FileCommandProcessorAdapter.cpp
+        src/player/Player.cpp src/player/AggressivePlayerStrategy.cpp src/player/BenevolentPlayerStrategy.cpp
+        src/player/CheaterPlayerStrategy.cpp src/player/HumanPlayerStrategy.cpp src/player/NeutralPlayerStrategy.cpp
+        src/player/PlayerStrategies.cpp)
 
 set(DRIVERS
-        src/CardsDriver.cpp src/GameEngineDriver.cpp src/MapDriver.cpp src/OrdersDriver.cpp src/PlayerDriver.cpp
-        src/MainDriver.cpp src/CommandProcessingDriver.cpp)
+        src/drivers/CardsDriver.cpp src/drivers/GameEngineDriver.cpp src/drivers/MapDriver.cpp src/drivers/OrdersDriver.cpp src/drivers/PlayerDriver.cpp
+        src/drivers/MainDriver.cpp src/drivers/CommandProcessingDriver.cpp)
 
 # Main executable
 add_executable(COMP345_RISK             ${HEADERS} ${SOURCES} ${DRIVERS})

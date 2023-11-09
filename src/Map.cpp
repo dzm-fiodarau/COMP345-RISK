@@ -12,9 +12,7 @@ Territory::Territory(const std::string &name, int xCoord, int yCoord, Continent 
     : name(name), x(xCoord), y(yCoord), continent(cont), owner(owner), numberOfArmies(armies)
 {
     if (owner)
-    {
         owner->addTerritory(*this);
-    }
 }
 
 // Copy constructor

@@ -1,7 +1,7 @@
-#include "../headers/Orders.h"
-#include "../headers/player/Player.h"
-#include "../headers/Map.h"
-#include "../headers/Cards.h"
+#include "../../headers/Orders.h"
+#include "../../headers/player/Player.h"
+#include "../../headers/Map.h"
+#include "../../headers/Cards.h"
 
 /**
  * \brief Tests Order-related functionality specified for Assignment I
@@ -24,32 +24,32 @@ void testOrdersLists()
      player2->addCard(*(new Card(type::airlift)));
      player2->addCard(*(new Card(type::diplomacy)));
 
-     auto europe = make_shared<Continent>("Europe", 100);
+     auto *europe = new Continent("Europe", 100);
 
-     auto france =  make_shared<Territory>("France", 5, 5, europe.get(), player1, 5);
-     auto belgium = make_shared<Territory>("Belgium", 6, 4, europe.get(), player1, 5);
-     auto england = make_shared<Territory>("England", 5, 3, europe.get(), player2, 5);
-     auto greece =  make_shared<Territory>("Greece", 10, 12, europe.get(), player1, 5);
+     auto* france =  new Territory("France", 5, 5, europe, player1, 5);
+     auto* belgium = new Territory("Belgium", 6, 4, europe, player1, 5);
+     auto* england = new Territory("England", 5, 3, europe, player2, 5);
+     auto* greece =  new Territory("Greece", 10, 12, europe, player1, 5);
 
-    france->addAdjacentTerritory(belgium.get());
-    france->addAdjacentTerritory(england.get());
-    belgium->addAdjacentTerritory(france.get());
-    belgium->addAdjacentTerritory(england.get());
-    england->addAdjacentTerritory(france.get());
-    england->addAdjacentTerritory(belgium.get());
+    france->addAdjacentTerritory(belgium);
+    france->addAdjacentTerritory(england);
+    belgium->addAdjacentTerritory(france);
+    belgium->addAdjacentTerritory(england);
+    england->addAdjacentTerritory(france);
+    england->addAdjacentTerritory(belgium);
 
-    player1->issueOrder("deploy", france.get(), 3, nullptr, nullptr);
-    player1->issueOrder("advance", belgium.get(), 4, france.get(), nullptr);
-    player1->issueOrder("bomb", england.get(), 0, nullptr, nullptr);
-    player1->issueOrder("blockade", belgium.get(), 0, nullptr, nullptr);
-    player1->issueOrder("airlift", greece.get(), 3, france.get(), nullptr);
+    player1->issueOrder("deploy", france, 3, nullptr, nullptr);
+    player1->issueOrder("advance", belgium, 4, france, nullptr);
+    player1->issueOrder("bomb", england, 0, nullptr, nullptr);
+    player1->issueOrder("blockade", belgium, 0, nullptr, nullptr);
+    player1->issueOrder("airlift", greece, 3, france, nullptr);
     player1->issueOrder("negotiate", nullptr, 0, nullptr, player2);
 
-    player2->issueOrder("deploy", france.get(), 2, nullptr, nullptr);
-    player2->issueOrder("advance", belgium.get(), 4, france.get(), nullptr);
-    player2->issueOrder("bomb", greece.get(), 0, nullptr, nullptr);
-    player2->issueOrder("blockade", france.get(), 0, nullptr, nullptr);
-    player2->issueOrder("airlift", england.get(), 2, france.get(), nullptr);
+    player2->issueOrder("deploy", france, 2, nullptr, nullptr);
+    player2->issueOrder("advance", belgium, 4, france, nullptr);
+    player2->issueOrder("bomb", greece, 0, nullptr, nullptr);
+    player2->issueOrder("blockade", france, 0, nullptr, nullptr);
+    player2->issueOrder("airlift", england, 2, france, nullptr);
     player2->issueOrder("negotiate", nullptr, 0, nullptr, player2);
 
     auto player1_ordersList = player1->getOrdersList();
@@ -59,11 +59,19 @@ void testOrdersLists()
     auto executeOrderFunction = [](Order *order)
     { order->execute(); return; };
 
+
+
     cout << "Valid Orders:\n";
     player1->getOrdersList()->apply(executeOrderFunction);
 
     cout << "\nInvalid Orders:\n";
     player2->getOrdersList()->apply(executeOrderFunction);
+
+    delete europe;
+    delete france;
+    delete belgium;
+    delete england;
+    delete greece;
 
     delete player1;
     delete player2;

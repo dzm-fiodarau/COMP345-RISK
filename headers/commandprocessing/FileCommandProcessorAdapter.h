@@ -17,7 +17,6 @@
 
 //  Forward declaration of required classes from other header files. (included in .cpp file)
 class State;                                //  gameengine/State.h
-class TransitionData;                       //  gameengine/GameEngine.h
 class GameEngine;                           //  gameengine/GameEngine.h
 class ConsoleCommandProcessorAdapter;       //  commandprocessing/ConsoleCommandProcessorAdapter.h
 
@@ -28,11 +27,10 @@ public:
     //  Constructors/Deconstructors
     /** \brief Constructs a 'default' FileCommandProcessorAdapter object. */
     FileCommandProcessorAdapter();
-    /** \brief Constructs a FileCommandProcessorAdapter object from a configuration of states and transition data. */
-    FileCommandProcessorAdapter(std::vector<State>, std::vector<TransitionData>, std::string);
-    /** \brief Constructs a FileCommandProcessorAdapter given a configuration of states and transitions from a
-     * GameObject */
-    FileCommandProcessorAdapter(const GameEngine&, std::string );
+
+    /** \brief Constructs a FileCommandProcessorAdapter object, reading from a specified file. */
+    explicit FileCommandProcessorAdapter(std::string);
+
     /** \brief Deconstructs a FileCommandProcessorAdapter object. */
     ~FileCommandProcessorAdapter() override;
 

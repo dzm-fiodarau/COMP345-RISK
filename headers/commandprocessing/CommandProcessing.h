@@ -16,7 +16,6 @@
 
 //  Forward declaration of required classes from other header files. (included in .cpp file)
 class State;                //  GameEngine.h
-class TransitionData;       //  GameEngine.h
 class GameEngine;           //  GameEngine.h
 
 /** \class Command
@@ -97,17 +96,12 @@ public:
     //  Constructors/Deconstructor
     /** \brief Constructs a default CommandProcessor object. */
     CommandProcessor();
-    /** \brief Constructs a CommandProcessor object. */
-    CommandProcessor(std::vector<State>, std::vector<TransitionData>);
-    /** \brief Constructs a CommandProcessor object using data from a GameEngine object. */
-    explicit CommandProcessor(const GameEngine&);
+
     /** \brief Deconstructs a CommandProcessor object. */
     virtual ~CommandProcessor();
 
     //  Virtual methods
-    /** \brief Returns a command from a source.
-     *  \param _ Takes a single parameter, a State object signifying the current state.
-     *  \return A 'Command' object */
+    /** \brief Returns a <code>Command</code> object from some source. */
     virtual Command& getCommand(const State&) = 0;
 
     /** \brief Returns a deep copy of the object. */
@@ -119,18 +113,7 @@ public:
      *  be correctly executed. */
     bool validate(const Command&, const State&);
 
-
-
 protected:
-    //  A vector of states
-    std::vector<State> states;
-
-    //  A vector of objects containing the transition data
-    std::vector<TransitionData> transitionDatabase;
-
-    /** \brief Returns a collection of help strings (for commands that contain the correct syntax) given the current
-     *  state. */
-    std::vector<std::string> getHelpStrings(const State&) const;
 
     /** \brief Prints an error block in case an incorrect raw command was inputted. */
     static void printErrorMenu(std::vector<std::string> helpStrings);
