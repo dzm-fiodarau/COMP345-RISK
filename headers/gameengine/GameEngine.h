@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "LoggingObserver.h"
 
 //  Forward declaration of required classes from other header files. (included in .cpp file)
 class Player;               //  Player.h
@@ -101,7 +102,7 @@ private:
 
 /** \class GameEngine
  *  \brief A class that controls the flow of the game through notations of state and transitions. */
-class GameEngine {
+class GameEngine : public ILoggable, public Subject {
 public:
     const static int MAX_PLAYERS = 6;
 

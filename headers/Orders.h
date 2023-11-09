@@ -4,6 +4,7 @@
 #include <string>
 #include <list>
 #include <iostream>
+#include "LoggingObserver.h"
 
 //  Forward declaration of required classes from other header files. (included in .cpp file)
 class Territory;    //  Map.h
@@ -23,7 +24,7 @@ const string allowedOrders[6] = {"deploy", "advance", "bomb", "blockade", "airli
  * \class   Order
  * \brief   A class that represents an order
  */
-class Order
+class Order : public ILoggable, public Subject
 {
 public:
     /**
@@ -57,6 +58,11 @@ public:
     virtual string execute() = 0;
 
     /**
+     * \brief   Creates the string to log
+     */
+    string StringToLog();
+
+    /**
      * \brief   Assigns new values to member variables of the Order object
      * \param   order Order object from which new values are to be taken
      */
@@ -80,7 +86,7 @@ protected:
  * \class   OrdersList
  * \brief   Class that holds the list of Order objects of each player
  */
-class OrdersList
+class OrdersList : public ILoggable, public Subject
 {
 public:
     /**
@@ -135,6 +141,12 @@ public:
      * \return  True if order moving is successful, false otherwise
      */
     bool move(Order *order, int index);
+
+    /**
+     * \brief   Creates and return string for logging
+     * \return  The string
+     */
+    string StringToLog();
 
     /**
      * \brief   Directly accesses the internal orders list

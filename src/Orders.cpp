@@ -5,6 +5,7 @@
 #include "../headers/Map.h"
 #include "../headers/Player.h"
 #include "../headers/Cards.h"
+#include "Orders.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 //  ORDERS LIST
@@ -128,6 +129,11 @@ bool OrdersList::move(Order *order, int index)
     return true;
 }
 
+string OrdersList::StringToLog()
+{
+    return string();
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 //  ORDER
 Order::Order(Player *owner, const string &type, Territory *target)
@@ -145,6 +151,11 @@ Order::Order(Order &order)
 }
 
 Order::~Order() = default;
+
+/* string Order::StringToLog()
+{
+    return "Order: " + type  + ", Effect: " + getEffect();
+} */
 
 Order &Order::operator=(const Order &order)
 {

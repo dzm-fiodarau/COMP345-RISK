@@ -13,6 +13,7 @@
 #include <vector>
 #include <iostream>
 #include <queue>
+#include "LoggingObserver.h"
 
 //  Forward declaration of required classes from other header files. (included in .cpp file)
 class State;                //  GameEngine.h
@@ -21,7 +22,7 @@ class GameEngine;           //  GameEngine.h
 
 /** \class Command
  *  \brief Class that encapsulates a command, storing additional information and providing helpful methods. */
-class Command {
+class Command : public ILoggable, public Subject {
 public:
     //  Constructors/Destructor
     /** \brief Constructs a Command object with default values. */
@@ -71,6 +72,11 @@ public:
     /** \brief Returns the number of arguments. */
     size_t getNumberOfArguments() const;
 
+    /**
+     * \brief   Creates the string to log
+     */
+    string stringToLog();
+
 private:
     //  The raw command, as read from an input stream.
     std::string rawCommand;
@@ -92,7 +98,7 @@ private:
  *  \remarks Note that commands returned are syntactically valid, however, they may still be erroneous in a specific
  *  context (ex. command to attack a player that does not exist). Error handling for those types of exceptions are
  *  delegated to the caller or the client. */
-class CommandProcessor {
+class CommandProcessor : public ILoggable, public Subject {
 public:
     //  Constructors/Deconstructor
     /** \brief Constructs a default CommandProcessor object. */
@@ -119,7 +125,10 @@ public:
      *  be correctly executed. */
     bool validate(const Command&, const State&);
 
-
+    /**
+     * \brief   Creates the string to log
+     */
+    string stringToLog();
 
 protected:
     //  A vector of states

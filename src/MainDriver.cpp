@@ -5,6 +5,7 @@ void testOrdersLists();
 void testOrderExecution();
 void testPlayers();
 void testCommandProcessing();
+void testLoggingObserver();
 
 //  Regular runtime
 #ifndef DEBUG
@@ -17,6 +18,7 @@ int main()
     // testPlayers();
     testGameStates();
     testCommandProcessing();
+    testLoggingObserver();
 
     return 0;
 }
@@ -47,6 +49,10 @@ int main()
 
 #ifdef EXECUTE_COMMAND_PROCESSING
     testCommandProcessing();
+#endif
+
+#ifdef EXECUTE_LOGGING_OBSERVER
+    testLoggingObserver();
 #endif
 
     return 0;

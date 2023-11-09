@@ -15,6 +15,7 @@
 #include "../../headers/gameengine/State.h"
 #include "../../headers/commandprocessing/CommandProcessing.h"
 #include "../../headers/macros/DebugMacros.h"
+#include "CommandProcessing.h"
 
 //  STATIC FUNCTION
 /** \brief Splits a string by spaces and returns a vector of string tokens. */
@@ -142,7 +143,10 @@ size_t Command::getNumberOfArguments() const {
     return getRemainingTokens().size();
 }
 
-
+string Command::stringToLog()
+{
+    return string();
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 //  Class: 'CommandProcessor' implementation
@@ -206,6 +210,11 @@ bool CommandProcessor::validate(const Command& command, const State& currentStat
         }
     }
     return false;
+}
+
+string CommandProcessor::stringToLog()
+{
+    return string();
 }
 
 std::vector<std::string> CommandProcessor::getHelpStrings(const State& currentState) const {

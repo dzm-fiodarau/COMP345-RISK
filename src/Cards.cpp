@@ -16,7 +16,7 @@ static std::string convertTypeToString(type type) {
     {
         //  No need for breaks since return exits the function anyway
     case type::bomb:
-       return "bomb";
+        return "bomb";
     case type::reinforcement:
         return "reinforcement";
     case type::blockade:
