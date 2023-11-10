@@ -6,5 +6,5 @@
 
 void testLoggingObserver()
 {
-    LogObserver *logObserver = new LogObserver();
+  
 }

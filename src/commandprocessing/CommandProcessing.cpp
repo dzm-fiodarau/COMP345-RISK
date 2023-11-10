@@ -15,7 +15,6 @@
 #include "../../headers/gameengine/State.h"
 #include "../../headers/commandprocessing/CommandProcessing.h"
 #include "../../headers/macros/DebugMacros.h"
-#include "CommandProcessing.h"
 
 //  STATIC FUNCTION
 /** \brief Splits a string by spaces and returns a vector of string tokens. */

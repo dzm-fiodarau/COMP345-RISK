@@ -28,7 +28,6 @@
 
 #include "../../headers/Map.h"
 #include "../../headers/Player.h"
-#include "GameEngine.h"
 
 #define PRESS_ENTER_TO_CONTINUE(clearConsole)                       \
     std::string _IGNORE_STRING;                                     \

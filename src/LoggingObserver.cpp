@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include "LoggingObserver.h"
+#include "../headers/LoggingObserver.h"
 
 ILoggable::ILoggable()
 {

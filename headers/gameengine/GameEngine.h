@@ -12,7 +12,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "LoggingObserver.h"
+#include "../LoggingObserver.h"
 
 //  Forward declaration of required classes from other header files. (included in .cpp file)
 class Player;               //  Player.h
