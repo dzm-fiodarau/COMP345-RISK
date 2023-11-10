@@ -93,7 +93,7 @@ public:
      * \brief   Notify changes for logging
      * \param   Observer ILoggable object
      */
-    virtual void Notify(ILoggable *log);
+    virtual void notify(ILoggable *log);
 
     /**
      * \brief   Default constructor

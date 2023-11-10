@@ -158,6 +158,10 @@ public:
     /** \brief Returns the number of currently registered players. */
     size_t numberOfPlayers() const;
 
+    /**
+     * \brief   Creates the string to log
+     */
+    string stringToLog();
 private:
 
     //  The index of the current state of the game engine

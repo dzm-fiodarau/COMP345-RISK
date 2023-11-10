@@ -13,7 +13,7 @@
 #include <vector>
 #include <iostream>
 #include <queue>
-#include "LoggingObserver.h"
+#include "../LoggingObserver.h"
 
 //  Forward declaration of required classes from other header files. (included in .cpp file)
 class State;                //  GameEngine.h

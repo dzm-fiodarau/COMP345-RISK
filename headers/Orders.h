@@ -7,18 +7,13 @@
 #include "LoggingObserver.h"
 
 //  Forward declaration of required classes from other header files. (included in .cpp file)
-class Territory;    //  Map.h
-class Player;       //  Player.h
-
-
+class Territory; //  Map.h
+class Player;    //  Player.h
 
 using namespace std;
 
-
 // Global string array containing all allowed orders
 const string allowedOrders[6] = {"deploy", "advance", "bomb", "blockade", "airlift", "negotiate"};
-
-
 
 /**
  * \class   Order
@@ -32,7 +27,7 @@ public:
      * \param   type Type of the Order object created
      * \param   target Territory targeted by the order
      */
-    Order(Player *owner, const string& type, Territory *target);
+    Order(Player *owner, const string &type, Territory *target);
 
     /**
      * \brief   Constructs an Order object using values from another Order object
@@ -58,9 +53,10 @@ public:
     virtual string execute() = 0;
 
     /**
-     * \brief   Creates the string to log
+     * \brief   Get the order type name
+     * \return  string of the order type
      */
-    string StringToLog();
+    string getOrderType();
 
     /**
      * \brief   Assigns new values to member variables of the Order object
@@ -105,19 +101,19 @@ public:
      * \param order Pointer to an Order object
      * \return  Returns true if append was successful, false otherwise
      */
-    bool addOrder(Order* order);
+    bool addOrder(Order *order);
 
     /**
      * \brief   Pops the head pointer in the list
      * \return  Pointer to an Order object; head of the list
      */
-    Order* getNextOrder();
+    Order *getNextOrder();
 
     /**
      * \brief   Gets the owner
      * \return  Pointer to a player object
      */
-    const Player* getOwner() const;
+    const Player *getOwner() const;
 
     /**
      * \brief   Takes in a function, then applies that function to each order in the list
@@ -125,7 +121,7 @@ public:
      * \remarks Solution to external iteration. Now iteration can occur internally through passing of a function.
      *          Upholds encapsulation.
      */
-    void apply(void (*func)(Order*));
+    void apply(void (*func)(Order *));
 
     /**
      * \brief   Removes the specified order from the list
@@ -146,14 +142,14 @@ public:
      * \brief   Creates and return string for logging
      * \return  The string
      */
-    string StringToLog();
+    string stringToLog();
 
     /**
      * \brief   Directly accesses the internal orders list
      * \param index Index of internal list
      * \return  Returns a Order pointer using the passed index. Returns nullptr if invalid index.
      */
-    Order* operator[](std::size_t index);
+    Order *operator[](std::size_t index);
 
     /**
      * \brief   Assigns new values to member variables of the OrdersList object
@@ -223,6 +219,11 @@ public:
      */
     friend ostream &operator<<(ostream &outs, const DeployOrder &order);
 
+    /**
+     * \brief   Creates the string to log
+     */
+    string stringToLog();
+
 private:
     // Number of army units to deploy
     int armyUnits;
@@ -277,6 +278,11 @@ public:
      */
     friend ostream &operator<<(ostream &outs, const AdvanceOrder &order);
 
+    /**
+     * \brief   Creates the string to log
+     */
+    string stringToLog();
+
 private:
     // Number of army units to move
     int armyUnits;
@@ -329,6 +335,11 @@ public:
      * \brief   Stream insertion override, prints order's type and target territory
      */
     friend ostream &operator<<(ostream &outs, const BombOrder &order);
+
+    /**
+     * \brief   Creates the string to log
+     */
+    string stringToLog();
 };
 
 /**
@@ -376,6 +387,11 @@ public:
      * \brief   Stream insertion override, prints order's type and target territory
      */
     friend ostream &operator<<(ostream &outs, const BlockadeOrder &order);
+
+    /**
+     * \brief   Creates the string to log
+     */
+    string stringToLog();
 };
 
 /**
@@ -425,6 +441,11 @@ public:
      * \brief   Stream insertion override, prints order's type, source and target territories, and number of army units
      */
     friend ostream &operator<<(ostream &outs, const AirliftOrder &order);
+
+    /**
+     * \brief   Creates the string to log
+     */
+    string stringToLog();
 
 private:
     // Number of army units advanced
@@ -478,6 +499,11 @@ public:
      * \brief   Stream insertion override, prints order's type and target player
      */
     friend ostream &operator<<(ostream &outs, const NegotiateOrder &order);
+
+    /**
+     * \brief   Creates the string to log
+     */
+    string stringToLog();
 
 private:
     // Player with whom attacks are prevented during current turn

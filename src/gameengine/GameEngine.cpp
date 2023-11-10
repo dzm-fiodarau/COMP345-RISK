@@ -28,6 +28,7 @@
 
 #include "../../headers/Map.h"
 #include "../../headers/Player.h"
+#include "GameEngine.h"
 
 #define PRESS_ENTER_TO_CONTINUE(clearConsole)                       \
     std::string _IGNORE_STRING;                                     \
@@ -373,7 +374,11 @@ std::vector<Player*> GameEngine::getPlayers() const { return players; }
 Map* GameEngine::getMap() const { return map; }
 
 //  Setter/Mutator methods
-void GameEngine::setStates(std::vector<State> newStates) { this->states = std::move(newStates); }
+void GameEngine::setStates(std::vector<State> newStates) { 
+    this->states = std::move(newStates); 
+    notify(this);
+}
+
 void GameEngine::setTransitionData(std::vector<TransitionData> newTransitionDatabase) { this->transitionDatabase = std::move(newTransitionDatabase); }
 void GameEngine::setCommandProcessor(const CommandProcessor& newCommandProcessor) { this->commandProcessor = newCommandProcessor.clone(); }
 void GameEngine::setMap(Map* newMap) { this->map = newMap; }
@@ -388,6 +393,10 @@ void GameEngine::addPlayer(Player* playerPtr) { players.push_back(playerPtr); }
 
 size_t GameEngine::numberOfPlayers() const { return players.size(); }
 
+string GameEngine::stringToLog()
+{
+    return "GameEngine updated state: " + states[currentStateIndex].getStateName();
+}
 
 #ifdef __GNUC__
 #pragma clang diagnostic pop

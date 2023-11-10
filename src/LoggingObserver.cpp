@@ -77,7 +77,7 @@ void Subject::Detach(Observer *o)
     _observers->remove(o);
 }
 
-void Subject::Notify(ILoggable *log)
+void Subject::notify(ILoggable *log)
 {
     for (Observer *observer : *_observers)
     {
