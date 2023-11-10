@@ -388,6 +388,148 @@ void GameEngine::addPlayer(Player* playerPtr) { players.push_back(playerPtr); }
 
 size_t GameEngine::numberOfPlayers() const { return players.size(); }
 
+void GameEngine::mainGameLoop() {
+
+  while(true) {
+    
+    // 1. Reinforcement phase
+    reinforcementPhase();
+
+    // 2. Issue orders phase
+    issueOrdersPhase();
+
+    // 3. Execute orders phase
+    executeOrdersPhase();
+
+    // Check end game conditions
+    if(players.size() == 1) {
+      cout << "Player " << players[0].getName() << " wins!" << endl;
+      break;
+    }
+
+    // Remove eliminated players
+    removeDefeatedPlayers(); 
+  }
+
+}
+
+void GameEngine::reinforcementPhase() {
+
+  for(auto& player : players) {
+
+    int reinforcements = player.getTerritories().size() / 3;
+    reinforcements = max(reinforcements, 3); // Minimum 3
+
+    // Give continent bonus
+    for(Continent continent : map.getContinents()) {
+      if(playerOwnsContinent(player, continent)) {
+        reinforcements += continent.getBonus();
+      } 
+    }
+
+    player.setReinforcements(reinforcements);
+
+  }
+
+}
+
+// Check if player owns all territories in continent
+bool GameEngine::playerOwnsContinent(Player player, Continent continent) {
+  for(Territory territory : continent.getTerritories()) {
+    if(territory.getOwner() != player) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void GameEngine::issueOrdersPhase() {
+
+  for(auto& player : players) {
+    
+    while(!player.isDoneIssuingOrders()) {
+    
+      // Get order from player  
+      string order = player.issueOrder();
+      
+      // Add to player's order list
+      player.orders.push_back(order);
+      
+    }
+  }
+  
+}
+
+void GameEngine::executeOrdersPhase() {
+
+  while(ordersRemaining()) {
+
+    for(auto& player : players) {
+
+      if(player.orders.empty()) 
+        continue;
+
+      // Get next order and execute
+      string order = player.orders.front();
+      player.orders.erase(player.orders.begin());
+      
+      executeOrder(order);
+
+    }
+  }
+
+}
+
+void GameEngine::removeDefeatedPlayers() {
+
+  players.erase(remove_if(players.begin(), players.end(), 
+    [](const Player& player) {
+      return player.getTerritories().empty();
+    }
+  ), players.end());
+
+}
+
+// Check if any players have orders remaining
+bool GameEngine::ordersRemaining() {
+
+  for(auto& player : players) {
+    if(!player.orders.empty()) {
+      return true;
+    }
+  }
+
+  return false;
+
+}
+
+// Execute an order
+void GameEngine::executeOrder(Order order) {
+
+  // Validate order 
+  if(!order.validate()) {
+    cout << "Invalid order" << endl; 
+    return;
+  }
+
+  // Deploy order
+  if(order.getType() == "deploy") {
+    auto deployOrder = dynamic_cast<DeployOrder&>(order);
+    deployOrder.execute(map);
+  }
+
+  // Advance order
+  else if(order.getType() == "advance") {
+    auto advanceOrder = dynamic_cast<AdvanceOrder&>(order); 
+    advanceOrder.execute(map);
+  }
+
+  // Other orders
+
+  cout << "Order executed" << endl;
+
+}
+
 
 #ifdef __GNUC__
 #pragma clang diagnostic pop
