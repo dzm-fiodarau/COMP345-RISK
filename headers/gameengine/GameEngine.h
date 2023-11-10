@@ -157,6 +157,14 @@ public:
     /** \brief Returns the number of currently registered players. */
     size_t numberOfPlayers() const;
 
+    void mainGameLoop();
+    void reinforcementPhase();
+    void issueOrdersPhase();
+    void executeOrdersPhase();
+    bool ordersRemaining();
+    void executeOrder(Order order);
+    void removeDefeatedPlayers();
+
 private:
 
     //  The index of the current state of the game engine
@@ -179,7 +187,8 @@ private:
 
     //  The playing map
     Map* map;
-    
+
+    bool playerOwnsContinent(Player player, Continent continent);
 
 
     //  Returns the index of the appropriate transition struct given the current state and the given transition name
