@@ -100,6 +100,8 @@ public:
      */
     Territory(const Territory &other);
 
+    ~Territory();
+
     /** 
      * \brief Assignment operator.
      * \param other Other Territory to assign from.
@@ -138,6 +140,13 @@ public:
      * \return Vector of pointers to adjacent territories.
      */
     std::vector<Territory *> getAdjacentTerritories() const;
+
+    /**
+     * \brief Determines whether the specified territory is adjacent to the territory.
+     * @param territory The territory to find.
+     * @return True if the territory is adjacent, false otherwise.
+     */
+    bool isTerritoryAdjacent(Territory *territory) const;
 
     /**
      * \brief Sets the owner of the territory.
