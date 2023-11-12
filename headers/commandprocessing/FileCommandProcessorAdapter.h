@@ -37,6 +37,10 @@ public:
     //  Overridden methods
     /** \brief Gets a valid command object given the valid state. */
     Command& getCommand(const State&) override;
+
+    /** \brief Returns a raw command. */
+    std::string getCommand() override;
+
     /** \brief Returns a deep copy of the object. */
     FileCommandProcessorAdapter* clone() const noexcept override;
 

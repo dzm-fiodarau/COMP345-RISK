@@ -71,6 +71,21 @@ Command& FileCommandProcessorAdapter::getCommand(const State& currentState) {
     return backupCommandProcessor->getCommand(currentState);
 }
 
+std::string FileCommandProcessorAdapter::getCommand() {
+    while (!commandQueue.empty()) {
+        auto rawCommand = commandQueue.front().getRawCommand();    //  Copy command
+        commandQueue.pop();                                        //  Dequeue
+
+        //  If input string is empty, just continue
+        if (!rawCommand.empty())
+            return rawCommand;
+    }
+
+    //  Reaching here means there are no more commands to take from the file.
+    //  Takes a command from the backup command processor.
+    return backupCommandProcessor->getCommand();
+}
+
 void FileCommandProcessorAdapter::loadFileContents() {
     auto* file = new std::ifstream(filePath);
 

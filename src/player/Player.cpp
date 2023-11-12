@@ -236,8 +236,8 @@ vector<Territory*> Player::toDefend() {
     return playerStrategy->toDefend();
 }
 
-void Player::issueOrder() {
-    ordersList->addOrder(playerStrategy->issueOrder());
+void Player::issueOrders(CommandProcessor* commandProcessor) {
+    playerStrategy->issueOrders(commandProcessor);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

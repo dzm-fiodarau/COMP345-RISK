@@ -54,28 +54,31 @@ public:
      */
     friend std::ostream& operator<<(std::ostream&, const GameEngine&);
 
+
     //  Other Methods
     /** \brief Starts the execution of the game object. Main entry point.
      */
+
     void execute();
     /** \brief Sets the game running flag to false
      */
     void stopRunning();
 
     //  Getter/Accessor methods
-
-    /** \brief Returns whether the game is running.
+    /** \brief Is the game running
      */
     bool isGameRunning() const;
-    /** \brief Returns a vector of currently added players.
+
+    /** \brief Returns the list of players.
      */
     std::vector<Player*> getPlayers() const;
+
     /** \brief Returns the currently loaded map.
      */
     Map* getMap() const;
 
-    //  Setter/Mutator methods
 
+    //  Setter/Mutator methods
     /** \brief Sets the command processor for the object.
      */
     void setCommandProcessor(const CommandProcessor&);
@@ -86,6 +89,7 @@ public:
      */
     void setMap(Map*);
 
+
     //  Additional behavior for Setter/Mutators
     /** \brief Appends a player instance to the end of the player vector. Moves data.
      */
@@ -94,14 +98,26 @@ public:
      */
     size_t numberOfPlayers() const;
 
+
+    //  Gameplay methods
+    /**  \brief Enters the main gameplay loop.
+     */
     void mainGameLoop();
+
+    /** \brief Each player gets a certain number of reinforcements this phase.
+     */
     void reinforcementPhase();
+
+    /** \brief Each player gets the opportunity to issue orders.
+     */
     void issueOrdersPhase();
 
     /** \brief In the player order determined at game start, executes the orders each player has issued.
      */
     void executeOrdersPhase();
 
+    /** \brief Removes all players who do not have any territories anymore.
+     */
     void removeDefeatedPlayers();
 
 private:

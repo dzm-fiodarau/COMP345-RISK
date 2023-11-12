@@ -17,7 +17,7 @@ class GameEngine;                           //  gameengine/GameEngine.h
 
 /** \class ConsoleCommandProcessorAdapter
  *  \brief A class that supplies commands from the standard cpp input stream. */
-class ConsoleCommandProcessorAdapter : public CommandProcessor {
+class ConsoleCommandProcessorAdapter final : public CommandProcessor {
 public:
     //  Constructors/Deconstructor
     /** \brief Constructs a 'default' ConsoleCommandProcessorAdapter object. */
@@ -29,6 +29,9 @@ public:
     //  Overridden methods
     /** \brief Gets a valid command object given the valid state. */
     Command& getCommand(const State&) override;
+
+    /** \brief Returns a raw command. */
+    std::string getCommand() override;
 
     /** \brief Returns a deep copy of the object. */
     ConsoleCommandProcessorAdapter* clone() const noexcept override;

@@ -1,7 +1,7 @@
 
 #include "../../headers/player/CheaterPlayerStrategy.h"
 
-CheaterPlayerStrategy::CheaterPlayerStrategy(const Player *owner) : PlayerStrategy(owner) {
+CheaterPlayerStrategy::CheaterPlayerStrategy(Player *owner) : PlayerStrategy(owner) {
 
 }
 
@@ -14,8 +14,8 @@ void CheaterPlayerStrategy::play() {
 
 }
 
-Order *CheaterPlayerStrategy::issueOrder() {
-    return nullptr;
+void CheaterPlayerStrategy::issueOrders(CommandProcessor*) {
+
 }
 
 std::vector<Territory *> CheaterPlayerStrategy::toAttack() {
@@ -29,4 +29,3 @@ std::vector<Territory *> CheaterPlayerStrategy::toDefend() {
 PlayerStrategy *CheaterPlayerStrategy::clone() {
     return nullptr;
 }
-

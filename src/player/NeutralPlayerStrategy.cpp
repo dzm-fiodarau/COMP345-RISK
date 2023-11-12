@@ -1,9 +1,10 @@
 
 #include "../../headers/player/NeutralPlayerStrategy.h"
 
-NeutralPlayerStrategy::NeutralPlayerStrategy(const Player *owner) : PlayerStrategy(owner) {
+NeutralPlayerStrategy::NeutralPlayerStrategy(Player *owner) : PlayerStrategy(owner) {
 
 }
+
 
 NeutralPlayerStrategy::~NeutralPlayerStrategy() {
 
@@ -13,8 +14,8 @@ void NeutralPlayerStrategy::play() {
 
 }
 
-Order *NeutralPlayerStrategy::issueOrder() {
-    return nullptr;
+void NeutralPlayerStrategy::issueOrders(CommandProcessor*) {
+
 }
 
 std::vector<Territory *> NeutralPlayerStrategy::toAttack() {
@@ -28,7 +29,4 @@ std::vector<Territory *> NeutralPlayerStrategy::toDefend() {
 PlayerStrategy *NeutralPlayerStrategy::clone() {
     return nullptr;
 }
-
-
-
 

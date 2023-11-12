@@ -5,11 +5,11 @@
 
 class BenevolentPlayerStrategy final : public PlayerStrategy {
 public:
-    explicit BenevolentPlayerStrategy(const Player* owner);
+    explicit BenevolentPlayerStrategy(Player* owner);
     ~BenevolentPlayerStrategy() override;
 
     void play() override;
-    Order* issueOrder() override;
+    void issueOrders(CommandProcessor*) override;
     std::vector<Territory*> toAttack() override;
     std::vector<Territory*> toDefend() override;
     PlayerStrategy* clone() override;

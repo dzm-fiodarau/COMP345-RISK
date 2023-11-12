@@ -122,7 +122,7 @@ public:
     /** \brief  Issues an order and adds it to the list of issued orders.
      *  \remarks Order creation is delegated to the <code>PlayerStrategies</code> object.
      */
-    void issueOrder();
+    void issueOrders(CommandProcessor*);
 
     /** \brief  Creates an order and appends it to the current list of orders based on the creation parameters given.
      *  \param type          The type of the order.

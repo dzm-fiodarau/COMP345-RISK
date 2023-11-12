@@ -17,6 +17,17 @@
 #include <vector>
 #include <chrono>
 
+
+#define PRESS_ENTER_TO_CONTINUE(clearConsole)                       \
+	std::string _IGNORE_STRING;                                     \
+	std::cout << "Press Enter to Continue... ";                     \
+	std::getline(std::cin, _IGNORE_STRING);                         \
+																	\
+	if (clearConsole) {                                             \
+		system("cls");                                              \
+	}                                                               \
+
+
 //----------------------------------------------------------------------------------------------------------------------
 //  Static 'helper' functions
 
@@ -228,26 +239,10 @@ bool game_gameStart(const std::vector<std::string>& values, GameEngine& gameEngi
 
     //  Print current config.
     printPlayerInfo(players);
-    return true;
-}
 
-bool game_issueOrder(const std::vector<std::string>& values, GameEngine& gameEngine) {
-    DEBUG_PRINT("GAME_ISSUE_ORDER")
-    return true;
-}
+    PRESS_ENTER_TO_CONTINUE(true)
 
-bool game_endIssueOrders(const std::vector<std::string>& values, GameEngine& gameEngine) {
-    DEBUG_PRINT("GAME_END_ISSUE_ORDERS")
-    return true;
-}
-
-bool game_executeOrder(const std::vector<std::string>& values, GameEngine& gameEngine) {
-    DEBUG_PRINT("GAME_EXECUTE_ORDER")
-    return true;
-}
-
-bool game_endExecuteOrders(const std::vector<std::string>& values, GameEngine& gameEngine) {
-    DEBUG_PRINT("GAME_END_EXECUTE_ORDERS")
+    gameEngine.mainGameLoop();
     return true;
 }
 

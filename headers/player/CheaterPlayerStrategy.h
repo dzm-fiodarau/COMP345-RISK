@@ -5,11 +5,11 @@
 
 class CheaterPlayerStrategy final : public PlayerStrategy {
 public:
-    explicit CheaterPlayerStrategy(const Player* owner);
+    explicit CheaterPlayerStrategy(Player* owner);
     ~CheaterPlayerStrategy() override;
 
     void play() override;
-    Order* issueOrder() override;
+    void issueOrders(CommandProcessor*) override;
     std::vector<Territory*> toAttack() override;
     std::vector<Territory*> toDefend() override;
     PlayerStrategy* clone() override;

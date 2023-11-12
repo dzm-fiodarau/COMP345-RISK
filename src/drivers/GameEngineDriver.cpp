@@ -30,13 +30,9 @@ void testGameStates(int argc, char* argv[])
     auto* mapLoaded = new State("map loaded");
     auto* mapValidated = new State("map validated");
     auto* playersAdded = new State("players added");
-    auto* assignReinforcement = new State("assign reinforcement");
-    auto* issueOrders = new State("issue orders");
-    auto* executeOrders = new State("execute orders");
+    auto* gameLoop = new State("game loop");
     auto* win = new State("win");
     auto* end = new State("END");
-
-    auto* tournament = new State("tournament");
 
     //  Inserting the transitions
     start->addTransition("loadmap", mapLoaded, 1, "loadmap [--filepath]", &game_loadMap);
@@ -45,21 +41,13 @@ void testGameStates(int argc, char* argv[])
     mapValidated->addTransition("addplayer", playersAdded, 1, "addplayer [--playername]", &game_addPlayer);
     playersAdded->addTransition("addplayer", playersAdded, 1, "addplayer [--playername]", &game_addPlayer);
     playersAdded->addTransition("viewplayers", playersAdded, 0, "viewplayers", &game_printPlayers);
-    playersAdded->addTransition("gamestart", assignReinforcement, 0, "gamestart", &game_gameStart);
-    assignReinforcement->addTransition("issueorder", issueOrders, 0, "issueorder -SAMPLE ARGUMENTS-", &game_issueOrder);
-    issueOrders->addTransition("issueorder", issueOrders, 0, "issueorder -SAMPLE ARGUMENTS-", &game_issueOrder);
-    issueOrders->addTransition("endissueorders", executeOrders, 0, "endissueorders", &game_endIssueOrders);
-    executeOrders->addTransition("execorder", executeOrders, 0, "execorder -SAMPLE ARGUMENTS-", &game_executeOrder);
-    executeOrders->addTransition("endexecorders", assignReinforcement, 0, "endexecorders", &game_endExecuteOrders);
-    executeOrders->addTransition("win", win, 0, "win", &game_winGame);
+    playersAdded->addTransition("gamestart", gameLoop, 0, "gamestart", &game_gameStart);
+    gameLoop->addTransition("win", win, 0, "win", &game_winGame);
     win->addTransition("replay", start, 0, "replay", &game_restart);
     win->addTransition("quit", end, 0, "quit", &game_quit);
 
-    start->addTransition("tournament", tournament, -1, "tournament -M [listofmapfiles] -P [listofplayerstrategies] -G [numberofgames] -D [maxnumberofturns]", &game_tournament);
-    tournament->addTransition("replay", start, 0, "replay", &game_emptyFunction);
-
     //  Initialize required objects
-    std::vector<State*> states = { start, mapLoaded, mapValidated, playersAdded, assignReinforcement, issueOrders, executeOrders, win, end };
+    std::vector<State*> states = { start, mapLoaded, mapValidated, playersAdded, gameLoop, win, end };
     auto* gameEngine = new GameEngine(states, commandProcessor);
 
     gameEngine->execute();

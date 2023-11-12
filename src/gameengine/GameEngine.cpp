@@ -285,9 +285,8 @@ bool GameEngine::playerOwnsContinent(Player* player, Continent* continent) {
 }
 
 void GameEngine::issueOrdersPhase() {
-
-    for(auto* player : players) {
-        //  Todo: implement in player strategy
+    for (Player* player : players) {
+        player->issueOrders(commandProcessor);
     }
 }
 

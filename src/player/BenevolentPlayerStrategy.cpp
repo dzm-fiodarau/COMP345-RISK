@@ -1,7 +1,7 @@
 
 #include "../../headers/player/BenevolentPlayerStrategy.h"
 
-BenevolentPlayerStrategy::BenevolentPlayerStrategy(const Player *owner) : PlayerStrategy(owner) {
+BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player *owner) : PlayerStrategy(owner) {
 
 }
 
@@ -14,8 +14,8 @@ void BenevolentPlayerStrategy::play() {
 
 }
 
-Order *BenevolentPlayerStrategy::issueOrder() {
-    return nullptr;
+void BenevolentPlayerStrategy::issueOrders(CommandProcessor*) {
+
 }
 
 std::vector<Territory *> BenevolentPlayerStrategy::toAttack() {
@@ -29,4 +29,3 @@ std::vector<Territory *> BenevolentPlayerStrategy::toDefend() {
 PlayerStrategy *BenevolentPlayerStrategy::clone() {
     return nullptr;
 }
-

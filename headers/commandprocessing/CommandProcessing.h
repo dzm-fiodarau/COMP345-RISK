@@ -104,6 +104,11 @@ public:
     /** \brief Returns a <code>Command</code> object from some source. */
     virtual Command& getCommand(const State&) = 0;
 
+    /** \brief Returns a raw command from some source.
+     *  \remarks <p>Use only when you need to obtain commands from objects other than the <code>GameEngine</code></p>
+     */
+    virtual std::string getCommand() = 0;
+
     /** \brief Returns a deep copy of the object. */
     virtual CommandProcessor* clone() const noexcept = 0;
 

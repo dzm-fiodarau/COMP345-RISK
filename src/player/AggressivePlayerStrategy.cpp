@@ -1,8 +1,8 @@
 
 #include "../../headers/player/AggressivePlayerStrategy.h"
 
-AggressivePlayerStrategy::AggressivePlayerStrategy(const Player *owner) : PlayerStrategy(owner) {
-    //  Empty
+AggressivePlayerStrategy::AggressivePlayerStrategy(Player *owner) : PlayerStrategy(owner) {
+
 }
 
 AggressivePlayerStrategy::~AggressivePlayerStrategy() {
@@ -14,8 +14,8 @@ void AggressivePlayerStrategy::play() {
 
 }
 
-Order *AggressivePlayerStrategy::issueOrder() {
-    return nullptr;
+void AggressivePlayerStrategy::issueOrders(CommandProcessor*) {
+
 }
 
 std::vector<Territory *> AggressivePlayerStrategy::toAttack() {

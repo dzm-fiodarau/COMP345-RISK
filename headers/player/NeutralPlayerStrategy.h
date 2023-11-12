@@ -5,11 +5,11 @@
 
 class NeutralPlayerStrategy final : public PlayerStrategy {
 public:
-    explicit NeutralPlayerStrategy(const Player* owner);
+    explicit NeutralPlayerStrategy(Player* owner);
     ~NeutralPlayerStrategy() override;
 
     void play() override;
-    Order* issueOrder() override;
+    void issueOrders(CommandProcessor*) override;
     std::vector<Territory*> toAttack() override;
     std::vector<Territory*> toDefend() override;
     PlayerStrategy* clone() override;

@@ -158,7 +158,6 @@ CommandProcessor::~CommandProcessor() {
     DEBUG_PRINT("Called [CommandProcessor, DECONSTRUCTOR]")
 }
 
-
 /**
  * \brief Checks if the given command is valid given a current state.
  * \param command       The command object to validate

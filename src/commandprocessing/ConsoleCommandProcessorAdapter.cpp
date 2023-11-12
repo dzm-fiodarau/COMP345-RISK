@@ -43,6 +43,21 @@ Command& ConsoleCommandProcessorAdapter::getCommand(const State& currentState) {
     }
 }
 
+std::string ConsoleCommandProcessorAdapter::getCommand() {
+    while (true) {
+        //  Gets a raw command from the std input stream
+        std::string userInput;
+        std::getline(std::cin, userInput);
+
+        //  If input string is empty, just continue
+        if (userInput.empty()) { continue; }
+
+        return userInput;
+    }
+}
+
 ConsoleCommandProcessorAdapter* ConsoleCommandProcessorAdapter::clone() const noexcept {
     return new ConsoleCommandProcessorAdapter();
 }
+
+

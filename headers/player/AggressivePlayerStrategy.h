@@ -10,11 +10,11 @@ class Player;
 
 class AggressivePlayerStrategy final : public PlayerStrategy {
 public:
-    explicit AggressivePlayerStrategy(const Player* owner);
+    explicit AggressivePlayerStrategy(Player* owner);
     ~AggressivePlayerStrategy() override;
 
     void play() override;
-    Order* issueOrder() override;
+    void issueOrders(CommandProcessor*) override;
     std::vector<Territory*> toAttack() override;
     std::vector<Territory*> toDefend() override;
     PlayerStrategy* clone() override;
