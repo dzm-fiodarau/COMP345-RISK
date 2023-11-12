@@ -216,7 +216,6 @@ bool CommandProcessor::validate(const Command& command, const State& currentStat
 
 string CommandProcessor::stringToLog()
 {
-    // TODO: Implement method
     return "CommandProcessor: ";
 }
 
