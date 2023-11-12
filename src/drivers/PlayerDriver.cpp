@@ -1,34 +1,34 @@
-#include "../headers/Player.h"
-#include "../headers/Map.h"
-#include "../headers/Cards.h"
+#include "../../headers/player/Player.h"
+#include "../../headers/Map.h"
+#include "../../headers/Cards.h"
 
 void testPlayers()
 {
     //      PHASE 1: SETUP
     // Create cards for players
-    Card* card1 = new Card(type::bomb);
-    Card* card2 = new Card(type::blockade);
+    auto card1 = new Card(type::bomb);
+    auto card2 = new Card(type::blockade);
 
     // Create player objects
     vector<Territory*> territories1;
     vector<Card*> handCards1 = {card1};
-    Player* player1 = new Player("Player1", territories1, handCards1);
+    auto* player1 = new Player("Player1", territories1, handCards1);
 
     vector<Territory*> territories2;
     vector<Card*> handCards2 = {card2};
-    Player* player2 = new Player("Player2", territories2, handCards2);
+    auto* player2 = new Player("Player2", territories2, handCards2);
 
     // Creating continents
-    Continent* continent1 = new Continent("Africa", 0);
-    Continent* continent2 = new Continent("Europe", 0);
+    auto* continent1 = new Continent("Africa", 0);
+    auto* continent2 = new Continent("Europe", 0);
 
     // Create territories for players
-    Territory* territory1 = new Territory("Territory1", 5, 3, continent1, player1, 0);
-    Territory* territory2 = new Territory("Territory2", 4, 2, continent2, player2, 0);
+    auto* territory1 = new Territory("Territory1", 5, 3, continent1, player1, 0);
+    auto* territory2 = new Territory("Territory2", 4, 2, continent2, player2, 0);
 
     // Add territories the player's 'owned territories' list
-    player1->territory.push_back(territory1);
-    player2->territory.push_back(territory2);
+    player1->addTerritory(*territory1);
+    player2->addTerritory(*territory2);
 
 
 
@@ -50,4 +50,7 @@ void testPlayers()
 
     player2->issueOrder("deploy", territory2, 2, nullptr, nullptr);
     player2->issueOrder("advance", territory2, 1, territory1, nullptr);
+
+    delete player1;
+    delete player2;
 }

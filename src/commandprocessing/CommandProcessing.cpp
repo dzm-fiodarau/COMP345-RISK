@@ -153,21 +153,9 @@ string Command::stringToLog()
 //----------------------------------------------------------------------------------------------------------------------
 //  Class: 'CommandProcessor' implementation
 
-CommandProcessor::CommandProcessor() : CommandProcessor({}, {}) {
+CommandProcessor::CommandProcessor() {
     //  Empty
     DEBUG_PRINT("Called [CommandProcessor, Default Constructor]")
-}
-
-CommandProcessor::CommandProcessor(std::vector<State> states, std::vector<TransitionData> transitionDatabase)
-    : states(std::move(states)), transitionDatabase(std::move(transitionDatabase)) {
-    //  Empty
-    DEBUG_PRINT("Called [CommandProcessor, Parameterized Constructor (std::vector<State>, std::vector<TransitionData>)]")
-}
-
-CommandProcessor::CommandProcessor(const GameEngine& gameEngine)
-    : states(gameEngine.getStates()), transitionDatabase(gameEngine.getTransitionDatabase()) {
-    //  Empty
-    DEBUG_PRINT("Called [CommandProcessor, Parameterized Constructor (const GameEngine&)]")
 }
 
 CommandProcessor::~CommandProcessor() {
@@ -175,7 +163,6 @@ CommandProcessor::~CommandProcessor() {
     //  Nothing to deallocate
     DEBUG_PRINT("Called [CommandProcessor, DECONSTRUCTOR]")
 }
-
 
 /**
  * \brief Checks if the given command is valid given a current state.
@@ -186,58 +173,12 @@ CommandProcessor::~CommandProcessor() {
  * TODO CHECK IF VALID, RE WRITTEN
  */
 bool CommandProcessor::validate(const Command& command, const State& currentState) {
-    //  Get the id of the current state on the states list
-    int stateIndex = -1;
-    for (size_t i = 0; i < states.size(); i++) {
-        if (states[i] == currentState) {
-            stateIndex = static_cast<int>(i);
-        }
-    }
-    if (stateIndex == -1) { // State not found in states list
-        return false;
-    }
-
-    //  A function that takes in a transition data object and returns true if its index1 equals the variable 'stateIndex'
-    auto equalState = [stateIndex] (const TransitionData& transitionData) -> bool { return transitionData.getIndex1() == stateIndex; };
-    //  Copy of the transition database
-    auto databaseCopy = std::vector<TransitionData>(transitionDatabase);
-    //  Erases all entries whose 'index1' value does not equal the value of the local variable 'stateIndex'
-    databaseCopy.erase(std::remove_if(databaseCopy.begin(), databaseCopy.end(), equalState), databaseCopy.end());
-
-    //  Iterates through the array and searches whether the data in the command object matches one of the transition data objects
-    for (const auto& transitionData : transitionDatabase) {
-        if (transitionData.getTransitionName() == command.getFirstToken() &&
-            transitionData.getNumberOfArguments() == command.getNumberOfArguments()) {
-            return true;
-        }
-    }
-    return false;
+    return currentState.isValidTransition(command.getFirstToken());
 }
 
 string CommandProcessor::stringToLog()
 {
     return "CommandProcessor: ";
-}
-
-std::vector<std::string> CommandProcessor::getHelpStrings(const State& currentState) const {
-    //  Get the index of the passed states in the states list
-    int currentStateIndex = -1;
-    for (size_t i = 0; i < states.size(); i++) {
-        if (states[i] == currentState) {
-            currentStateIndex = static_cast<int>(i);
-            break;
-        }
-    }
-
-    //  Iterate through the transition database, adding any help strings to the collection
-    std::vector<std::string> helpStrings;
-    for (const auto& transitionData : transitionDatabase) {
-        if (transitionData.getIndex1() == currentStateIndex) {
-            helpStrings.push_back(transitionData.getHelpString());
-        }
-    }
-
-    return helpStrings;
 }
 
 #ifdef __GNUC__

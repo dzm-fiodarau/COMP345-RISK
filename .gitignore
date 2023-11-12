@@ -559,3 +559,4 @@ FodyWeavers.xsd
 *.sln
 *.vcxproj
 *.vcxproj.filters
+.idea/

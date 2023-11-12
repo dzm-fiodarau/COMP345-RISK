@@ -7,13 +7,10 @@
 #include "LoggingObserver.h"
 
 //  Forward declaration of required classes from other header files. (included in .cpp file)
-class Territory; //  Map.h
-class Player;    //  Player.h
+class Territory;    //  Map.h
+class Player;       //  Player.h
 
 using namespace std;
-
-// Global string array containing all allowed orders
-const string allowedOrders[6] = {"deploy", "advance", "bomb", "blockade", "airlift", "negotiate"};
 
 /**
  * \class   Order
@@ -22,12 +19,38 @@ const string allowedOrders[6] = {"deploy", "advance", "bomb", "blockade", "airli
 class Order : public ILoggable, public Subject
 {
 public:
+
+    /** \brief An enum class that indicates the type of the order
+     */
+    enum class OrderType {
+        Deploy, Advance, Bomb, Blockade, Airlift, Negotiate, Invalid
+    };
+
+    /** \brief Returns an <code>OrderType</code> enum corresponding to a string.
+     * @param orderTypeAsString The string to be parsed.
+     * @return Returns <code>OrderType</code> enum.
+     */
+    static Order::OrderType parseOrderType(const string& orderTypeAsString);
+
+    /** \brief Returns a string representation of an <code>OrderType</code> enum.
+     * @param orderType The <code>OrderType</code> enum.
+     * @return Returns a string representation of the enum.
+     */
+    static string orderTypeToString(Order::OrderType orderType);
+
     /**
      * \brief   Constructs an Order object
      * \param   type Type of the Order object created
      * \param   target Territory targeted by the order
      */
     Order(Player *owner, const string &type, Territory *target);
+
+    /**
+     * \brief   Constructs an Order object.
+     * @param orderType The type of the <code>Order</code> object created. A <code>OrderType</code> enum.
+     * @param target Territory targeted by the order.
+     */
+    Order(Player *owner, Order::OrderType orderType, Territory *target);
 
     /**
      * \brief   Constructs an Order object using values from another Order object
@@ -53,10 +76,10 @@ public:
     virtual string execute() = 0;
 
     /**
-     * \brief   Get the order type name
-     * \return  string of the order type
+     * \brief   Get the order type 
+     * \return  The order type
      */
-    string getOrderType();
+    OrderType getOrderType();
 
     /**
      * \brief   Assigns new values to member variables of the Order object
@@ -69,11 +92,13 @@ public:
      */
     friend ostream &operator<<(ostream &outs, const Order &order);
 
+    inline Order::OrderType getOrderType() const noexcept { return type; }
+
 protected:
     //  Pointer to the player that owns the object
     Player *owner;
     //  Type of order
-    string type;
+    OrderType type;
     // Territory targeted by the order
     Territory *target;
 };

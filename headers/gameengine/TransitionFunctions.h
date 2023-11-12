@@ -30,22 +30,15 @@ bool game_printPlayers(const std::vector<std::string>&, GameEngine&);
  *           - Give the players 2 drawn cards from the deck. */
 bool game_gameStart(const std::vector<std::string>&, GameEngine&);
 
-/** \brief Issue an order. */
-bool game_issueOrder(const std::vector<std::string>&, GameEngine&);
-
-/** \brief End the issuing orders phase. */
-bool game_endIssueOrders(const std::vector<std::string>&, GameEngine&);
-
-/** \brief Execute an order. */
-bool game_executeOrder(const std::vector<std::string>&, GameEngine&);
-
-/** \brief End the executing orders phase. */
-bool game_endExecuteOrders(const std::vector<std::string>&, GameEngine&);
-
 /** \brief Enter the game Win phase. */
 bool game_winGame(const std::vector<std::string>&, GameEngine&);
 
 /** \brief Quits the game phase. Stops the game engine. */
 bool game_quit(const std::vector<std::string>&, GameEngine&);
+
+/** \brief Attempts to enter a tournament mode. */
+bool game_tournament(const std::vector<std::string>&, GameEngine&);
+
+inline bool game_emptyFunction(const std::vector<std::string>&, GameEngine&) { return true; }
 
 #endif //   TRANSITION_FUNCTIONS_H

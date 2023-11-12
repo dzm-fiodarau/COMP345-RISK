@@ -5,3 +5,4 @@ addplayer mami
 addplayer aaron
 viewplayers
 gamestart
+issueorders

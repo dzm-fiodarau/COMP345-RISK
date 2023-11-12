@@ -3,7 +3,7 @@
 #include <random>
 
 #include "../headers/Cards.h"
-#include "../headers/Player.h"
+#include "../headers/player/Player.h"
 #include "../headers/Map.h"
 
 
@@ -49,9 +49,7 @@ type Card::getCardType() const
     return cardType;
 }
 
-Card::~Card()
-{
-}
+Card::~Card() = default;
 
 bool Card::operator==(const Card &otherCard) const
 {
@@ -98,7 +96,7 @@ std::ostream &operator<<(std::ostream &os, const Deck &deck)
 
     for (Card *card : deck.cardList)
     {
-        os << *card;
+        os << *card << ", ";
     }
 
     return os;
@@ -122,7 +120,7 @@ Deck::Deck()
     }
 }
 
-Card *Deck::draw() const
+Card *Deck::draw()
 {
     std::random_device r;
     std::mt19937 rng(r());
@@ -136,7 +134,7 @@ Card *Deck::draw() const
 
     // TODO REVIEW: not completely sure if card should be deleted from the deck
     // Delete it from the deck
-    //  cardList.erase(cardList.begin() + randNum);
+    cardList.erase(cardList.begin() + randNum);
 
     // Return the card
     return cardSelected;
@@ -154,8 +152,10 @@ int Deck::getDeckSize() const
 
 Deck::~Deck()
 {
+    /*
     for (Card *card : cardList)
     {
         delete card;
     }
+     */
 }
