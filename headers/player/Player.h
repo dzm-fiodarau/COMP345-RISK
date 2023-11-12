@@ -189,9 +189,12 @@ public:
     void setPlayerName(const std::string& newName);
 
     /** \brief Adds units to the current reinforcement pool of the player.
-     *  \param units The number of units to add into the reinforcement pool.
      */
     void addToReinforcementPool(int units);
+
+    /** \brief Sets the number of units in the reinforcement pool
+     */
+    inline void setReinforcements(size_t units) { reinforcementPool = static_cast<int>(units); }
 
     /** \brief Sets whether or not the player should draw a card at the end of their turn. */
     void setDrawCard(bool drawCard);

@@ -18,6 +18,8 @@
 //  Forward declaration of required classes from other header files. (included in .cpp file)
 class Player;               //  Player.h
 class Map;                  //  Map.h
+class Continent;            //  Map.h
+class Order;                //  Orders.h
 class State;                //  gameengine/State.h
 
 //  Forward declaration of classes
@@ -31,51 +33,76 @@ public:
     const static int MAX_PLAYERS = 6;
 
     //  Constructors/Deconstructor
-    /** \brief Constructs a default <code>GameEngine</code> object. */
+    /** \brief Constructs a default <code>GameEngine</code> object.
+     */
     GameEngine() = default;
 
-    /** \brief Constructs a <code>GameEngine</code> object with a given state configuration and a command processor. */
+    /** \brief Constructs a <code>GameEngine</code> object with a given state configuration and a command processor.
+     */
     GameEngine(const std::vector<State*>&, CommandProcessor*);
 
-    /** \brief Deconstructs a <code>GameEngine</code> object. */
+    /** \brief Deconstructs a <code>GameEngine</code> object.
+     */
     ~GameEngine();
 
     //  Operator overrides
-    /** \brief Assigns the values of the passed GameEngine object to the current. Copy assignment operator. */
+    /** \brief Assigns the values of the passed GameEngine object to the current. Copy assignment operator.
+     */
     GameEngine& operator=(const GameEngine&);
 
-    /** \brief Prints a brief description of the current internal configurations of the instance. */
+    /** \brief Prints a brief description of the current internal configurations of the instance.
+     */
     friend std::ostream& operator<<(std::ostream&, const GameEngine&);
 
     //  Other Methods
-    /** \brief Starts the execution of the game object. Main entry point. */
+    /** \brief Starts the execution of the game object. Main entry point.
+     */
     void execute();
-    /** \brief Sets the game running flag to false */
+    /** \brief Sets the game running flag to false
+     */
     void stopRunning();
 
     //  Getter/Accessor methods
 
-    /** \brief Returns whether the game is running. */
+    /** \brief Returns whether the game is running.
+     */
     bool isGameRunning() const;
-    /** \brief Returns a vector of currently added players. */
+    /** \brief Returns a vector of currently added players.
+     */
     std::vector<Player*> getPlayers() const;
-    /** \brief Returns the currently loaded map. */
+    /** \brief Returns the currently loaded map.
+     */
     Map* getMap() const;
 
     //  Setter/Mutator methods
 
-    /** \brief Sets the command processor for the object. */
+    /** \brief Sets the command processor for the object.
+     */
     void setCommandProcessor(const CommandProcessor&);
-    /** \brief Sets the players. Returns a vector of the previous players. */
+    /** \brief Sets the players. Returns a vector of the previous players.
+     */
     std::vector<Player*> setPlayers(std::vector<Player*>);
-    /** \brief Sets the currently loaded map. */
+    /** \brief Sets the currently loaded map.
+     */
     void setMap(Map*);
 
     //  Additional behavior for Setter/Mutators
-    /** \brief Appends a player instance to the end of the player vector. Moves data. */
+    /** \brief Appends a player instance to the end of the player vector. Moves data.
+     */
     void addPlayer(Player*);
-    /** \brief Returns the number of currently registered players. */
+    /** \brief Returns the number of currently registered players.
+     */
     size_t numberOfPlayers() const;
+
+    void mainGameLoop();
+    void reinforcementPhase();
+    void issueOrdersPhase();
+
+    /** \brief In the player order determined at game start, executes the orders each player has issued.
+     */
+    void executeOrdersPhase();
+
+    void removeDefeatedPlayers();
 
 private:
     //  A list of states that is 'owned' by the game engine.
@@ -94,10 +121,12 @@ private:
     std::vector<Player*> players = {};
 
     //  The playing map
-    //  The game engine is responsible for deallocating.
     Map* map = nullptr;
 
     bool isRunning = false;
+
+    //  Checks if a player owns all the territories in a continent
+    static bool playerOwnsContinent(Player* player, Continent* continent);
 
     //  Further process a command. Calls the corresponding transition function.
     void processCommand(bool (*)(const std::vector<std::string>&, GameEngine&), const std::string&, State*);

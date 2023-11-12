@@ -315,7 +315,7 @@ void Player::negotiateWith(Player& player)
 
 void Player::removeTerritory(Territory& target)
 {
-    //  TODO: Implement soon after idk
+    territories.erase(std::remove_if(territories.begin(), territories.end(), [&target] (Territory* ptr) { return &target == ptr; }), territories.end());
 }
 
 bool Player::ownsTerritory(Territory& territory) const

@@ -85,6 +85,8 @@ public:
      */
     friend ostream &operator<<(ostream &outs, const Order &order);
 
+    inline Order::OrderType getOrderType() const noexcept { return type; }
+
 protected:
     //  Pointer to the player that owns the object
     Player *owner;

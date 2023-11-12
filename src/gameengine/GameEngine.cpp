@@ -18,22 +18,21 @@
 #include <sstream>
 #include <numeric>
 #include <memory>
+#include <algorithm>
 
 #include "../../headers/gameengine/GameEngine.h"
-
 #include "../../headers/commandprocessing/ConsoleCommandProcessorAdapter.h"
-
 #include "../../headers/Map.h"
 #include "../../headers/player/Player.h"
 
 #define PRESS_ENTER_TO_CONTINUE(clearConsole)                       \
-    std::string _IGNORE_STRING;                                     \
-    std::cout << "Press Enter to Continue... ";                     \
-    std::getline(std::cin, _IGNORE_STRING);                         \
-                                                                    \
-    if (clearConsole) {                                             \
-        system("cls");                                              \
-    }                                                               \
+	std::string _IGNORE_STRING;                                     \
+	std::cout << "Press Enter to Continue... ";                     \
+	std::getline(std::cin, _IGNORE_STRING);                         \
+																	\
+	if (clearConsole) {                                             \
+		system("cls");                                              \
+	}                                                               \
 
 
 
@@ -242,6 +241,71 @@ void GameEngine::addPlayer(Player* playerPtr) {
 size_t GameEngine::numberOfPlayers() const {
     return players.size();
 }
+
+void GameEngine::mainGameLoop() {
+    while(true) {
+        // 1. Reinforcement phase
+        reinforcementPhase();
+
+        // 2. Issue orders phase
+        issueOrdersPhase();
+
+        // 3. Execute orders phase
+        executeOrdersPhase();
+
+        // Remove eliminated players
+        removeDefeatedPlayers();
+
+        // Check end game conditions
+        if(players.size() == 1) {
+            cout << "Player " << players[0]->getName() << " wins!" << endl;
+            break;
+        }
+    }
+}
+
+void GameEngine::reinforcementPhase() {
+    for(auto& player : players) {
+        int reinforcements = int(player->getTerritories().size() / 3);
+        reinforcements = max(reinforcements, 3); // Minimum 3
+        // Give continent bonus
+
+        for(Continent* continent : map->getContinents())
+            if(playerOwnsContinent(player, continent))
+                reinforcements += continent->getBonus();
+
+        player->setReinforcements(reinforcements);
+    }
+}
+
+// Check if player owns all territories in continent
+bool GameEngine::playerOwnsContinent(Player* player, Continent* continent) {
+    std::vector<Territory*> territories = continent->getTerritories();
+    return std::ranges::all_of(territories.begin(), territories.end(), [player] (Territory* territory) -> bool { return territory->getOwner() == player;});
+}
+
+void GameEngine::issueOrdersPhase() {
+
+    for(auto* player : players) {
+        //  Todo: implement in player strategy
+    }
+}
+
+
+void GameEngine::executeOrdersPhase() {
+    for (auto& player :players) {
+        OrdersList* ordersList = player->getOrdersList();
+        while (auto* nextOrder = ordersList->getNextOrder()) {
+            nextOrder->execute();
+            delete nextOrder;
+        }
+    }
+}
+
+void GameEngine::removeDefeatedPlayers() {
+    players.erase(std::remove_if(players.begin(), players.end(), [] (Player* player) -> bool { return true; }), players.end());
+}
+
 
 #ifdef __GNUC__
 #pragma clang diagnostic pop

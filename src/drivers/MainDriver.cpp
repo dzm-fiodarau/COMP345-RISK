@@ -7,11 +7,11 @@ void testPlayers();
 
 int main(int argc, char* argv[])
 {
-    testLoadMaps();
-    testOrdersLists();
-    testOrderExecution();
-    testCards();
-    testPlayers();
+    //  testLoadMaps();
+    //  testOrdersLists();
+    //  testOrderExecution();
+    //  testCards();
+    //  testPlayers();
     testGameStates(argc, argv);
 
     return 0;
