@@ -1,55 +1,18 @@
 void testCards();
-void testGameStates();
+void testGameStates(int, char**);
 void testLoadMaps();
 void testOrdersLists();
 void testOrderExecution();
 void testPlayers();
-void testCommandProcessing();
 
-//  Regular runtime
-#ifndef DEBUG
-int main()
+int main(int argc, char* argv[])
 {
-    // testLoadMaps();
-    // testOrdersLists();
-    testOrderExecution();
-    // testCards();
-    // testPlayers();
-    testGameStates();
-    testCommandProcessing();
-
-    return 0;
-}
-#endif
-
-#ifdef DEBUG
-int main()
-{
-#ifdef EXECUTE_CARDS
-    testCards();
-#endif
-
-#ifdef EXECUTE_MAP
     testLoadMaps();
-#endif
-
-#ifdef EXECUTE_ORDERS
     testOrdersLists();
     testOrderExecution();
-#endif
-
-#ifdef EXECUTE_PLAYER
+    testCards();
     testPlayers();
-#endif
-
-#ifdef EXECUTE_GAME_ENGINE
-    testGameStates();
-#endif
-
-#ifdef EXECUTE_COMMAND_PROCESSING
-    testCommandProcessing();
-#endif
+    testGameStates(argc, argv);
 
     return 0;
 }
-#endif

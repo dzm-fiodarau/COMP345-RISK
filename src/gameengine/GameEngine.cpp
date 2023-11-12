@@ -20,9 +20,6 @@
 #include <memory>
 
 #include "../../headers/gameengine/GameEngine.h"
-#include "../../headers/gameengine/State.h"
-
-#include "../../headers/macros/DebugMacros.h"
 
 #include "../../headers/commandprocessing/ConsoleCommandProcessorAdapter.h"
 
@@ -57,11 +54,7 @@ static std::vector<std::string> getTokens(std::string input) {
     return tokens;
 }
 
-/**
- *
- * @param tokens
- * @return
- */
+/** \brief Joins strings contained in a vector by a single whitespace. */
 static std::string reduceStringVector(const std::vector<std::string>& tokens) {
     std::string stringBuilder;
 
@@ -249,9 +242,6 @@ void GameEngine::addPlayer(Player* playerPtr) {
 size_t GameEngine::numberOfPlayers() const {
     return players.size();
 }
-
-
-
 
 #ifdef __GNUC__
 #pragma clang diagnostic pop

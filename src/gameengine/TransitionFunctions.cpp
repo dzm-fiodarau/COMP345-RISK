@@ -13,7 +13,6 @@
 
 #include <iostream>
 #include <string>
-#include <algorithm>
 #include <random>
 #include <vector>
 #include <chrono>
@@ -87,7 +86,7 @@ bool game_restart(const std::vector<std::string>& values, GameEngine& gameEngine
  *
  * \param values        Passed arguments. Note that these arguments are validated to be a certain of a certain number
  *                      before calling method. EXPECT 1 ARGUMENT: (std::string) filepath.
- * \param gameEngine    Game object to achange/obtain values.
+ * \param gameEngine    Game object to change/obtain values.
  * \return  True if loading was successful, false otherwise.
  */
 bool game_loadMap(const std::vector<std::string>& values, GameEngine& gameEngine) {
@@ -106,8 +105,6 @@ bool game_loadMap(const std::vector<std::string>& values, GameEngine& gameEngine
 
     //  Transfer ownership of loaded map object to the game engine
     gameEngine.setMap(loadedMap);
-    loadedMap = nullptr;
-
     return true;
 }
 
@@ -261,6 +258,11 @@ bool game_winGame(const std::vector<std::string>& values, GameEngine& gameEngine
 
 bool game_quit(const std::vector<std::string>& values, GameEngine& gameEngine) {
     DEBUG_PRINT("GAME_END_PROGRAM")
+    return true;
+}
+
+bool game_tournament(const std::vector<std::string>&, GameEngine&) {
+    DEBUG_PRINT("GAME_TOURNAMENT")
     return true;
 }
 

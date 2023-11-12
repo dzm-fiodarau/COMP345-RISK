@@ -97,7 +97,7 @@ private:
     //  The game engine is responsible for deallocating.
     Map* map = nullptr;
 
-    bool isRunning;
+    bool isRunning = false;
 
     //  Further process a command. Calls the corresponding transition function.
     void processCommand(bool (*)(const std::vector<std::string>&, GameEngine&), const std::string&, State*);

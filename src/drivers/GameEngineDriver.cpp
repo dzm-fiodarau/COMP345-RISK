@@ -1,37 +1,29 @@
-#include <iostream>
-#include <memory>
 #include <vector>
-#include <string>
+#include <iostream>
+#include <cstring>
 
 #include "../../headers/gameengine/GameEngine.h"
-#include "../../headers/gameengine/State.h"
 #include "../../headers/gameengine/TransitionFunctions.h"
-
 #include "../../headers/commandprocessing/ConsoleCommandProcessorAdapter.h"
 #include "../../headers/commandprocessing/FileCommandProcessorAdapter.h"
 
-
-
-
-void testGameStates()
+void testGameStates(int argc, char* argv[])
 {
-    /*
-    //  Dependencies instantiation
-    std::vector<State> states = { STATES_CONTENTS };
-    std::vector<TransitionData> transitionDatabase = { TRANSITIONS_CONTENTS };
-    auto commandProcessor = std::make_unique<FileCommandProcessorAdapter>(states, transitionDatabase, "../../commands.txt");
+    CommandProcessor* commandProcessor = new ConsoleCommandProcessorAdapter();
+    //  If there are arguments
+    if (argc > 1) {
+        if (strcmp(*(argv + 1), "-console") == 0 && argc == 2) {
+            commandProcessor = new ConsoleCommandProcessorAdapter();
+        } else if (strcmp(*(argv + 1), "-file") == 0 && argc == 3) {
+            std::cout << *(argv + 2) << std::endl;
+            commandProcessor = new FileCommandProcessorAdapter(*(argv + 2));
+        } else {
+            std::cerr << "ERROR: Incorrect arguments provided" << std::endl;
+            return;
+        }
+    }
 
 
-    //  Main objects
-    //  Dependency Injection
-    auto gameEngine = std::make_unique<GameEngine>();
-    gameEngine->setStates(states);
-    gameEngine->setTransitionData(transitionDatabase);
-    gameEngine->setCommandProcessor(*commandProcessor);
-
-    //  Run
-    gameEngine->execute();
-     */
 
     //  Instantiating the states
     auto* start = new State("start");
@@ -43,6 +35,8 @@ void testGameStates()
     auto* executeOrders = new State("execute orders");
     auto* win = new State("win");
     auto* end = new State("END");
+
+    auto* tournament = new State("tournament");
 
     //  Inserting the transitions
     start->addTransition("loadmap", mapLoaded, 1, "loadmap [--filepath]", &game_loadMap);
@@ -61,9 +55,11 @@ void testGameStates()
     win->addTransition("replay", start, 0, "replay", &game_restart);
     win->addTransition("quit", end, 0, "quit", &game_quit);
 
+    start->addTransition("tournament", tournament, -1, "tournament -M [listofmapfiles] -P [listofplayerstrategies] -G [numberofgames] -D [maxnumberofturns]", &game_tournament);
+    tournament->addTransition("replay", start, 0, "replay", &game_emptyFunction);
+
     //  Initialize required objects
     std::vector<State*> states = { start, mapLoaded, mapValidated, playersAdded, assignReinforcement, issueOrders, executeOrders, win, end };
-    CommandProcessor* commandProcessor = new FileCommandProcessorAdapter("../../commands.txt");
     auto* gameEngine = new GameEngine(states, commandProcessor);
 
     gameEngine->execute();
