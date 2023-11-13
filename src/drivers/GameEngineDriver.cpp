@@ -1,30 +1,11 @@
 #include <vector>
-#include <iostream>
-#include <cstring>
 
 #include "../../headers/gameengine/GameEngine.h"
 #include "../../headers/gameengine/TransitionFunctions.h"
-#include "../../headers/commandprocessing/ConsoleCommandProcessorAdapter.h"
-#include "../../headers/commandprocessing/FileCommandProcessorAdapter.h"
+#include "../../headers/commandprocessing/CommandProcessing.h"
 
-void testGameStates(int argc, char* argv[])
+void testGameStates(CommandProcessor* commandProcessor)
 {
-    CommandProcessor* commandProcessor = new ConsoleCommandProcessorAdapter();
-    //  If there are arguments
-    if (argc > 1) {
-        if (strcmp(*(argv + 1), "-console") == 0 && argc == 2) {
-            commandProcessor = new ConsoleCommandProcessorAdapter();
-        } else if (strcmp(*(argv + 1), "-file") == 0 && argc == 3) {
-            std::cout << *(argv + 2) << std::endl;
-            commandProcessor = new FileCommandProcessorAdapter(*(argv + 2));
-        } else {
-            std::cerr << "ERROR: Incorrect arguments provided" << std::endl;
-            return;
-        }
-    }
-
-
-
     //  Instantiating the states
     auto* start = new State("start");
     auto* mapLoaded = new State("map loaded");

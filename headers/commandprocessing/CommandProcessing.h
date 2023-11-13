@@ -33,7 +33,7 @@ public:
     /** \brief Constructs a Command object from another Command object. */
     Command(const Command&);
     /** \brief Deconstructs a Command object. */
-    ~Command();
+    ~Command() override;
 
 
     //  Operator overrides
@@ -71,10 +71,8 @@ public:
     /** \brief Returns the number of arguments. */
     size_t getNumberOfArguments() const;
 
-    /**
-     * \brief   Creates the string to log
-     */
-    string stringToLog();
+    /** \brief Creates the string to log */
+    string stringToLog() override;
 
 private:
     //  The raw command, as read from an input stream.
@@ -104,7 +102,7 @@ public:
     CommandProcessor();
 
     /** \brief Deconstructs a CommandProcessor object. */
-    virtual ~CommandProcessor();
+    ~CommandProcessor() override;
 
     //  Virtual methods
     /** \brief Returns a <code>Command</code> object from some source. */
@@ -127,7 +125,7 @@ public:
     /**
      * \brief   Creates the string to log
      */
-    string stringToLog();
+    string stringToLog() override;
 
 protected:
 

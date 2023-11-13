@@ -7,20 +7,15 @@
 #include "../headers/gameengine/GameEngine.h"
 #include "../headers/gameengine/State.h"
 #include "../headers/gameengine/TransitionFunctions.h"
-#include "../headers/commandprocessing/ConsoleCommandProcessorAdapter.h"
-#include "../headers/commandprocessing/FileCommandProcessorAdapter.h"
+#include "../headers/commandprocessing/CommandProcessing.h"
 #include "../headers/LoggingObserver.h"
 #include "../headers/player/Player.h"
 #include "../headers/Map.h"
 #include "../headers/Cards.h"
 
-void testLoggingObserver()
+void testLoggingObserver(CommandProcessor* commandProcessor)
 {
     Observer *observer = new LogObserver();
-
-    CommandProcessor *commandProcessor = new ConsoleCommandProcessorAdapter();
-
-    commandProcessor = new ConsoleCommandProcessorAdapter();
 
     //  Instantiating the states
     auto *start = new State("start");

@@ -146,12 +146,12 @@ public:
     /**
      * \brief  Destructor
      */
-    ~LogObserver();
+    ~LogObserver() override;
 
     /**
      * \brief   Takes the string from ILoggable and write it to a file
      */
-    void Update(ILoggable *log);
+    void Update(ILoggable *log) override;
 
     /**
      * \brief   Assigns new values to member variables of the ILoggable object

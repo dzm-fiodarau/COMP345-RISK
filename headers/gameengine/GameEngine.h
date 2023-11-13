@@ -12,9 +12,9 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "../LoggingObserver.h"
 
 #include "State.h"
+#include "../LoggingObserver.h"
 
 //  Forward declaration of required classes from other header files. (included in .cpp file)
 class Player;               //  Player.h
@@ -44,7 +44,7 @@ public:
 
     /** \brief Deconstructs a <code>GameEngine</code> object.
      */
-    ~GameEngine();
+    ~GameEngine() override;
 
     //  Operator overrides
     /** \brief Assigns the values of the passed GameEngine object to the current. Copy assignment operator.
@@ -102,7 +102,7 @@ public:
     /**
      * \brief   Creates the string to log
      */
-    string stringToLog();
+    string stringToLog() override;
 
     //  Gameplay methods
     /**  \brief Enters the main gameplay loop.

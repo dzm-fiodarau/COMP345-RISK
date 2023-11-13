@@ -1,5 +1,6 @@
 #include <iostream>
 #include <utility>
+#include <algorithm>
 
 #include "../../headers/gameengine/State.h"
 
