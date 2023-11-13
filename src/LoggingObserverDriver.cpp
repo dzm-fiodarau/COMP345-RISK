@@ -10,93 +10,98 @@
 #include "../headers/commandprocessing/ConsoleCommandProcessorAdapter.h"
 #include "../headers/commandprocessing/FileCommandProcessorAdapter.h"
 #include "../headers/LoggingObserver.h"
-#include "../headers/Player.h"
+#include "../headers/player/Player.h"
 #include "../headers/Map.h"
 #include "../headers/Cards.h"
-
-#define STATES_CONTENTS                                                                  \
-    State("start"), State("map loaded"), State("map validated"), State("players added"), \
-        State("assign reinforcement"), State("issueorder"), State("execute orders"), State("win"), State("END")
-
-#define TRANSITIONS_CONTENTS                                                                      \
-    TransitionData(0, 1, 1, "loadmap", "loadmap [--filepath]", &game_loadMap),                    \
-        TransitionData(1, 1, 1, "loadmap", "loadmap [--filepath]", &game_loadMap),                \
-        TransitionData(1, 2, 0, "validatemap", "validatemap", &game_validateMap),                 \
-        TransitionData(2, 3, 1, "addplayer", "addplayer [--playername]", &game_addPlayer),        \
-        TransitionData(3, 3, 1, "addplayer", "addplayer [--playername]", &game_addPlayer),        \
-        TransitionData(3, 3, 0, "viewplayers", "viewplayers", &game_printPlayers),                \
-        TransitionData(3, 4, 0, "gamestart", "gamestart", &game_gameStart),                       \
-        TransitionData(4, 5, 0, "issueorder", "issueorder -SAMPLE ARGUMENTS-", &game_issueOrder), \
-        TransitionData(5, 5, 0, "issueorder", "issueorder -SAMPLE ARGUMENTS-", &game_issueOrder), \
-        TransitionData(5, 6, 0, "endissueorders", "endissueorders", &game_endIssueOrders),        \
-        TransitionData(6, 6, 0, "execorder", "execorder -SAMPLE ARGUMENTS-", &game_executeOrder), \
-        TransitionData(6, 4, 0, "endexecorders", "endexecorders", &game_endExecuteOrders),        \
-        TransitionData(6, 7, 0, "win", "win", &game_winGame),                                     \
-        TransitionData(7, 0, 0, "replay", "replay", &game_restart),                               \
-        TransitionData(7, 8, 0, "quit", "quit", &game_quit)
 
 void testLoggingObserver()
 {
     Observer *observer = new LogObserver();
 
-    //  Dependencies instantiation
-    std::vector<State> states = {STATES_CONTENTS};
-    std::vector<TransitionData> transitionDatabase = {TRANSITIONS_CONTENTS};
-    auto commandProcessor = std::make_unique<FileCommandProcessorAdapter>(states, transitionDatabase, "../../commands.txt");
+    CommandProcessor *commandProcessor = new ConsoleCommandProcessorAdapter();
 
-    //  Main objects
-    //  Dependency Injection
-    auto gameEngine = std::make_unique<GameEngine>();
-    gameEngine->setStates(states);
-    gameEngine->setTransitionData(transitionDatabase);
-    gameEngine->setCommandProcessor(*commandProcessor);
+    commandProcessor = new ConsoleCommandProcessorAdapter();
+
+    //  Instantiating the states
+    auto *start = new State("start");
+    auto *mapLoaded = new State("map loaded");
+    auto *mapValidated = new State("map validated");
+    auto *playersAdded = new State("players added");
+    auto *gameLoop = new State("game loop");
+    auto *win = new State("win");
+    auto *end = new State("END");
+
+    //  Inserting the transitions
+    start->addTransition("loadmap", mapLoaded, 1, "loadmap [--filepath]", &game_loadMap);
+    mapLoaded->addTransition("loadmap", mapLoaded, 1, "loadmap [--filepath]", &game_loadMap);
+    mapLoaded->addTransition("validatemap", mapValidated, 0, "validatemap", &game_validateMap);
+    mapValidated->addTransition("addplayer", playersAdded, 1, "addplayer [--playername]", &game_addPlayer);
+    playersAdded->addTransition("addplayer", playersAdded, 1, "addplayer [--playername]", &game_addPlayer);
+    playersAdded->addTransition("viewplayers", playersAdded, 0, "viewplayers", &game_printPlayers);
+    playersAdded->addTransition("gamestart", gameLoop, 0, "gamestart", &game_gameStart);
+    gameLoop->addTransition("win", win, 0, "win", &game_winGame);
+    win->addTransition("replay", start, 0, "replay", &game_restart);
+    win->addTransition("quit", end, 0, "quit", &game_quit);
+
+    //  Initialize required objects
+    std::vector<State *> states = {start, mapLoaded, mapValidated, playersAdded, gameLoop, win, end};
+    auto *gameEngine = new GameEngine(states, commandProcessor);
     gameEngine->Attach(observer);
 
-    //  Run
     gameEngine->execute();
 
-    // Create cards for players
-    Card *card1 = new Card(type::bomb);
-    Card *card2 = new Card(type::blockade);
+    auto *player1 = new Player("player1");
+    auto *player2 = new Player("player1");
 
-    // Create player objects
-    vector<Territory *> territories1;
-    vector<Card *> handCards1 = {card1};
-    Player *player1 = new Player("Player1", territories1, handCards1);
+    player1->addToReinforcementPool(3);
+    player2->addToReinforcementPool(2);
 
-    vector<Territory *> territories2;
-    vector<Card *> handCards2 = {card2};
-    Player *player2 = new Player("Player2", territories2, handCards2);
+    player1->addCard(*(new Card(type::bomb)));
+    player1->addCard(*(new Card(type::bomb)));
+    player1->addCard(*(new Card(type::airlift)));
+    player1->addCard(*(new Card(type::diplomacy)));
 
-    // Creating continents
-    Continent *continent1 = new Continent("Africa", 0);
-    Continent *continent2 = new Continent("Europe", 0);
+    player2->addCard(*(new Card(type::blockade)));
+    player2->addCard(*(new Card(type::bomb)));
+    player2->addCard(*(new Card(type::airlift)));
+    player2->addCard(*(new Card(type::diplomacy)));
 
-    // Create territories for players
-    Territory *territory1 = new Territory("Territory1", 5, 3, continent1, player1, 0);
-    Territory *territory2 = new Territory("Territory2", 4, 2, continent2, player2, 0);
+    auto *europe = new Continent("Europe", 100);
 
-    // Add territories the player's 'owned territories' list
-    player1->territory.push_back(territory1);
-    player2->territory.push_back(territory2);
+    auto *france = new Territory("France", 5, 5, europe, player1, 5);
+    auto *belgium = new Territory("Belgium", 6, 4, europe, player1, 5);
+    auto *england = new Territory("England", 5, 3, europe, player2, 5);
+    auto *greece = new Territory("Greece", 10, 12, europe, player1, 5);
 
-    // Call toAttack() and toDefend() methods for player1 and player2
-    cout << "Player 1 territories to attack: ";
-    player1->toAttack();
-    cout << "Player 1 territories to defend: ";
-    player1->toDefend();
+    france->addAdjacentTerritory(belgium);
+    france->addAdjacentTerritory(england);
+    belgium->addAdjacentTerritory(france);
+    belgium->addAdjacentTerritory(england);
+    england->addAdjacentTerritory(france);
+    england->addAdjacentTerritory(belgium);
 
-    cout << "Player 2 territories to attack: ";
-    player2->toAttack();
-    cout << "Player 2 territories to defend: ";
-    player2->toDefend();
+    player1->issueOrder("deploy", france, 3, nullptr, nullptr);
+    player1->issueOrder("advance", belgium, 4, france, nullptr);
+    player1->issueOrder("bomb", england, 0, nullptr, nullptr);
+    player1->issueOrder("blockade", belgium, 0, nullptr, nullptr);
+    player1->issueOrder("airlift", greece, 3, france, nullptr);
+    player1->issueOrder("negotiate", nullptr, 0, nullptr, player2);
 
-    // Issue orders for player1 and player2
-    player1->issueOrder("deploy", territory1, 3, nullptr, nullptr);
-    player1->issueOrder("advance", territory1, 2, territory2, nullptr);
-
-    player2->issueOrder("deploy", territory2, 2, nullptr, nullptr);
-    player2->issueOrder("advance", territory2, 1, territory1, nullptr);
+    player2->issueOrder("deploy", france, 2, nullptr, nullptr);
+    player2->issueOrder("advance", belgium, 4, france, nullptr);
+    player2->issueOrder("bomb", greece, 0, nullptr, nullptr);
+    player2->issueOrder("blockade", france, 0, nullptr, nullptr);
+    player2->issueOrder("airlift", england, 2, france, nullptr);
+    player2->issueOrder("negotiate", nullptr, 0, nullptr, player2);
 
     gameEngine->Detach(observer);
+    delete gameEngine;
+    delete europe;
+    delete france;
+    delete belgium;
+    delete england;
+    delete greece;
+
+    delete player1;
+    delete player2;
 }

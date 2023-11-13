@@ -460,7 +460,7 @@ NegotiateOrder &NegotiateOrder::operator=(const NegotiateOrder &order)
 
 string NegotiateOrder::stringToLog()
 {
-    return "Order: type = " + Order::orderTypeToString(this->type) + ", target player = " + this->player->getPlayerName();
+    return "Order: type = " + Order::orderTypeToString(this->type) + ", target player = " + this->player->getName();
 }
 
 ostream &operator<<(ostream &outs, const NegotiateOrder &order)
