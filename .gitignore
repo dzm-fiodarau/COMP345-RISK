@@ -554,4 +554,9 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
+#Others
+.vscode/settings.json
+*.sln
+*.vcxproj
+*.vcxproj.filters
 .idea/

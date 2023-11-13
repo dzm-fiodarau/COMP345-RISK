@@ -7,6 +7,8 @@
 #endif
 
 #include <fstream>
+#include <filesystem>
+#include <sstream>
 
 #include "../../headers/gameengine/GameEngine.h"
 #include "../../headers/gameengine/State.h"
@@ -92,7 +94,10 @@ void FileCommandProcessorAdapter::loadFileContents() {
     //  Check if the specified file exists
     if (!*file) {
         DEBUG_PRINT("ERROR: FileCommandProcessorAdapter, unable to find file")
-        throw std::runtime_error("ERROR: THE FILE COULD NOT BE FOUND");
+        std::stringstream outputMessage{};
+        outputMessage << "ERROR: THE FILE COULD NOT BE FOUND\n";
+        outputMessage << "  Expected:\t" << std::filesystem::absolute(filePath) << "\n";
+        throw std::runtime_error(outputMessage.str());
     }
 
     //  Read from the file, encapsulate into 'Command' object, and enqueue

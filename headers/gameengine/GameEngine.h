@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "State.h"
+#include "../LoggingObserver.h"
 
 //  Forward declaration of required classes from other header files. (included in .cpp file)
 class Player;               //  Player.h
@@ -28,7 +29,7 @@ class CommandProcessor;
 
 /** \class GameEngine
  *  \brief A class that controls the flow of the game through notations of state and transitions. */
-class GameEngine {
+class GameEngine : public ILoggable, public Subject {
 public:
     const static int MAX_PLAYERS = 6;
 
@@ -43,7 +44,7 @@ public:
 
     /** \brief Deconstructs a <code>GameEngine</code> object.
      */
-    ~GameEngine();
+    ~GameEngine() override;
 
     //  Operator overrides
     /** \brief Assigns the values of the passed GameEngine object to the current. Copy assignment operator.
@@ -98,6 +99,10 @@ public:
      */
     size_t numberOfPlayers() const;
 
+    /**
+     * \brief   Creates the string to log
+     */
+    string stringToLog() override;
 
     //  Gameplay methods
     /**  \brief Enters the main gameplay loop.

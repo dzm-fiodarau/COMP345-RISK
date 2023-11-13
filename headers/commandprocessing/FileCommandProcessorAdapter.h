@@ -22,7 +22,7 @@ class ConsoleCommandProcessorAdapter;       //  commandprocessing/ConsoleCommand
 
 /** \class FileCommandProcessorAdapter
  *  \brief A class that supplies commands from a specified file. */
-class FileCommandProcessorAdapter : public CommandProcessor {
+class FileCommandProcessorAdapter final : public CommandProcessor {
 public:
     //  Constructors/Deconstructors
     /** \brief Constructs a 'default' FileCommandProcessorAdapter object. */

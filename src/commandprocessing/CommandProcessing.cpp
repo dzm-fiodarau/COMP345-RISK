@@ -114,7 +114,10 @@ const bool* Command::getIsValidExecution() const { return isValidExecution; }
 void Command::setRawCommand(const std::string& newRawCommand) { rawCommand = newRawCommand; }
 
 /** \brief Sets the value of the effect member variable. */
-void Command::setEffect(const std::string& newEffect) { effect = newEffect; }
+void Command::setEffect(const std::string& newEffect) {
+    effect = newEffect;
+    notify(this);
+}
 
 /** \brief  Sets the execution status of the command
  *  \param newStatus The new status. False for unsuccessful execution, true otherwise.
@@ -142,7 +145,10 @@ size_t Command::getNumberOfArguments() const {
     return getRemainingTokens().size();
 }
 
-
+string Command::stringToLog()
+{
+    return "Command " + effect;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 //  Class: 'CommandProcessor' implementation
@@ -170,6 +176,10 @@ bool CommandProcessor::validate(const Command& command, const State& currentStat
     return currentState.isValidTransition(command.getFirstToken());
 }
 
+string CommandProcessor::stringToLog()
+{
+    return "CommandProcessor: ";
+}
 
 #ifdef __GNUC__
 #pragma clang diagnostic pop

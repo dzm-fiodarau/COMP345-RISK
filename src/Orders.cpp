@@ -59,6 +59,7 @@ bool OrdersList::addOrder(Order *order)
     if (order != nullptr)
     {
         orders.push_back(order);
+        notify(this);
         return true;
     }
 
@@ -126,6 +127,11 @@ bool OrdersList::move(Order *order, int index)
     orders.insert(it, order);
     cout << "OrdersList::move() was successful.\n";
     return true;
+}
+
+string OrdersList::stringToLog()
+{
+    return "New Order added: " + Order::orderTypeToString(orders.back()->getOrderType());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -203,6 +209,11 @@ Order::Order(Order &order)
 
 Order::~Order() = default;
 
+Order::OrderType Order::getOrderType()
+{
+    return this->type;
+}
+
 Order &Order::operator=(const Order &order)
 {
     if (this != &order)
@@ -254,6 +265,11 @@ DeployOrder &DeployOrder::operator=(const DeployOrder &order)
     return *this;
 }
 
+string DeployOrder::stringToLog()
+{
+    return "Order: type = " + Order::orderTypeToString(this->type) + ", target = " + this->target->getName() + ", army units = " + std::to_string(this->armyUnits);
+}
+
 ostream &operator<<(ostream &outs, const DeployOrder &order)
 {
     return outs << "DeployOrder: type = " << Order::orderTypeToString(order.type) << ", target = " << order.target->getName()
@@ -290,6 +306,11 @@ AdvanceOrder &AdvanceOrder::operator=(const AdvanceOrder &order)
     return *this;
 }
 
+string AdvanceOrder::stringToLog()
+{
+    return "Order: type = " + Order::orderTypeToString(this->type) + ", target = " + this->target->getName() + ", army units = " + std::to_string(this->armyUnits) + ", source = " + this->source->getName();
+}
+
 ostream &operator<<(ostream &outs, const AdvanceOrder &order)
 {
     return outs << "AdvanceOrder: type = " << Order::orderTypeToString(order.type) << ", target = " << order.target->getName()
@@ -322,6 +343,11 @@ BombOrder &BombOrder::operator=(const BombOrder &order)
     return *this;
 }
 
+string BombOrder::stringToLog()
+{
+    return "Order: type = " + Order::orderTypeToString(this->type) + ", target = " + this->target->getName();
+}
+
 ostream &operator<<(ostream &outs, const BombOrder &order)
 {
     return outs << "BombOrder: type = " << Order::orderTypeToString(order.type) << ", target = " << order.target->getName();
@@ -351,6 +377,11 @@ BlockadeOrder &BlockadeOrder::operator=(const BlockadeOrder &order)
     }
 
     return *this;
+}
+
+string BlockadeOrder::stringToLog()
+{
+    return "Order: type = " + Order::orderTypeToString(this->type) + ", target = " + this->target->getName();
 }
 
 ostream &operator<<(ostream &outs, const BlockadeOrder &order)
@@ -388,6 +419,12 @@ AirliftOrder &AirliftOrder::operator=(const AirliftOrder &order)
     return *this;
 }
 
+string AirliftOrder::stringToLog()
+{
+    return "Order: type = " + Order::orderTypeToString(this->type) + ", target = " + this->target->getName()
+                            + ", army units = " + std::to_string(this->armyUnits) + ", source = " + this->source->getName();
+}
+
 ostream &operator<<(ostream &outs, const AirliftOrder &order)
 {
     return outs << "AirliftOrder: type = " << Order::orderTypeToString(order.type) << ", target = " << order.target->getName()
@@ -419,6 +456,11 @@ NegotiateOrder &NegotiateOrder::operator=(const NegotiateOrder &order)
     }
 
     return *this;
+}
+
+string NegotiateOrder::stringToLog()
+{
+    return "Order: type = " + Order::orderTypeToString(this->type) + ", target player = " + this->player->getName();
 }
 
 ostream &operator<<(ostream &outs, const NegotiateOrder &order)
@@ -526,6 +568,7 @@ string DeployOrder::execute()
     {
         target->setNumberOfArmies(target->getNumberOfArmies() + armyUnits);
         cout << *this << " has been executed." << endl;
+        notify(this);
         return to_string(armyUnits) + " units were added to " + target->getName() + ". It now has " + to_string(target->getNumberOfArmies()) + " units.";
     }
     else
@@ -544,6 +587,7 @@ string AdvanceOrder::execute()
             source->setNumberOfArmies(source->getNumberOfArmies() - armyUnits);
             target->setNumberOfArmies(target->getNumberOfArmies() + armyUnits);
             cout << *this << " has been executed." << endl;
+            notify(this);
             return to_string(armyUnits) + " units were moved from " + source->getName() + " to " + target->getName() + ".";
         }
         else
@@ -575,6 +619,7 @@ string AdvanceOrder::execute()
                 target->setNumberOfArmies(armyUnits > attackerUnitsKilled ? armyUnits - attackerUnitsKilled : 0);
                 owner->setDrawCard(true);
                 cout << *this << " has been executed." << endl;
+                notify(this);
                 return owner->getName() + " has captured " + target->getName() + ". It is now occupied by " + to_string(target->getNumberOfArmies()) + " units.";
             }
             else
@@ -582,6 +627,7 @@ string AdvanceOrder::execute()
                 target->setNumberOfArmies(target->getNumberOfArmies() - defenderUnitsKilled);
                 source->setNumberOfArmies(armyUnits >= attackerUnitsKilled ? source->getNumberOfArmies() - attackerUnitsKilled : source->getNumberOfArmies() - armyUnits);
                 cout << *this << " has been executed." << endl;
+                notify(this);
                 return "The attack resulted in " + source->getName() + " having " + to_string(source->getNumberOfArmies()) + "units and " + target->getName() + " having " + to_string(target->getNumberOfArmies()) + " units left.";
             }
         }
@@ -599,6 +645,7 @@ string BombOrder::execute()
     {
         target->setNumberOfArmies(target->getNumberOfArmies() / 2);
         cout << *this << " has been executed." << endl;
+        notify(this);
         return target->getName() + " was bombed. It has" + to_string(target->getNumberOfArmies()) + " units left.";
     }
     else
@@ -618,6 +665,7 @@ string BlockadeOrder::execute()
         target->setNumberOfArmies(target->getNumberOfArmies() * 2);
 
         cout << *this << " has been executed." << endl;
+        notify(this);
         return "Neutral player now owns " + target->getName() + " with " + to_string(target->getNumberOfArmies()) + " units on it.";
     }
     else
@@ -634,6 +682,7 @@ string AirliftOrder::execute()
         source->setNumberOfArmies(source->getNumberOfArmies() - armyUnits);
         target->setNumberOfArmies(target->getNumberOfArmies() + armyUnits);
         cout << *this << " has been executed." << endl;
+        notify(this);
         return to_string(armyUnits) + " units have been moved from " + source->getName() + " to " + target->getName() + ".";
     }
     else
@@ -650,6 +699,7 @@ string NegotiateOrder::execute()
         owner->negotiateWith(*player);
         player->negotiateWith(*owner);
         cout << *this << " has been executed." << endl;
+        notify(this);
         return owner->getName() + " and " + player->getName() + " are now negotiating.";
     }
     else

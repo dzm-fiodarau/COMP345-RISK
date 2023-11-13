@@ -305,6 +305,10 @@ void GameEngine::removeDefeatedPlayers() {
     players.erase(std::remove_if(players.begin(), players.end(), [] (Player* player) -> bool { return true; }), players.end());
 }
 
+string GameEngine::stringToLog()
+{
+    return "GameEngine updated state: " + currentState->getStateName();
+}
 
 #ifdef __GNUC__
 #pragma clang diagnostic pop

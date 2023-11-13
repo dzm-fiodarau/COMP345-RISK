@@ -1,4 +1,4 @@
-loadmap ../../maps/Cornwall.map
+loadmap maps/Cornwall.map
 validatemap
 addplayer jose
 addplayer mami

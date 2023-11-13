@@ -47,10 +47,13 @@ Below we build and run the project using `g++` and `CMake`.
 # In the directory of the source code
 # Create output directory
 mkdir bin
-
-# Build project into new directory
-g++ -o ./bin/COMP345_RISK -std=c++20 -I./headers ./src/*.cpp
-
+```
+After making the build/bin directory, then you need to build the project. This can be done using the following command below:
+```shell
+g++ -o ./bin/COMP345_RISK -std=c++20 -I./headers ./src/*.cpp ./src/commandprocessing/*.cpp ./src/drivers/*.cpp ./src/gameengine/*.cpp ./src/player/*.cpp
+```
+After running the command, we can run the executable directly:
+```shell
 # Run built executable
 ./bin/COMP345_RISK
 ```
@@ -71,6 +74,25 @@ cmake --build ./bin/
 # Run build executable
 ./bin/Debug/COMP345_RISK
 ```
+
+## Using the program
+After obtaining an executable, you can then specify additional command line arguments:
+
+### Specifying the input
+You can specify from where the program will take input from. You can put commands in a file and watch the game play. By default, the game is set to console/player input.
+```shell
+# Assuming the name of the executable is 'COMP345_RISK'
+# File input
+./COMP345_RISK [-file] FILEPATH
+
+# Console input
+./COMP345_RISK [-console]
+
+# Or without any arguments specified
+./COMP345_RISK
+```
+
+
 
 [contributors-shield]: https://img.shields.io/github/contributors/dzm-fiodarau/COMP345-RISK.svg?style=for-the-badge
 [contributors-url]: https://github.com/dzm-fiodarau/COMP345-RISK/graphs/contributors
