@@ -137,7 +137,8 @@ string OrdersList::stringToLog()
 //----------------------------------------------------------------------------------------------------------------------
 //  ORDER
 
-Order::OrderType Order::parseOrderType(const string& orderTypeAsString) {
+Order::OrderType Order::parseOrderType(const string &orderTypeAsString)
+{
     if (orderTypeAsString == "deploy")
         return Order::OrderType::Deploy;
 
@@ -160,33 +161,38 @@ Order::OrderType Order::parseOrderType(const string& orderTypeAsString) {
         return Order::OrderType::Invalid;
 }
 
-string Order::orderTypeToString(Order::OrderType orderType) {
-    switch (orderType) {
-        case Order::OrderType::Deploy:
-            return "deploy";
+string Order::orderTypeToString(Order::OrderType orderType)
+{
+    switch (orderType)
+    {
+    case Order::OrderType::Deploy:
+        return "deploy";
 
-        case Order::OrderType::Advance:
-            return "advance";
+    case Order::OrderType::Advance:
+        return "advance";
 
-        case Order::OrderType::Bomb:
-            return "bomb";
+    case Order::OrderType::Bomb:
+        return "bomb";
 
-        case Order::OrderType::Blockade:
-            return "blockade";
+    case Order::OrderType::Blockade:
+        return "blockade";
 
-        case Order::OrderType::Airlift:
-            return "airlift";
+    case Order::OrderType::Airlift:
+        return "airlift";
 
-        case Order::OrderType::Negotiate:
-            return "negotiate";
+    case Order::OrderType::Negotiate:
+        return "negotiate";
 
-        default:
-            return "invalid";
+    default:
+        return "invalid";
     }
 }
 
+Order::Order()
+{
+}
 
-Order::Order(Player *owner, const string& type, Territory *target)
+Order::Order(Player *owner, const string &type, Territory *target)
 {
     this->owner = owner;
     this->type = parseOrderType(type);
@@ -240,6 +246,10 @@ ostream &operator<<(ostream &outs, const Order &order)
 
 //----------------------------------------------------------------------------------------------------------------------
 //  DEPLOY ORDER
+DeployOrder::DeployOrder() : Order()
+{
+}
+
 DeployOrder::DeployOrder(Player *owner, Territory *target, int armyUnits)
     : Order(owner, "deploy", target)
 {
@@ -421,8 +431,7 @@ AirliftOrder &AirliftOrder::operator=(const AirliftOrder &order)
 
 string AirliftOrder::stringToLog()
 {
-    return "Order: type = " + Order::orderTypeToString(this->type) + ", target = " + this->target->getName()
-                            + ", army units = " + std::to_string(this->armyUnits) + ", source = " + this->source->getName();
+    return "Order: type = " + Order::orderTypeToString(this->type) + ", target = " + this->target->getName() + ", army units = " + std::to_string(this->armyUnits) + ", source = " + this->source->getName();
 }
 
 ostream &operator<<(ostream &outs, const AirliftOrder &order)
@@ -480,8 +489,7 @@ ostream &operator<<(ostream &outs, const NegotiateOrder &order)
  */
 bool Order::validate()
 {
-    return type != Order::OrderType::Invalid
-        && (target != nullptr);
+    return type != Order::OrderType::Invalid && (target != nullptr);
 }
 
 /** \remarks A <code>DeployOrder</code> is valid when:
@@ -491,8 +499,7 @@ bool Order::validate()
  */
 bool DeployOrder::validate()
 {
-    return (target != nullptr)
-        && owner->ownsTerritory(*target);
+    return (target != nullptr) && owner->ownsTerritory(*target);
 }
 
 /** \remarks A <code>AdvanceOrder</code> is valid when:
@@ -506,11 +513,8 @@ bool DeployOrder::validate()
  */
 bool AdvanceOrder::validate()
 {
-    return (source != nullptr && target != nullptr)
-        && (armyUnits > 0 && armyUnits <= source->numberOfArmies)   //  TODO: probably a logical bug here
-        && (owner->ownsTerritory(*source))
-        && (source->isTerritoryAdjacent(target))
-        && !(owner->isPlayerInNegotiations(*target->getOwner()));
+    return (source != nullptr && target != nullptr) && (armyUnits > 0 && armyUnits <= source->numberOfArmies) //  TODO: probably a logical bug here
+           && (owner->ownsTerritory(*source)) && (source->isTerritoryAdjacent(target)) && !(owner->isPlayerInNegotiations(*target->getOwner()));
 }
 
 /** \remarks A <code>BombOrder</code> is valid when:
@@ -521,10 +525,7 @@ bool AdvanceOrder::validate()
  */
 bool BombOrder::validate()
 {
-    return (target != nullptr)
-        && !(owner->ownsTerritory(*target))
-        && (owner->isTerritoryAdjacent(*target))
-        && !(owner->isPlayerInNegotiations(*target->getOwner()));
+    return (target != nullptr) && !(owner->ownsTerritory(*target)) && (owner->isTerritoryAdjacent(*target)) && !(owner->isPlayerInNegotiations(*target->getOwner()));
 }
 
 /** \remarks A <code>BlockadeOrder</code> is valid when:
@@ -533,8 +534,7 @@ bool BombOrder::validate()
  */
 bool BlockadeOrder::validate()
 {
-    return (target != nullptr)
-        && (owner->ownsTerritory(*target));
+    return (target != nullptr) && (owner->ownsTerritory(*target));
 }
 
 /** \remarks A <code>AirliftOrder</code> is valid when:
@@ -544,10 +544,7 @@ bool BlockadeOrder::validate()
  */
 bool AirliftOrder::validate()
 {
-    return (source != nullptr && target != nullptr)
-        && (source && armyUnits > 0 && armyUnits <= source->numberOfArmies)
-        && (owner->ownsTerritory(*source))
-        && (owner->ownsTerritory(*target));
+    return (source != nullptr && target != nullptr) && (source && armyUnits > 0 && armyUnits <= source->numberOfArmies) && (owner->ownsTerritory(*source)) && (owner->ownsTerritory(*target));
 }
 
 /** \remarks A <code>NegotiateOrder</code> is valid when:
@@ -556,8 +553,7 @@ bool AirliftOrder::validate()
  */
 bool NegotiateOrder::validate()
 {
-    return (player != nullptr)
-        && (player != owner);
+    return (player != nullptr) && (player != owner);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -592,6 +588,10 @@ string AdvanceOrder::execute()
         }
         else
         {
+            if (NeutralPlayerStrategy *temp_ptr = dynamic_cast<NeutralPlayerStrategy *>(target->getOwner()->getPlayerStrategy()))
+            {
+                target->getOwner()->setPlayerStrategy(new AggressivePlayerStrategy(target->getOwner()));
+            }
             int defenderUnitsKilled = 0;
             int attackerUnitsKilled = 0;
             for (int i = 0; i < armyUnits; i++)
@@ -612,8 +612,8 @@ string AdvanceOrder::execute()
             }
             if (defenderUnitsKilled >= target->getNumberOfArmies())
             {
-                target->getOwner()->removeTerritory(*target);    //  The owner of the target no longer owns the target territory
-                target->setOwner(owner);                        //  Set the owner to this player (player that owns the order)
+                target->getOwner()->removeTerritory(*target); //  The owner of the target no longer owns the target territory
+                target->setOwner(owner);                      //  Set the owner to this player (player that owns the order)
                 owner->addTerritory(*target);
                 source->setNumberOfArmies(source->getNumberOfArmies() - armyUnits);
                 target->setNumberOfArmies(armyUnits > attackerUnitsKilled ? armyUnits - attackerUnitsKilled : 0);
@@ -643,6 +643,10 @@ string BombOrder::execute()
 {
     if (validate())
     {
+        if (NeutralPlayerStrategy *temp_ptr = dynamic_cast<NeutralPlayerStrategy *>(target->getOwner()->getPlayerStrategy()))
+        {
+            target->getOwner()->setPlayerStrategy(new AggressivePlayerStrategy(target->getOwner()));
+        }
         target->setNumberOfArmies(target->getNumberOfArmies() / 2);
         cout << *this << " has been executed." << endl;
         notify(this);
@@ -659,7 +663,7 @@ string BlockadeOrder::execute()
 {
     if (validate())
     {
-        target->getOwner()->removeTerritory(*target);        //  The owner of the target no longer owns the target territory
+        target->getOwner()->removeTerritory(*target); //  The owner of the target no longer owns the target territory
         Player::neutralPlayer->addTerritory(*target);
         target->setOwner(Player::neutralPlayer);
         target->setNumberOfArmies(target->getNumberOfArmies() * 2);

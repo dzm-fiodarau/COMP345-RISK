@@ -10,7 +10,6 @@
 #pragma ide diagnostic ignored "UnusedParameter"
 #endif
 
-
 #include <utility>
 #include <string>
 #include <iostream>
@@ -25,47 +24,48 @@
 #include "../../headers/Map.h"
 #include "../../headers/player/Player.h"
 
-#define PRESS_ENTER_TO_CONTINUE(clearConsole)                       \
-	std::string _IGNORE_STRING;                                     \
-	std::cout << "Press Enter to Continue... ";                     \
-	std::getline(std::cin, _IGNORE_STRING);                         \
-																	\
-	if (clearConsole) {                                             \
-		system("cls");                                              \
-	}                                                               \
-
-
-
+#define PRESS_ENTER_TO_CONTINUE(clearConsole)   \
+    std::string _IGNORE_STRING;                 \
+    std::cout << "Press Enter to Continue... "; \
+    std::getline(std::cin, _IGNORE_STRING);     \
+                                                \
+    if (clearConsole)                           \
+    {                                           \
+        system("cls");                          \
+    }
 
 //----------------------------------------------------------------------------------------------------------------------
 //  Static functions
 
-
-
 /** \brief Splits a string by spaces and returns a vector of string tokens. */
-static std::vector<std::string> getTokens(std::string input) {
+static std::vector<std::string> getTokens(std::string input)
+{
     std::istringstream iss(input);
     std::vector<std::string> tokens;
 
-    while (iss >> input) {
+    while (iss >> input)
+    {
         tokens.push_back(input);
     }
     return tokens;
 }
 
 /** \brief Joins strings contained in a vector by a single whitespace. */
-static std::string reduceStringVector(const std::vector<std::string>& tokens) {
+static std::string reduceStringVector(const std::vector<std::string> &tokens)
+{
     std::string stringBuilder;
 
     //  Concats each element with a whitespace in between
-    for (const std::string& str : tokens) {
+    for (const std::string &str : tokens)
+    {
         stringBuilder += str + " ";
     }
 
     //  Trims the trailing whitespace of the string
-    size_t endpos = stringBuilder.find_last_not_of(" \t\n\r");  // Finding the last non-whitespace character
-    if( std::string::npos != endpos ) {
-        stringBuilder = stringBuilder.substr(0, endpos+1);  // Trimming the trailing whitespaces
+    size_t endpos = stringBuilder.find_last_not_of(" \t\n\r"); // Finding the last non-whitespace character
+    if (std::string::npos != endpos)
+    {
+        stringBuilder = stringBuilder.substr(0, endpos + 1); // Trimming the trailing whitespaces
     }
     return stringBuilder;
 }
@@ -73,33 +73,37 @@ static std::string reduceStringVector(const std::vector<std::string>& tokens) {
 //----------------------------------------------------------------------------------------------------------------------
 //  "GameEngine" implementations
 
-GameEngine::GameEngine(const vector<State*>& states, CommandProcessor* commandProcessor) {
+GameEngine::GameEngine(const vector<State *> &states, CommandProcessor *commandProcessor)
+{
     this->ownedStates = states;
-    this->currentState = *states.begin();   //  The first state in the vector
+    this->currentState = *states.begin(); //  The first state in the vector
     this->commandProcessor = commandProcessor;
     this->players = {};
     this->map = {};
     this->isRunning = false;
 }
 
-GameEngine::~GameEngine() {
-    for (const auto& state : ownedStates)
+GameEngine::~GameEngine()
+{
+    for (const auto &state : ownedStates)
         delete state;
 
-    for (const auto& player : players)
+    for (const auto &player : players)
         delete player;
 
     delete commandProcessor;
     delete map;
 }
 
-GameEngine &GameEngine::operator=(const GameEngine& otherGameEngine) {
-    if (this != &otherGameEngine) {
+GameEngine &GameEngine::operator=(const GameEngine &otherGameEngine)
+{
+    if (this != &otherGameEngine)
+    {
         //  Delete all current data
-        for (const auto& state : ownedStates)
+        for (const auto &state : ownedStates)
             delete state;
 
-        for (const auto& player : players)
+        for (const auto &player : players)
             delete player;
 
         delete commandProcessor;
@@ -117,7 +121,8 @@ GameEngine &GameEngine::operator=(const GameEngine& otherGameEngine) {
     return *this;
 }
 
-std::ostream& operator<<(std::ostream& os, const GameEngine& gameEngine) {
+std::ostream &operator<<(std::ostream &os, const GameEngine &gameEngine)
+{
     //  TODO: implement when finished refactoring
     return os;
 }
@@ -132,18 +137,20 @@ std::ostream& operator<<(std::ostream& os, const GameEngine& gameEngine) {
  *    'Command' object. The command is then verified. If valid, then it is executed by calling the respective transition
  *    function. If invalid, then an error message is printed.
  */
-void GameEngine::execute() {
+void GameEngine::execute()
+{
     //  Checks if all the required variables have been instantiated and checks for the presence of any data
-    if (currentState == nullptr || commandProcessor == nullptr) {
+    if (currentState == nullptr || commandProcessor == nullptr)
+    {
         std::cerr << "ERROR: GameEngine not fully instantiated. Dependencies missing" << std::endl;
         return;
     }
 
-
     //  Set the isRunning status variable to 'true'
     isRunning = true;
 
-    while (isRunning) {
+    while (isRunning)
+    {
         //  Printing out prompt
         std::cout << "CURRENT STATE:\t[" << currentState->getStateName() << "]" << std::endl;
         std::cout << "Please enter a command:\n";
@@ -152,13 +159,15 @@ void GameEngine::execute() {
         auto command = std::make_unique<Command>(commandProcessor->getCommand(*currentState));
 
         //  If input is empty, refresh
-        if (command->getRawCommand().empty()) {
+        if (command->getRawCommand().empty())
+        {
             system("cls");
             continue;
         }
 
         //  Checking if the given transition is valid
-        if (currentState->isValidTransition(command->getFirstToken())) {
+        if (currentState->isValidTransition(command->getFirstToken()))
+        {
             //  Transition is valid
             //  Isolate the arguments, reduce them into a string, then pass it to be further processed
             std::string argumentsRaw = reduceStringVector(command->getRemainingTokens());
@@ -166,9 +175,13 @@ void GameEngine::execute() {
             auto nextState = *currentState->getNextState(command->getFirstToken());
 
             processCommand(transitionFunction, argumentsRaw, nextState);
-        } else {
+        }
+        else
+        {
             //  Transition is invalid, print series of error messages
-            std::cerr << "\033[1;31m" << "INVALID COMMAND. View the valid commands below:" << "\033[0m";
+            std::cerr << "\033[1;31m"
+                      << "INVALID COMMAND. View the valid commands below:"
+                      << "\033[0m";
             std::cerr << currentState->getHelpStrings() << std::endl;
         }
 
@@ -180,7 +193,8 @@ void GameEngine::execute() {
 /**
  * \brief Flags the game engine to stop running.
  */
-void GameEngine::stopRunning() {
+void GameEngine::stopRunning()
+{
     this->isRunning = false;
 }
 
@@ -192,8 +206,10 @@ void GameEngine::stopRunning() {
  * indicates an error with the provided arguments or an error somewhere down the line of execution. If 'true', then
  * we transition into the next state, updating the 'currentStateIndex' member variable.
  */
-void GameEngine::processCommand(bool (*transitionFunction)(const std::vector<std::string>&, GameEngine&), const std::string& argumentsRaw, State* nextState) {
-    if (!transitionFunction(getTokens(argumentsRaw), *this)) {
+void GameEngine::processCommand(bool (*transitionFunction)(const std::vector<std::string> &, GameEngine &), const std::string &argumentsRaw, State *nextState)
+{
+    if (!transitionFunction(getTokens(argumentsRaw), *this))
+    {
         //  PRINTING OF ERROR MESSAGES IS DELEGATED TO TRANSITION FUNCTIONS.
         return;
     }
@@ -203,47 +219,75 @@ void GameEngine::processCommand(bool (*transitionFunction)(const std::vector<std
 
     //  Print that you have switched states
     std::string newCurrentStateName = currentState->getStateName();
-    std::cout << "\033[34m" << "SWITCHED STATES TO:\t[" << newCurrentStateName << "]\033[0m" << std::endl;
+    std::cout << "\033[34m"
+              << "SWITCHED STATES TO:\t[" << newCurrentStateName << "]\033[0m" << std::endl;
 }
 
 //  Getter/Accessor methods
-bool GameEngine::isGameRunning() const {
+bool GameEngine::isGameRunning() const
+{
     return isRunning;
 }
 
-std::vector<Player*> GameEngine::getPlayers() const {
+std::vector<Player *> GameEngine::getPlayers() const
+{
     return players;
 }
 
-Map* GameEngine::getMap() const {
+Map *GameEngine::getMap() const
+{
     return map;
 }
 
 //  Setter/Mutator methods
-void GameEngine::setCommandProcessor(const CommandProcessor& newCommandProcessor) {
+CommandProcessor *GameEngine::getCommandProcessor()
+{
+    return commandProcessor;
+}
+
+void GameEngine::setCommandProcessor(const CommandProcessor &newCommandProcessor)
+{
     this->commandProcessor = newCommandProcessor.clone();
 }
 
-void GameEngine::setMap(Map* newMap) {
+void GameEngine::setMap(Map *newMap)
+{
     this->map = newMap;
 }
 
-std::vector<Player*> GameEngine::setPlayers(std::vector<Player*> newPlayers) {
-    auto tempVector = std::move(players);       //  Store old list of players
-    this->players = std::move(newPlayers);      //  Set the new list of players
-    return tempVector;                          //  Return old list through temp variable
+std::vector<Player *> GameEngine::setPlayers(std::vector<Player *> newPlayers)
+{
+    auto tempVector = std::move(players);  //  Store old list of players
+    this->players = std::move(newPlayers); //  Set the new list of players
+    return tempVector;                     //  Return old list through temp variable
 }
 
-void GameEngine::addPlayer(Player* playerPtr) {
+Player *GameEngine::getPlayerByName(const std::string &name) const
+{
+    for (const auto &player : players)
+    {
+        if (player->getName() == name)
+        {
+            return player;
+        }
+    }
+    return nullptr;
+}
+
+void GameEngine::addPlayer(Player *playerPtr)
+{
     players.push_back(playerPtr);
 }
 
-size_t GameEngine::numberOfPlayers() const {
+size_t GameEngine::numberOfPlayers() const
+{
     return players.size();
 }
 
-void GameEngine::mainGameLoop() {
-    while(true) {
+void GameEngine::mainGameLoop()
+{
+    while (true)
+    {
         // 1. Reinforcement phase
         reinforcementPhase();
 
@@ -257,21 +301,24 @@ void GameEngine::mainGameLoop() {
         removeDefeatedPlayers();
 
         // Check end game conditions
-        if(players.size() == 1) {
+        if (players.size() == 1)
+        {
             cout << "Player " << players[0]->getName() << " wins!" << endl;
             break;
         }
     }
 }
 
-void GameEngine::reinforcementPhase() {
-    for(auto& player : players) {
+void GameEngine::reinforcementPhase()
+{
+    for (auto &player : players)
+    {
         int reinforcements = int(player->getTerritories().size() / 3);
         reinforcements = max(reinforcements, 3); // Minimum 3
         // Give continent bonus
 
-        for(Continent* continent : map->getContinents())
-            if(playerOwnsContinent(player, continent))
+        for (Continent *continent : map->getContinents())
+            if (playerOwnsContinent(player, continent))
                 reinforcements += continent->getBonus();
 
         player->setReinforcements(reinforcements);
@@ -279,30 +326,39 @@ void GameEngine::reinforcementPhase() {
 }
 
 // Check if player owns all territories in continent
-bool GameEngine::playerOwnsContinent(Player* player, Continent* continent) {
-    std::vector<Territory*> territories = continent->getTerritories();
-    return std::ranges::all_of(territories.begin(), territories.end(), [player] (Territory* territory) -> bool { return territory->getOwner() == player;});
+bool GameEngine::playerOwnsContinent(Player *player, Continent *continent)
+{
+    std::vector<Territory *> territories = continent->getTerritories();
+    return std::ranges::all_of(territories.begin(), territories.end(), [player](Territory *territory) -> bool
+                               { return territory->getOwner() == player; });
 }
 
-void GameEngine::issueOrdersPhase() {
-    for (Player* player : players) {
-        player->issueOrders(commandProcessor);
+void GameEngine::issueOrdersPhase()
+{
+    for (Player *player : players)
+    {
+        player->issueOrders(this);
     }
 }
 
-
-void GameEngine::executeOrdersPhase() {
-    for (auto& player :players) {
-        OrdersList* ordersList = player->getOrdersList();
-        while (auto* nextOrder = ordersList->getNextOrder()) {
+void GameEngine::executeOrdersPhase()
+{
+    for (auto &player : players)
+    {
+        OrdersList *ordersList = player->getOrdersList();
+        while (auto *nextOrder = ordersList->getNextOrder())
+        {
             nextOrder->execute();
             delete nextOrder;
         }
     }
 }
 
-void GameEngine::removeDefeatedPlayers() {
-    players.erase(std::remove_if(players.begin(), players.end(), [] (Player* player) -> bool { return true; }), players.end());
+void GameEngine::removeDefeatedPlayers()
+{
+    players.erase(std::remove_if(players.begin(), players.end(), [](Player *player) -> bool
+                                 { return true; }),
+                  players.end());
 }
 
 string GameEngine::stringToLog()
