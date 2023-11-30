@@ -142,7 +142,6 @@ void Player::issueOrder(Order::OrderType orderType, Territory *target, int armyU
 
     //  Issues a 'deploy' order. No card has to be present like other orders.
     case Order::OrderType::Deploy:
-        cout << armyUnits << "  " << reinforcementPool << "     " << Player::getUnits() << endl;
         if (armyUnits > 0 && armyUnits <= reinforcementPool)
         {
             ordersList->addOrder(new DeployOrder(this, target, armyUnits));
@@ -308,7 +307,6 @@ void Player::setPlayerName(const string &newName)
 
 void Player::addToReinforcementPool(int units)
 {
-    cout << units << endl;
     reinforcementPool += units;
 }
 

@@ -321,7 +321,7 @@ void GameEngine::reinforcementPhase()
             if (playerOwnsContinent(player, continent))
                 reinforcements += continent->getBonus();
 
-        player->setReinforcements(reinforcements);
+        player->addToReinforcementPool(reinforcements);
     }
 }
 
