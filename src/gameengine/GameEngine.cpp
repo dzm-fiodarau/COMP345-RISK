@@ -342,7 +342,10 @@ void GameEngine::issueOrdersPhase()
         issuingOrders = false;
         for (Player *player : players)
         {
-            player->issueOrders(this);
+            if (player->isIssuingOrders())
+            {
+                player->issueOrders(this);
+            }
         }
         for (Player *player : players)
         {
@@ -367,15 +370,20 @@ void GameEngine::executeOrdersPhase()
         issuingOrders = false;
         for (Player *player : players)
         {
-            OrdersList *ordersList = player->getOrdersList();
-            auto *nextOrder = ordersList->getNextOrder();
-            nextOrder->execute();
-            delete nextOrder;
-            if (player->getOrdersList()->size() == 0)
+            if (player->isIssuingOrders())
             {
-                player->setIssuingOrders(false);
+                OrdersList *ordersList = player->getOrdersList();
+                auto *nextOrder = ordersList->getNextOrder();
+                nextOrder->execute();
+                delete nextOrder;
+                if (player->getOrdersList()->size() == 0)
+                {
+                    player->setIssuingOrders(false);
+                }
             }
-
+        }
+        for (Player *player : players)
+        {
             if (player->isIssuingOrders())
             {
                 issuingOrders = true;
