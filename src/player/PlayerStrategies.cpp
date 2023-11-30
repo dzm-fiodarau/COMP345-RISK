@@ -7,17 +7,6 @@
 #include "../../headers/Map.h"
 #include <sstream>
 #include <algorithm>
-#ifndef PRESS_ENTER_TO_CONTINUE
-#define PRESS_ENTER_TO_CONTINUE(clearConsole)   \
-    std::string _IGNORE_STRING;                 \
-    std::cout << "Press Enter to Continue... "; \
-    std::getline(std::cin, _IGNORE_STRING);     \
-                                                \
-    if (clearConsole)                           \
-    {                                           \
-        system("cls");                          \
-    }
-#endif
 
 PlayerStrategy::PlayerStrategy(Player *player)
 {
@@ -46,51 +35,51 @@ void HumanPlayerStrategy::issueOrders(GameEngine *gameEngine)
     std::cout << "CURRENT PLAYER:\t[" << player->getName() << "]" << std::endl;
     std::cout << "Please issue an order \nOrder arguments in this order: <order name> <target territory> <# units> <source territory> <negotiate player>\nOnly enter the arguments that are needed for the specified order\n(enter 'finish' to finish issuing orders):\n";
 
-    do
+    CommandProcessor *commandProcessor = gameEngine->getCommandProcessor();
+    std::string command_str = commandProcessor->getCommand();
+
+    if (command_str == "finish")
     {
-        CommandProcessor *commandProcessor = gameEngine->getCommandProcessor();
-        std::string command_str = commandProcessor->getCommand();
+        player->setIssuingOrders(false);
+        return;
+    }
+    Command *command = new Command(command_str);
+    vector<string> args = command->getRemainingTokens();
+    Order *order = new DeployOrder();
+    // issueOrder(Order::OrderType orderType, Territory * target, int armyUnits, Territory *source, Player *player);
+    switch (order->parseOrderType(command->getFirstToken()))
+    {
+    case Order::OrderType::Deploy:
+        player->issueOrder(Order::OrderType::Deploy, gameEngine->getMap()->getTerritoryByName(args[0]), stoi(args[1]), nullptr, nullptr);
+        return;
 
-        if (command_str == "finish")
-            break;
-        Command *command = new Command(command_str);
-        vector<string> args = command->getRemainingTokens();
-        Order *order = new DeployOrder();
-        // issueOrder(Order::OrderType orderType, Territory * target, int armyUnits, Territory *source, Player *player);
-        switch (order->parseOrderType(command->getFirstToken()))
-        {
-        case Order::OrderType::Deploy:
-            player->issueOrder(Order::OrderType::Deploy, gameEngine->getMap()->getTerritoryByName(args[0]), stoi(args[1]), nullptr, nullptr);
-            return;
+    //  Issue an 'advance' order. No card has to be present like other orders.
+    case Order::OrderType::Advance:
+        player->issueOrder(Order::OrderType::Advance, gameEngine->getMap()->getTerritoryByName(args[0]), stoi(args[1]), gameEngine->getMap()->getTerritoryByName(args[2]), nullptr);
+        return;
 
-        //  Issue an 'advance' order. No card has to be present like other orders.
-        case Order::OrderType::Advance:
-            player->issueOrder(Order::OrderType::Advance, gameEngine->getMap()->getTerritoryByName(args[0]), stoi(args[1]), gameEngine->getMap()->getTerritoryByName(args[2]), nullptr);
-            return;
+    //  We check if the player has a 'bomb' card. If so, we 'consume' the card and issue an order
+    //  If not, print an error message, nothing is issued.
+    case Order::OrderType::Bomb:
+        player->issueOrder(Order::OrderType::Bomb, gameEngine->getMap()->getTerritoryByName(args[0]), 0, nullptr, nullptr);
+        return;
 
-        //  We check if the player has a 'bomb' card. If so, we 'consume' the card and issue an order
-        //  If not, print an error message, nothing is issued.
-        case Order::OrderType::Bomb:
-            player->issueOrder(Order::OrderType::Bomb, gameEngine->getMap()->getTerritoryByName(args[0]), 0, nullptr, nullptr);
-            return;
+    case Order::OrderType::Blockade:
+        player->issueOrder(Order::OrderType::Blockade, gameEngine->getMap()->getTerritoryByName(args[0]), 0, nullptr, nullptr);
+        return;
 
-        case Order::OrderType::Blockade:
-            player->issueOrder(Order::OrderType::Blockade, gameEngine->getMap()->getTerritoryByName(args[0]), 0, nullptr, nullptr);
-            return;
+    case Order::OrderType::Airlift:
+        player->issueOrder(Order::OrderType::Airlift, gameEngine->getMap()->getTerritoryByName(args[0]), stoi(args[1]), gameEngine->getMap()->getTerritoryByName(args[2]), nullptr);
+        return;
 
-        case Order::OrderType::Airlift:
-            player->issueOrder(Order::OrderType::Airlift, gameEngine->getMap()->getTerritoryByName(args[0]), stoi(args[1]), gameEngine->getMap()->getTerritoryByName(args[2]), nullptr);
-            return;
+    case Order::OrderType::Negotiate:
+        player->issueOrder(Order::OrderType::Negotiate, nullptr, 0, nullptr, gameEngine->getPlayerByName(args[0]));
+        return;
 
-        case Order::OrderType::Negotiate:
-            player->issueOrder(Order::OrderType::Negotiate, nullptr, 0, nullptr, gameEngine->getPlayerByName(args[0]));
-            return;
-
-        default:
-            cout << "Specified order is not allowed. No order was added to the orders list." << endl;
-            return;
-        }
-    } while (true);
+    default:
+        cout << "Specified order is not allowed. No order was added to the orders list." << endl;
+        return;
+    }
 }
 
 std::vector<Territory *> HumanPlayerStrategy::toAttack()
@@ -125,7 +114,6 @@ void AggressivePlayerStrategy::play()
 void AggressivePlayerStrategy::issueOrders(GameEngine *)
 {
     cout << "In agressive player issueOrders\n";
-    PRESS_ENTER_TO_CONTINUE(true);
     // Deploys all reinforcements to one of the strongest territories
     vector<Territory *> strongest = vector<Territory *>();
     for (Territory *territory : player->getTerritories())
@@ -220,7 +208,6 @@ void BenevolentPlayerStrategy::play()
 void BenevolentPlayerStrategy::issueOrders(GameEngine *gameEngine)
 {
     cout << "In benevolent player issueOrders\n";
-    PRESS_ENTER_TO_CONTINUE(true);
     // Deploys all reinforcements to the weakest territories
     vector<Territory *> weakest = vector<Territory *>();
     for (Territory *territory : player->getTerritories())
@@ -294,7 +281,6 @@ void NeutralPlayerStrategy::play()
 void NeutralPlayerStrategy::issueOrders(GameEngine *)
 {
     cout << "In neutral player issueOrders\n";
-    PRESS_ENTER_TO_CONTINUE(true);
 }
 
 std::vector<Territory *> NeutralPlayerStrategy::toAttack()
@@ -329,7 +315,6 @@ void CheaterPlayerStrategy::play()
 void CheaterPlayerStrategy::issueOrders(GameEngine *)
 {
     cout << "In cheater player issueOrders\n";
-    PRESS_ENTER_TO_CONTINUE(true);
     vector<Territory *> toConquer = vector<Territory *>();
     for (Territory *territory : player->getTerritories())
     {

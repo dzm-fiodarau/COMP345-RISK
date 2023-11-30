@@ -38,6 +38,9 @@ private:
     // Indication of whether the player has to draw a card at the end of his turn or not
     bool drawCard;
 
+    // Indication of if player is still issuing orders
+    bool issuingOrders = true;
+
     //  'PlayerStrategy' object that defines behavior for 'toAttack()', 'toDefend()', and 'issueOrder(..)'
     //  Class has single/sole ownership
     PlayerStrategy *playerStrategy;
@@ -188,6 +191,12 @@ public:
 
     /** \brief Gets the <code>OrdersList</code> object of the class. */
     OrdersList *getOrdersList() const;
+
+    /** \brief Gets the <code>issuingOrders</code> of the object*/
+    bool isIssuingOrders() const { return issuingOrders; };
+
+    /** \brief Sets the <code>issuingOrders</code> of the object*/
+    void setIssuingOrders(bool issuingOrders) { Player::issuingOrders = issuingOrders; };
 
     //  Setter/Mutator methods
     void setPlayerName(const std::string &newName);

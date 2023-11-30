@@ -181,6 +181,11 @@ public:
     string stringToLog();
 
     /**
+     * \brief Returns size of the list of Order objects
+     */
+    int size() const { return orders.size(); };
+
+    /**
      * \brief   Directly accesses the internal orders list
      * \param index Index of internal list
      * \return  Returns a Order pointer using the passed index. Returns nullptr if invalid index.

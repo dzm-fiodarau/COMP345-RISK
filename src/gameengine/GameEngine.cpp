@@ -24,7 +24,6 @@
 #include "../../headers/Map.h"
 #include "../../headers/player/Player.h"
 
-#ifndef PRESS_ENTER_TO_CONTINUE(clearConsole)
 #define PRESS_ENTER_TO_CONTINUE(clearConsole)   \
     std::string _IGNORE_STRING;                 \
     std::cout << "Press Enter to Continue... "; \
@@ -34,7 +33,6 @@
     {                                           \
         system("cls");                          \
     }
-#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 //  Static functions
@@ -290,7 +288,10 @@ void GameEngine::mainGameLoop()
 {
     while (true)
     {
-        cout << *players[0] << players[0]->getReinforcementPool() << endl;
+        for (Player *player : players)
+        {
+            player->setIssuingOrders(true);
+        }
         // 1. Reinforcement phase
         reinforcementPhase();
         // 2. Issue orders phase
@@ -335,23 +336,53 @@ bool GameEngine::playerOwnsContinent(Player *player, Continent *continent)
 
 void GameEngine::issueOrdersPhase()
 {
-    for (Player *player : players)
+    bool issuingOrders = true;
+    do
     {
-        player->issueOrders(this);
-    }
+        issuingOrders = false;
+        for (Player *player : players)
+        {
+            player->issueOrders(this);
+        }
+        for (Player *player : players)
+        {
+            if (player->isIssuingOrders())
+            {
+                issuingOrders = true;
+                break;
+            }
+        }
+    } while (issuingOrders);
 }
 
 void GameEngine::executeOrdersPhase()
 {
-    for (auto &player : players)
+    for (Player *player : players)
     {
-        OrdersList *ordersList = player->getOrdersList();
-        while (auto *nextOrder = ordersList->getNextOrder())
+        player->setIssuingOrders(true);
+    }
+    bool issuingOrders = true;
+    do
+    {
+        issuingOrders = false;
+        for (Player *player : players)
         {
+            OrdersList *ordersList = player->getOrdersList();
+            auto *nextOrder = ordersList->getNextOrder();
             nextOrder->execute();
             delete nextOrder;
+            if (player->getOrdersList()->size() == 0)
+            {
+                player->setIssuingOrders(false);
+            }
+
+            if (player->isIssuingOrders())
+            {
+                issuingOrders = true;
+                break;
+            }
         }
-    }
+    } while (issuingOrders);
 }
 
 void GameEngine::removeDefeatedPlayers()
