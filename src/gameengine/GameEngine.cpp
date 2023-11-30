@@ -24,6 +24,7 @@
 #include "../../headers/Map.h"
 #include "../../headers/player/Player.h"
 
+#ifndef PRESS_ENTER_TO_CONTINUE(clearConsole)
 #define PRESS_ENTER_TO_CONTINUE(clearConsole)   \
     std::string _IGNORE_STRING;                 \
     std::cout << "Press Enter to Continue... "; \
@@ -33,6 +34,7 @@
     {                                           \
         system("cls");                          \
     }
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 //  Static functions
@@ -288,15 +290,13 @@ void GameEngine::mainGameLoop()
 {
     while (true)
     {
+        cout << *players[0] << players[0]->getReinforcementPool() << endl;
         // 1. Reinforcement phase
         reinforcementPhase();
-
         // 2. Issue orders phase
         issueOrdersPhase();
-
         // 3. Execute orders phase
         executeOrdersPhase();
-
         // Remove eliminated players
         removeDefeatedPlayers();
 

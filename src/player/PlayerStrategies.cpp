@@ -7,6 +7,17 @@
 #include "../../headers/Map.h"
 #include <sstream>
 #include <algorithm>
+#ifndef PRESS_ENTER_TO_CONTINUE
+#define PRESS_ENTER_TO_CONTINUE(clearConsole)   \
+    std::string _IGNORE_STRING;                 \
+    std::cout << "Press Enter to Continue... "; \
+    std::getline(std::cin, _IGNORE_STRING);     \
+                                                \
+    if (clearConsole)                           \
+    {                                           \
+        system("cls");                          \
+    }
+#endif
 
 PlayerStrategy::PlayerStrategy(Player *player)
 {
@@ -79,7 +90,6 @@ void HumanPlayerStrategy::issueOrders(GameEngine *gameEngine)
             cout << "Specified order is not allowed. No order was added to the orders list." << endl;
             return;
         }
-
     } while (true);
 }
 
@@ -114,6 +124,8 @@ void AggressivePlayerStrategy::play()
 
 void AggressivePlayerStrategy::issueOrders(GameEngine *)
 {
+    cout << "In agressive player issueOrders\n";
+    PRESS_ENTER_TO_CONTINUE(true);
     // Deploys all reinforcements to one of the strongest territories
     vector<Territory *> strongest = vector<Territory *>();
     for (Territory *territory : player->getTerritories())
@@ -207,6 +219,8 @@ void BenevolentPlayerStrategy::play()
 
 void BenevolentPlayerStrategy::issueOrders(GameEngine *gameEngine)
 {
+    cout << "In benevolent player issueOrders\n";
+    PRESS_ENTER_TO_CONTINUE(true);
     // Deploys all reinforcements to the weakest territories
     vector<Territory *> weakest = vector<Territory *>();
     for (Territory *territory : player->getTerritories())
@@ -279,6 +293,8 @@ void NeutralPlayerStrategy::play()
 
 void NeutralPlayerStrategy::issueOrders(GameEngine *)
 {
+    cout << "In neutral player issueOrders\n";
+    PRESS_ENTER_TO_CONTINUE(true);
 }
 
 std::vector<Territory *> NeutralPlayerStrategy::toAttack()
@@ -312,6 +328,8 @@ void CheaterPlayerStrategy::play()
 
 void CheaterPlayerStrategy::issueOrders(GameEngine *)
 {
+    cout << "In cheater player issueOrders\n";
+    PRESS_ENTER_TO_CONTINUE(true);
     vector<Territory *> toConquer = vector<Territory *>();
     for (Territory *territory : player->getTerritories())
     {
