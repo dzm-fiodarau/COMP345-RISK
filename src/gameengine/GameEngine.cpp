@@ -291,6 +291,7 @@ void GameEngine::mainGameLoop()
         for (Player *player : players)
         {
             player->setIssuingOrders(true);
+            cout << *player;
         }
         // 1. Reinforcement phase
         reinforcementPhase();
@@ -342,6 +343,7 @@ void GameEngine::issueOrdersPhase()
         issuingOrders = false;
         for (Player *player : players)
         {
+            cout << player->isIssuingOrders();
             if (player->isIssuingOrders())
             {
                 player->issueOrders(this);
@@ -362,7 +364,14 @@ void GameEngine::executeOrdersPhase()
 {
     for (Player *player : players)
     {
-        player->setIssuingOrders(true);
+        if (player->getOrdersList()->size() == 0)
+        {
+            player->setIssuingOrders(false);
+        }
+        else
+        {
+            player->setIssuingOrders(true);
+        }
     }
     bool issuingOrders = true;
     do
@@ -396,7 +405,7 @@ void GameEngine::executeOrdersPhase()
 void GameEngine::removeDefeatedPlayers()
 {
     players.erase(std::remove_if(players.begin(), players.end(), [](Player *player) -> bool
-                                 { return true; }),
+                                 { return player->getTerritories().size() == 0; }),
                   players.end());
 }
 

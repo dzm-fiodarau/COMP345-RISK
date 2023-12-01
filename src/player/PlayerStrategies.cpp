@@ -113,7 +113,7 @@ void AggressivePlayerStrategy::play()
 
 void AggressivePlayerStrategy::issueOrders(GameEngine *)
 {
-    cout << "In agressive player issueOrders\n";
+    cout << "In aggressive " << *player << endl;
     // Deploys all reinforcements to one of the strongest territories
     vector<Territory *> strongest = vector<Territory *>();
     for (Territory *territory : player->getTerritories())
@@ -167,13 +167,20 @@ void AggressivePlayerStrategy::issueOrders(GameEngine *)
     if (opponent_adjacent.size() > 0)
     {
         int attack_index = rand() % opponent_adjacent.size();
-        player->issueOrder(Order::OrderType::Advance, strongest[strongest_index], strongest[strongest_index]->getNumberOfArmies() - 1, opponent_adjacent[attack_index], nullptr);
+        if (strongest[strongest_index]->getNumberOfArmies() > 0)
+        {
+            player->issueOrder(Order::OrderType::Advance, opponent_adjacent[attack_index], strongest[strongest_index]->getNumberOfArmies() - 1, strongest[strongest_index], nullptr);
+        }
     }
     else
     {
         int move_index = rand() % strongest[strongest_index]->getAdjacentTerritories().size();
-        player->issueOrder(Order::OrderType::Advance, strongest[strongest_index], strongest[strongest_index]->getNumberOfArmies() - 1, strongest[strongest_index]->getAdjacentTerritories()[move_index], nullptr);
+        if (strongest[strongest_index]->getNumberOfArmies() > 0)
+        {
+            player->issueOrder(Order::OrderType::Advance, strongest[strongest_index]->getAdjacentTerritories()[move_index], strongest[strongest_index]->getNumberOfArmies() - 1, strongest[strongest_index], nullptr);
+        }
     }
+    player->setIssuingOrders(false);
 }
 
 std::vector<Territory *> AggressivePlayerStrategy::toAttack()
@@ -247,6 +254,7 @@ void BenevolentPlayerStrategy::issueOrders(GameEngine *gameEngine)
         player->issueOrder(Order::OrderType::Negotiate, nullptr, 0, nullptr, gameEngine->getPlayers()[bombing_index]);
         break;
     }
+    player->setIssuingOrders(false);
 }
 
 std::vector<Territory *> BenevolentPlayerStrategy::toAttack()
@@ -281,6 +289,7 @@ void NeutralPlayerStrategy::play()
 void NeutralPlayerStrategy::issueOrders(GameEngine *)
 {
     cout << "In neutral player issueOrders\n";
+    player->setIssuingOrders(false);
 }
 
 std::vector<Territory *> NeutralPlayerStrategy::toAttack()
@@ -330,6 +339,7 @@ void CheaterPlayerStrategy::issueOrders(GameEngine *)
         player->addTerritory(*territory);
         territory->setOwner(player);
     }
+    player->setIssuingOrders(false);
 }
 
 std::vector<Territory *> CheaterPlayerStrategy::toAttack()
