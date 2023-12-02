@@ -17,16 +17,15 @@
 #include <vector>
 #include <chrono>
 
-
-#define PRESS_ENTER_TO_CONTINUE(clearConsole)                       \
-	std::string _IGNORE_STRING;                                     \
-	std::cout << "Press Enter to Continue... ";                     \
-	std::getline(std::cin, _IGNORE_STRING);                         \
-																	\
-	if (clearConsole) {                                             \
-		system("cls");                                              \
-	}                                                               \
-
+#define PRESS_ENTER_TO_CONTINUE(clearConsole)   \
+    std::string _IGNORE_STRING;                 \
+    std::cout << "Press Enter to Continue... "; \
+    std::getline(std::cin, _IGNORE_STRING);     \
+                                                \
+    if (clearConsole)                           \
+    {                                           \
+        system("cls");                          \
+    }
 
 //----------------------------------------------------------------------------------------------------------------------
 //  Static 'helper' functions
@@ -36,9 +35,11 @@
  * \param players       List of players to evenly distribute territories to
  * \param territories   List of territories to be distributed
  */
-static void distributeTerritories(const std::vector<Player*>& players, const std::vector<Territory*>& territories) {
+static void distributeTerritories(const std::vector<Player *> &players, const std::vector<Territory *> &territories)
+{
     size_t playersVectorIndex = 0;
-    for (auto territory : territories) {
+    for (auto territory : territories)
+    {
         if (playersVectorIndex >= players.size())
             playersVectorIndex = 0;
 
@@ -52,9 +53,11 @@ static void distributeTerritories(const std::vector<Player*>& players, const std
  * \remarks Does not print out ALL details about the player, just the relevant information initialized during game start
  * \param players   The list/vector of players
  */
-static void printPlayerInfo(const std::vector<Player*>& players) {
-    for (size_t i = 0; i < players.size(); i++) {
-        auto* currentPlayer = players[i];
+static void printPlayerInfo(const std::vector<Player *> &players)
+{
+    for (size_t i = 0; i < players.size(); i++)
+    {
+        auto *currentPlayer = players[i];
 
         //  Print out player name + their position in the order of play
         std::cout << "[" << (i + 1) << "].    " << currentPlayer->getName() << std::endl;
@@ -62,14 +65,16 @@ static void printPlayerInfo(const std::vector<Player*>& players) {
         //  Print out owned territories
         std::cout << "  Territories:" << std::endl;
         std::cout << "  FORMAT: NAME(x, y); CONTINENT" << std::endl;
-        for (const auto& territory : currentPlayer->getTerritories()) {
+        for (const auto &territory : currentPlayer->getTerritories())
+        {
             std::cout << "      - " << territory->getName() << "(" << territory->getX() << ", " << territory->getY()
                       << "); " << territory->getContinent()->getName() << std::endl;
         }
 
         //  Print out drawn cards
         std::cout << "  Cards:" << std::endl;
-        for (const auto& card : currentPlayer->getCards()) {
+        for (const auto &card : currentPlayer->getCards())
+        {
             std::cout << "      - " << *card << std::endl;
         }
 
@@ -84,7 +89,8 @@ static void printPlayerInfo(const std::vector<Player*>& players) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bool game_restart(const std::vector<std::string>& values, GameEngine& gameEngine) {
+bool game_restart(const std::vector<std::string> &values, GameEngine &gameEngine)
+{
     DEBUG_PRINT("GAME_RESTART")
     return true;
 }
@@ -100,13 +106,15 @@ bool game_restart(const std::vector<std::string>& values, GameEngine& gameEngine
  * \param gameEngine    Game object to change/obtain values.
  * \return  True if loading was successful, false otherwise.
  */
-bool game_loadMap(const std::vector<std::string>& values, GameEngine& gameEngine) {
+bool game_loadMap(const std::vector<std::string> &values, GameEngine &gameEngine)
+{
     //  Attempt to load map
     auto mapLoader = std::make_unique<MapLoader>(values.front());
-    auto* loadedMap = mapLoader->load();
+    auto *loadedMap = mapLoader->load();
 
     //  A 'nullptr' implies that the loading was unsuccessful
-    if (loadedMap == nullptr) {
+    if (loadedMap == nullptr)
+    {
         std::cerr << "ERROR: An error has occurred when trying to load the map!" << std::endl;
         return false;
     }
@@ -126,20 +134,25 @@ bool game_loadMap(const std::vector<std::string>& values, GameEngine& gameEngine
  * \param gameEngine    Game object to change/obtain values.
  * \return True if validating was successful, false otherwise.
  */
-bool game_validateMap(const std::vector<std::string>& _ignored_, GameEngine& gameEngine) {
-    auto* mapPtr = gameEngine.getMap();
+bool game_validateMap(const std::vector<std::string> &_ignored_, GameEngine &gameEngine)
+{
+    auto *mapPtr = gameEngine.getMap();
 
     //  If the current map object in the game engine is a 'nullptr', then it means it hasn't been loaded yet
-    if (mapPtr == nullptr) {
+    if (mapPtr == nullptr)
+    {
         std::cerr << "ERROR: No map has been loaded yet!" << std::endl;
         return false;
     }
 
     //  Check if valid, print a corresponding error/success message
-    if (mapPtr->getIsValid()) {
+    if (mapPtr->getIsValid())
+    {
         std::cout << "SUCCESS: Map has been successfully validated!" << std::endl;
         return true;
-    } else {
+    }
+    else
+    {
         std::cerr << "ERROR: The current map is NOT valid!" << std::endl;
         return false;
     }
@@ -153,17 +166,38 @@ bool game_validateMap(const std::vector<std::string>& _ignored_, GameEngine& gam
  * \param gameEngine    Game object to change/obtain values.
  * \return True if addition of player was successful, false otherwise.
  */
-bool game_addPlayer(const std::vector<std::string>& values, GameEngine& gameEngine) {
+bool game_addPlayer(const std::vector<std::string> &values, GameEngine &gameEngine)
+{
     //  If number of player cap is met, unable to add any more players
-    if (gameEngine.numberOfPlayers() >= GameEngine::MAX_PLAYERS) {
+    if (gameEngine.numberOfPlayers() >= GameEngine::MAX_PLAYERS)
+    {
         std::cerr << "ERROR: Cannot add any more players!" << std::endl;
         std::cerr << "       Max no. of players (" << GameEngine::MAX_PLAYERS << " player(s)) reached!" << std::endl;
         return false;
     }
 
     //  Instantiate a new player and add it to the game engine
-    const std::string& playerName = values.front();
-    auto* newPlayer = new Player(playerName);
+    const std::string &playerName = values.front();
+    auto *newPlayer = new Player(playerName);
+    if (values.size() >= 2)
+    {
+        if (values[1] == "aggressive")
+        {
+            newPlayer->setPlayerStrategy(new AggressivePlayerStrategy(newPlayer));
+        }
+        else if (values[1] == "benevolent")
+        {
+            newPlayer->setPlayerStrategy(new BenevolentPlayerStrategy(newPlayer));
+        }
+        else if (values[1] == "neutral")
+        {
+            newPlayer->setPlayerStrategy(new NeutralPlayerStrategy(newPlayer));
+        }
+        else if (values[1] == "cheater")
+        {
+            newPlayer->setPlayerStrategy(new CheaterPlayerStrategy(newPlayer));
+        }
+    }
     gameEngine.addPlayer(newPlayer);
 
     std::cout << "Successfully added player!" << std::endl;
@@ -177,12 +211,14 @@ bool game_addPlayer(const std::vector<std::string>& values, GameEngine& gameEngi
  * \param gameEngine    Game object to change/obtain values.
  * \return  Returns true.
  */
-bool game_printPlayers(const std::vector<std::string>& _ignored_, GameEngine& gameEngine) {
-    std::vector<Player*> players = gameEngine.getPlayers();
-    size_t playerCount = 1;     //   Counter variable to numerate the players when printing
+bool game_printPlayers(const std::vector<std::string> &_ignored_, GameEngine &gameEngine)
+{
+    std::vector<Player *> players = gameEngine.getPlayers();
+    size_t playerCount = 1; //   Counter variable to numerate the players when printing
 
     std::cout << "  CURRENT PLAYERS" << std::endl;
-    for (auto* player : players) {
+    for (auto *player : players)
+    {
         std::cout << "  " << (playerCount++) << ". " << player->getName() << std::endl;
     }
 
@@ -204,13 +240,15 @@ bool game_printPlayers(const std::vector<std::string>& _ignored_, GameEngine& ga
  * \param gameEngine    Game object to change/obtain values.
  * \return  True if the initialization was successful, false otherwise.
  */
-bool game_gameStart(const std::vector<std::string>& values, GameEngine& gameEngine) {
+bool game_gameStart(const std::vector<std::string> &values, GameEngine &gameEngine)
+{
 
-    std::vector<Territory*> territories = gameEngine.getMap()->getTerritories();
-    std::vector<Player*> players = gameEngine.getPlayers();
+    std::vector<Territory *> territories = gameEngine.getMap()->getTerritories();
+    std::vector<Player *> players = gameEngine.getPlayers();
 
     //  If there are more players than there are territories -> territories cannot be properly distributed
-    if (players.size() > territories.size()) {
+    if (players.size() > territories.size())
+    {
         std::cerr << "ERROR:    There are not enough territories for the number of players!" << std::endl;
         return false;
     }
@@ -226,12 +264,13 @@ bool game_gameStart(const std::vector<std::string>& values, GameEngine& gameEngi
     (void)gameEngine.setPlayers(players);
 
     //  3.  Give 50 initial army units to the players, which are placed in their respective reinforcement pool
-    for (Player* player : players)
+    for (Player *player : players)
         player->addToReinforcementPool(50);
 
     //  4.  Let each player draw 2 initial cards from the deck using the deck's 'draw()' method
-    Deck& deck = Deck::getInstance();
-    for (Player* player : players) {
+    Deck &deck = Deck::getInstance();
+    for (Player *player : players)
+    {
         //  Draw two cards from the deck
         player->addCard(*deck.draw());
         player->addCard(*deck.draw());
@@ -246,17 +285,20 @@ bool game_gameStart(const std::vector<std::string>& values, GameEngine& gameEngi
     return true;
 }
 
-bool game_winGame(const std::vector<std::string>& values, GameEngine& gameEngine) {
+bool game_winGame(const std::vector<std::string> &values, GameEngine &gameEngine)
+{
     DEBUG_PRINT("GAME_WIN_GAME")
     return true;
 }
 
-bool game_quit(const std::vector<std::string>& values, GameEngine& gameEngine) {
+bool game_quit(const std::vector<std::string> &values, GameEngine &gameEngine)
+{
     DEBUG_PRINT("GAME_END_PROGRAM")
     return true;
 }
 
-bool game_tournament(const std::vector<std::string>&, GameEngine&) {
+bool game_tournament(const std::vector<std::string> &, GameEngine &)
+{
     DEBUG_PRINT("GAME_TOURNAMENT")
     return true;
 }

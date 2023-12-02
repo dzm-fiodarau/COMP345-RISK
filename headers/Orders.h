@@ -7,8 +7,8 @@
 #include "LoggingObserver.h"
 
 //  Forward declaration of required classes from other header files. (included in .cpp file)
-class Territory;    //  Map.h
-class Player;       //  Player.h
+class Territory; //  Map.h
+class Player;    //  Player.h
 
 using namespace std;
 
@@ -19,24 +19,35 @@ using namespace std;
 class Order : public ILoggable, public Subject
 {
 public:
-
     /** \brief An enum class that indicates the type of the order
      */
-    enum class OrderType {
-        Deploy, Advance, Bomb, Blockade, Airlift, Negotiate, Invalid
+    enum class OrderType
+    {
+        Deploy,
+        Advance,
+        Bomb,
+        Blockade,
+        Airlift,
+        Negotiate,
+        Invalid
     };
 
     /** \brief Returns an <code>OrderType</code> enum corresponding to a string.
      * @param orderTypeAsString The string to be parsed.
      * @return Returns <code>OrderType</code> enum.
      */
-    static Order::OrderType parseOrderType(const string& orderTypeAsString);
+    static Order::OrderType parseOrderType(const string &orderTypeAsString);
 
     /** \brief Returns a string representation of an <code>OrderType</code> enum.
      * @param orderType The <code>OrderType</code> enum.
      * @return Returns a string representation of the enum.
      */
     static string orderTypeToString(Order::OrderType orderType);
+
+    /**
+     * \brief   Constructs empty Order object
+     */
+    Order();
 
     /**
      * \brief   Constructs an Order object
@@ -76,7 +87,7 @@ public:
     virtual string execute() = 0;
 
     /**
-     * \brief   Get the order type 
+     * \brief   Get the order type
      * \return  The order type
      */
     OrderType getOrderType();
@@ -170,6 +181,11 @@ public:
     string stringToLog();
 
     /**
+     * \brief Returns size of the list of Order objects
+     */
+    int size() const { return orders.size(); };
+
+    /**
      * \brief   Directly accesses the internal orders list
      * \param index Index of internal list
      * \return  Returns a Order pointer using the passed index. Returns nullptr if invalid index.
@@ -202,6 +218,10 @@ private:
 class DeployOrder : public Order
 {
 public:
+    /**
+     * \brief   Constructs empty DeployOrder object
+     */
+    DeployOrder();
     /**
      * \brief   Constructs a DeployOrder object
      * \param   type Type of the DeployOrder object created
