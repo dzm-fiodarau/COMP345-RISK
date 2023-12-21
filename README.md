@@ -15,8 +15,7 @@
 </div>
 
 ## About
-Sample text
-
+This is a Risk console game developed in the context of a school assignment. 
 
 
 ## Installation
